@@ -20,7 +20,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mappings, err := ambassador.GenerateMappings("default", "svc", spec)
+	mappings, err := ambassador.GenerateMappings(ambassador.Options{
+		ServiceNamespace: "ambassador",
+		ServiceName:      "petstore",
+		BasePath:         "/petstore/api/v3",
+		TrimPrefix:       "/petstore",
+		RootOnly:         true,
+	}, spec)
+
 	if err != nil {
 		log.Fatal(err)
 	}

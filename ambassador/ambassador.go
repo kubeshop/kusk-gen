@@ -2,6 +2,7 @@ package ambassador
 
 import (
 	"bytes"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -9,18 +10,9 @@ import (
 )
 
 var (
-	mappingTemplate *template.Template
+	mappingTemplate     *template.Template
+	reDuplicateNewlines = regexp.MustCompile(`\s*\n+`)
 )
-
-type opTemplate struct {
-	Namespace     string
-	ServiceName   string
-	OperationName string
-
-	Method string
-	Path   string
-	Regex  bool
-}
 
 func init() {
 	mappingTemplate = template.New("mapping")
@@ -64,33 +56,82 @@ func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	return path, true
 }
 
-func GenerateMappings(namespace, serviceName string, spec *openapi3.T) (string, error) {
-	var operations []opTemplate
+func generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
+	// TODO: generate proper mapping name if operationId is missing
+	return strings.ToLower(strings.ReplaceAll(serviceName+operation.OperationID, "-", ""))
+}
 
-	for path, pathItem := range spec.Paths {
-		for method, operation := range pathItem.Operations() {
-			mappingPath, regex := generateMappingPath(path, operation)
+type Options struct {
+	// AmbassadorNamespace is the target namespace for mappings (default: ambassador)
+	AmbassadorNamespace string
 
-			op := opTemplate{
-				Namespace:   namespace,
-				ServiceName: serviceName,
-				// TODO: OperationID may not be present, we'll have to generate something here
-				OperationName: operation.OperationID,
-				Method:        method,
-				Path:          mappingPath,
-				Regex:         regex,
+	ServiceNamespace string
+	ServiceName      string
+
+	// BasePath determines the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route)
+	BasePath string
+
+	// TrimPrefix determines the prefix that would be omitted from the URL when request is being forwarded
+	// to the upstream service, i.e. BasePath == /petstore/api/v3, TrimPrefix == /petstore, path that the Mapping would
+	// match is /petstore/api/v3/pets, URL that the upstream service would receive is /api/v3/pets
+	TrimPrefix string
+
+	// RootOnly determines whether the mappings will be generated for each route (default)
+	// or for the root prefix only (requires both BasePath and RootOnly options to be set)
+	RootOnly bool
+}
+
+func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
+	if options.AmbassadorNamespace == "" {
+		options.AmbassadorNamespace = "ambassador"
+	}
+
+	var mappings []MappingTemplate
+
+	if options.RootOnly && options.BasePath != "" {
+		// generate a single mapping for the service
+		op := MappingTemplate{
+			MappingName:         options.ServiceName,
+			AmbassadorNamespace: options.AmbassadorNamespace,
+			ServiceNamespace:    options.ServiceNamespace,
+			ServiceName:         options.ServiceName,
+			BasePath:            options.BasePath,
+			TrimPrefix:          options.TrimPrefix,
+		}
+
+		mappings = append(mappings, op)
+	} else {
+		// generate a mapping for each operation
+
+		for path, pathItem := range spec.Paths {
+			for method, operation := range pathItem.Operations() {
+				mappingPath, regex := generateMappingPath(path, operation)
+
+				op := MappingTemplate{
+					MappingName:         generateMappingName(options.ServiceName, method, path, operation),
+					AmbassadorNamespace: options.AmbassadorNamespace,
+					ServiceNamespace:    options.ServiceNamespace,
+					ServiceName:         options.ServiceName,
+					BasePath:            options.BasePath,
+					TrimPrefix:          options.TrimPrefix,
+					Method:              method,
+					Path:                mappingPath,
+					Regex:               regex,
+				}
+
+				mappings = append(mappings, op)
 			}
-
-			operations = append(operations, op)
 		}
 	}
 
 	var buf bytes.Buffer
 
-	err := mappingTemplate.Execute(&buf, operations)
+	err := mappingTemplate.Execute(&buf, mappings)
 	if err != nil {
 		return "", err
 	}
 
-	return buf.String(), nil
+	res := buf.String()
+
+	return reDuplicateNewlines.ReplaceAllString(res, "\n"), nil
 }
