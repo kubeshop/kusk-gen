@@ -34,7 +34,7 @@ spec:
   method: {{.Method}}
   {{end}}
 
-  service: {{.ServiceName}}
+  service: {{.ServiceName}}.{{.ServiceNamespace}}
 
   {{if .TrimPrefix}}
   regex_rewrite:

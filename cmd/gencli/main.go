@@ -21,7 +21,7 @@ func main() {
 	}
 
 	mappings, err := ambassador.GenerateMappings(ambassador.Options{
-		ServiceNamespace: "ambassador",
+		ServiceNamespace: "default",
 		ServiceName:      "petstore",
 		BasePath:         "/petstore/api/v3",
 		TrimPrefix:       "/petstore",
