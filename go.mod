@@ -1,4 +1,4 @@
-module github.com/kubeshop/openapi-kgen
+module github.com/kubeshop/openapi-operator
 
 go 1.16
 
