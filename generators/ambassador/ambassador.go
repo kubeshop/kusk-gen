@@ -12,6 +12,7 @@ import (
 var (
 	mappingTemplate     *template.Template
 	reDuplicateNewlines = regexp.MustCompile(`\s*\n+`)
+	rePathSymbols       = regexp.MustCompile(`[/{}]`)
 )
 
 func init() {
@@ -57,8 +58,22 @@ func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 }
 
 func generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
-	// TODO: generate proper mapping name if operationId is missing
-	return strings.ToLower(strings.ReplaceAll(serviceName+operation.OperationID, "-", ""))
+	var res strings.Builder
+
+	if operation.OperationID != "" {
+		res.WriteString(serviceName)
+		res.WriteString("-")
+		res.WriteString(operation.OperationID)
+		return strings.ToLower(res.String())
+	}
+
+	// generate proper mapping name if operationId is missing
+	res.WriteString(serviceName)
+	res.WriteString("-")
+	res.WriteString(method)
+	res.WriteString(rePathSymbols.ReplaceAllString(path, ""))
+
+	return strings.ToLower(res.String())
 }
 
 type Options struct {
