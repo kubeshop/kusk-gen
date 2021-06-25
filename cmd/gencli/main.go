@@ -7,7 +7,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 
-	"github.com/kubeshop/openapi-operator/ambassador"
+	"github.com/kubeshop/openapi-operator/generators/ambassador"
 )
 
 func main() {
