@@ -23,8 +23,6 @@ externalDocs:
   url: http://swagger.io
 servers:
   - url: "/api/v3"
-x-ambassador:
-  service: my-target-service
 tags:
   - name: pet
     description: Everything about your Pets
@@ -46,8 +44,6 @@ paths:
       summary: Update an existing pet
       description: Update an existing pet by Id
       operationId: updatePet
-      x-ambassador:
-        ignore: true
       requestBody:
         description: Update an existent pet in the store
         content:
@@ -87,9 +83,6 @@ paths:
       summary: Add a new pet to the store
       description: Add a new pet to the store
       operationId: addPet
-      x-ambassador:
-        service: another-petstore
-        prefix: /another-petstore
       requestBody:
         description: Create a new pet in the store
         content:
