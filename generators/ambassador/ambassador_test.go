@@ -112,7 +112,7 @@ spec:
 `,
 	},
 	{
-		name: "basic+namespace",
+		name: "basic-namespace",
 		options: Options{
 			AmbassadorNamespace: "amb",
 			ServiceNamespace:    "default",
@@ -285,7 +285,7 @@ spec:
 `,
 	},
 	{
-		name: "basepath+rootonly",
+		name: "basepath-rootonly",
 		options: Options{
 			AmbassadorNamespace: "",
 			ServiceNamespace:    "default",
@@ -334,7 +334,7 @@ spec:
 `,
 	},
 	{
-		name: "basepath+trimprefix",
+		name: "basepath-trimprefix",
 		options: Options{
 			AmbassadorNamespace: "",
 			ServiceNamespace:    "default",
