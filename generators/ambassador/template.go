@@ -1,6 +1,6 @@
 package ambassador
 
-type MappingTemplate struct {
+type mappingTemplateData struct {
 	MappingName string
 
 	AmbassadorNamespace string
