@@ -6,7 +6,7 @@ import (
 
 type header struct {
 	Swagger string `json:"swagger"`
-	OpenAPI string `json:"openapi"`
+	OpenAPI string `json:"openapi"` // we might need that to distinguish 3.1.x vs 3.0.x
 }
 
 // isSwagger tries to decode the spec header
@@ -16,9 +16,5 @@ func isSwagger(spec []byte) bool {
 	// we can ignore the error here
 	_ = json.Unmarshal(spec, &header)
 
-	if header.Swagger != "" {
-		return true
-	}
-
-	return false
+	return header.Swagger != ""
 }
