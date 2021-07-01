@@ -1,35 +1,10 @@
 package ambassador
 
 import (
-	"log"
 	"testing"
 
-	"github.com/getkin/kin-openapi/openapi2"
-	"github.com/getkin/kin-openapi/openapi2conv"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 )
-
-func parseSpec(t *testing.T, spec string) *openapi3.T {
-	r := require.New(t)
-
-	if spec := []byte(spec); isSwagger(spec) {
-		var s openapi2.T
-
-		r.NoErrorf(s.UnmarshalJSON(spec), "failed to unmarshal Swagger spec")
-
-		res, err := openapi2conv.ToV3(&s)
-		r.NoErrorf(err, "failed to convert Swagger spec to OpenAPI")
-
-		log.Println("swagger detected")
-		return res
-	}
-
-	res, err := openapi3.NewLoader().LoadFromData([]byte(spec))
-	r.NoErrorf(err, "invalid OpenAPI spec")
-
-	return res
-}
 
 type testCase struct {
 	name    string
@@ -42,7 +17,9 @@ func TestAmbassador(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
-			spec := parseSpec(t, testCase.spec)
+
+			spec, err := parseSpec([]byte(testCase.spec))
+			r.NoError(err, "failed to parse spec")
 
 			mappings, err := GenerateMappings(testCase.options, spec)
 			r.NoError(err)
@@ -359,7 +336,7 @@ spec:
 `,
 	},
 	{
-		name: "swagger",
+		name: "swagger-yaml",
 		options: Options{
 			AmbassadorNamespace: "",
 			ServiceNamespace:    "default",
@@ -456,6 +433,17 @@ definitions:
 apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
+  name: petstore-createpets
+  namespace: ambassador
+spec:
+  prefix: "/pets"
+  method: POST
+  service: petstore.default
+  rewrite: ""
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
   name: petstore-listpets
   namespace: ambassador
 spec:
@@ -467,11 +455,173 @@ spec:
 apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
+  name: petstore-showpetbyid
+  namespace: ambassador
+spec:
+  prefix: "/pets/([a-zA-Z0-9]*)"
+  prefix_regex: true
+  method: GET
+  service: petstore.default
+  rewrite: ""
+`,
+	},
+	{
+		name: "swagger-json",
+		options: Options{
+			AmbassadorNamespace: "",
+			ServiceNamespace:    "default",
+			ServiceName:         "petstore",
+			BasePath:            "",
+			TrimPrefix:          "",
+			RootOnly:            false,
+		},
+		spec: `
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Swagger Petstore"
+  },
+  "basePath": "/v1",
+  "paths": {
+    "/pets": {
+      "get": {
+        "summary": "List all pets",
+        "operationId": "listPets",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paged array of pets",
+            "schema": {
+              "$ref": "#/definitions/Pets"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a pet",
+        "operationId": "createPets",
+        "responses": {
+          "201": {
+            "description": "Null response"
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/pets/{petId}": {
+      "get": {
+        "operationId": "showPetById",
+        "parameters": [
+          {
+            "name": "petId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expected response to a valid request",
+            "schema": {
+              "$ref": "#/definitions/Pets"
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Pet": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      }
+    },
+    "Pets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Pet"
+      }
+    },
+    "Error": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
+`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
   name: petstore-createpets
   namespace: ambassador
 spec:
   prefix: "/pets"
   method: POST
+  service: petstore.default
+  rewrite: ""
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-listpets
+  namespace: ambassador
+spec:
+  prefix: "/pets"
+  method: GET
   service: petstore.default
   rewrite: ""
 ---
