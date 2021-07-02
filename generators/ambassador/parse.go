@@ -24,10 +24,14 @@ func isSwagger(spec []byte) bool {
 }
 
 func parseSpec(spec []byte) (*openapi3.T, error) {
-	if !isSwagger(spec) {
-		return openapi3.NewLoader().LoadFromData(spec)
+	if isSwagger(spec) {
+		return parseSwaggerSpec(spec)
 	}
 
+	return parseOpenAPI3Spec(spec)
+}
+
+func parseSwaggerSpec(spec []byte) (*openapi3.T, error) {
 	spec, err := yaml.YAMLToJSON(spec)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert YAML to JSON: %w", err)
@@ -41,4 +45,8 @@ func parseSpec(spec []byte) (*openapi3.T, error) {
 	}
 
 	return openapi2conv.ToV3(&swaggerSpec)
+}
+
+func parseOpenAPI3Spec(spec []byte) (*openapi3.T, error) {
+	return openapi3.NewLoader().LoadFromData(spec)
 }
