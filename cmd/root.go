@@ -7,8 +7,9 @@ import (
 	"os"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/kubeshop/openapi-operator/generators/ambassador"
 	"github.com/spf13/cobra"
+
+	"github.com/kubeshop/openapi-operator/generators/ambassador"
 )
 
 var (
