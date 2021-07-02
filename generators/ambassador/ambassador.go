@@ -3,6 +3,7 @@ package ambassador
 import (
 	"bytes"
 	"regexp"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -118,6 +119,14 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 			}
 		}
 	}
+
+	// We need to sort mappings as in the process of conversion of YAML to JSON
+	// the Go map's access mechanics randomize the order and therefore the output is shuffled.
+	// Not only it makes tests fail, it would also affect people who would use this in order to
+	// generate manifests and use them in GitOps processes
+	sort.Slice(mappings, func(i, j int) bool {
+		return mappings[i].MappingName < mappings[j].MappingName
+	})
 
 	var buf bytes.Buffer
 
