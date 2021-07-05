@@ -1,4 +1,4 @@
-module github.com/kubeshop/openapi-operator
+module github.com/kubeshop/kusk
 
 go 1.16
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kubeshop/openapi-operator/cmd"
+	"github.com/kubeshop/kusk/cmd"
 )
 
 func main() {
