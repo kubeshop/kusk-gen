@@ -1,6 +1,6 @@
-# openapi-kgen
+# kusk
 
-openapi-operator is a tool that treats your openapi or swagger spec as a source of truth to generate automatically
+kusk is a tool that treats your openapi or swagger spec as a source of truth to generate automatically
 various custom resources for your Kubernetes cluster services in regards to mappings, monitors and alerts
 
 We handle the generation of these resources so developers don't have to.
@@ -11,7 +11,7 @@ We handle the generation of these resources so developers don't have to.
 Framework that makes an OpenAPI definition the source of truth for all API-related objects in a cluster (services, mappings, monitors, etc)
 
 Usage:
-  openapi-operator [command]
+  kusk [command]
 
 Available Commands:
   ambassador  Generates ambassador mappings for your cluster from the provided api specification
@@ -19,16 +19,16 @@ Available Commands:
   help        Help about any command
 
 Flags:
-  -h, --help        help for openapi-operator
+  -h, --help        help for kusk
   -i, --in string   file path to api spec file to generate mappings from. e.g. -in apispec.yaml
 
-Use "openapi-operator [command] --help" for more information about a command.
+Use "kusk [command] --help" for more information about a command.
 ```
 
 ### Example
 For a quick minimal example, run the following
 ```shell
-./openapi-operator -i examples/petstore.yaml ambassador --service-name petstore
+./kusk -i examples/petstore.yaml ambassador --service-name petstore
 ```
 
 ## Development

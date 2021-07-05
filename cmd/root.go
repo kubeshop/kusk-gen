@@ -16,7 +16,7 @@ var (
 	apiSpecContents *openapi3.T
 
 	rootCmd = &cobra.Command{
-		Use:   "openapi-operator",
+		Use:   "kusk",
 		Short: "Framework that makes an OpenAPI definition the source of truth for all API-related objects in a cluster (services, mappings, monitors, etc)",
 		Long:  ``,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {

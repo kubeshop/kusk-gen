@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/openapi-operator/generators/ambassador"
+	"github.com/kubeshop/kusk/generators/ambassador"
 )
 
 // ambassadorCmd represents the ambassador command
