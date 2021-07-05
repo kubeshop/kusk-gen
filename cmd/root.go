@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -9,6 +8,8 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
+
+	"github.com/kubeshop/kusk/spec"
 )
 
 var (
@@ -24,12 +25,8 @@ var (
 				log.Fatal(errors.New("no openapi or swagger definition provided"))
 			}
 
-			loader := openapi3.Loader{
-				Context: context.Background(),
-			}
-
 			var err error
-			apiSpecContents, err = loader.LoadFromFile(apiSpecPath)
+			apiSpecContents, err = spec.ParseFromFile(apiSpecPath)
 			if err != nil {
 				log.Fatal(err)
 			}

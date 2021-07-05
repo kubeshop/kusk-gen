@@ -1,7 +1,8 @@
-package ambassador
+package spec
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/getkin/kin-openapi/openapi2"
 	"github.com/getkin/kin-openapi/openapi2conv"
@@ -23,15 +24,24 @@ func isSwagger(spec []byte) bool {
 	return header.Swagger != ""
 }
 
-func parseSpec(spec []byte) (*openapi3.T, error) {
-	if isSwagger(spec) {
-		return parseSwaggerSpec(spec)
+func ParseFromFile(path string) (*openapi3.T, error) {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read spec file: %w", err)
 	}
 
-	return parseOpenAPI3Spec(spec)
+	return Parse(contents)
 }
 
-func parseSwaggerSpec(spec []byte) (*openapi3.T, error) {
+func Parse(spec []byte) (*openapi3.T, error) {
+	if isSwagger(spec) {
+		return parseSwagger(spec)
+	}
+
+	return parseOpenAPI3(spec)
+}
+
+func parseSwagger(spec []byte) (*openapi3.T, error) {
 	spec, err := yaml.YAMLToJSON(spec)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert YAML to JSON: %w", err)
@@ -47,6 +57,6 @@ func parseSwaggerSpec(spec []byte) (*openapi3.T, error) {
 	return openapi2conv.ToV3(&swaggerSpec)
 }
 
-func parseOpenAPI3Spec(spec []byte) (*openapi3.T, error) {
+func parseOpenAPI3(spec []byte) (*openapi3.T, error) {
 	return openapi3.NewLoader().LoadFromData(spec)
 }

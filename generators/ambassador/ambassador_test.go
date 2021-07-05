@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/kubeshop/kusk/spec"
 )
 
 type testCase struct {
@@ -18,7 +20,7 @@ func TestAmbassador(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
 
-			spec, err := parseSpec([]byte(testCase.spec))
+			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
 			mappings, err := GenerateMappings(testCase.options, spec)
