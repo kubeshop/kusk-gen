@@ -2,52 +2,49 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
-
-	"github.com/kubeshop/openapi-operator/generators/ambassador"
 )
 
 var (
-	apiSpecPath string
+	apiSpecPath     string
+	apiSpecContents *openapi3.T
 
 	rootCmd = &cobra.Command{
 		Use:   "openapi-operator",
 		Short: "Framework that makes an OpenAPI definition the source of truth for all API-related objects in a cluster (services, mappings, monitors, etc)",
 		Long:  ``,
-		Run: func(cmd *cobra.Command, args []string) {
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if apiSpecPath == "" {
+				log.Fatal(errors.New("no openapi or swagger definition provided"))
+			}
+
 			loader := openapi3.Loader{
 				Context: context.Background(),
 			}
 
-			spec, err := loader.LoadFromFile(apiSpecPath)
+			var err error
+			apiSpecContents, err = loader.LoadFromFile(apiSpecPath)
 			if err != nil {
 				log.Fatal(err)
 			}
-
-			mappings, err := ambassador.GenerateMappings(ambassador.Options{
-				ServiceNamespace: "default",
-				ServiceName:      "petstore",
-				BasePath:         "/petstore/api/v3",
-				TrimPrefix:       "/petstore",
-				RootOnly:         true,
-			}, spec)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			fmt.Println(mappings)
 		},
 	}
 )
 
 func init() {
-	rootCmd.Flags().StringVarP(&apiSpecPath, "in", "i", "", "file path to api spec file to generate mappings from. e.g. -in apispec.yaml")
+	rootCmd.PersistentFlags().StringVarP(
+		&apiSpecPath,
+		"in",
+		"i",
+		"",
+		"file path to api spec file to generate mappings from. e.g. -in apispec.yaml",
+	)
 	rootCmd.MarkFlagRequired("in")
 }
 
