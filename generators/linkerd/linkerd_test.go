@@ -30,7 +30,7 @@ func TestLinkerd(t *testing.T) {
 	}
 }
 
-var testCases = []testCase {
+var testCases = []testCase{
 	{
 		name: "booksapp",
 		options: &Options{
@@ -47,7 +47,7 @@ paths:
   /authors:
     post: {}
 `,
-	res: `apiVersion: linkerd.io/v1alpha2
+		res: `apiVersion: linkerd.io/v1alpha2
 kind: ServiceProfile
 metadata:
   creationTimestamp: null

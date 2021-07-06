@@ -28,7 +28,7 @@ func Generate(options *Options, spec *openapi3.T) (string, error) {
 				options.Name,
 				options.Namespace,
 				options.ClusterDomain,
-				),
+			),
 			Namespace: options.Namespace,
 		},
 		Spec: generateProfileSpec(spec),
@@ -53,8 +53,8 @@ func generateProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
 
 func generateRouteSpec(method, path string) *v1alpha2.RouteSpec {
 	return &v1alpha2.RouteSpec{
-		Name:            fmt.Sprintf("%s %s", method, path),
-		Condition:       &v1alpha2.RequestMatch{
+		Name: fmt.Sprintf("%s %s", method, path),
+		Condition: &v1alpha2.RequestMatch{
 			PathRegex: path,
 			Method:    method,
 		},
