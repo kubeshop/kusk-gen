@@ -11,14 +11,16 @@ import (
 
 // linkerdCmd represents the linkerd command
 var (
+	clusterDomain string
+
 	linkerdCmd = &cobra.Command{
 		Use:   "linkerd",
 		Short: "Generates service profiles for your service",
 		Run: func(cmd *cobra.Command, args []string) {
 			profiles, err := linkerd.Generate(&linkerd.Options{
-				Name:          "test",
-				Namespace:     "default",
-				ClusterDomain: "cluster.local",
+				ServiceName:      serviceName,
+				ServiceNamespace: serviceNamespace,
+				ClusterDomain:    clusterDomain,
 			}, apiSpecContents)
 
 			if err != nil {
@@ -32,4 +34,12 @@ var (
 
 func init() {
 	rootCmd.AddCommand(linkerdCmd)
+
+	linkerdCmd.Flags().StringVarP(
+		&clusterDomain,
+		"cluster-domain",
+		"",
+		"cluster.local",
+		"--cluster-domain cluster.local",
+	)
 }

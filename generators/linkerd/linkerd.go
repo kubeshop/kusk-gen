@@ -7,13 +7,14 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha2"
 	"github.com/linkerd/linkerd2/pkg/k8s"
+	"github.com/linkerd/linkerd2/pkg/profiles"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type Options struct {
-	Namespace     string
-	Name          string
-	ClusterDomain string
+	ServiceNamespace string
+	ServiceName      string
+	ClusterDomain    string
 }
 
 func Generate(options *Options, spec *openapi3.T) (string, error) {
@@ -25,13 +26,13 @@ func Generate(options *Options, spec *openapi3.T) (string, error) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name: fmt.Sprintf(
 				"%s.%s.svc.%s",
-				options.Name,
-				options.Namespace,
+				options.ServiceName,
+				options.ServiceNamespace,
 				options.ClusterDomain,
 			),
-			Namespace: options.Namespace,
+			Namespace: options.ServiceNamespace,
 		},
-		Spec: generateProfileSpec(spec),
+		Spec: generateServiceProfileSpec(spec),
 	}
 
 	b, err := yaml.Marshal(profile)
@@ -39,7 +40,7 @@ func Generate(options *Options, spec *openapi3.T) (string, error) {
 	return string(b), err
 }
 
-func generateProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
+func generateServiceProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
 	routes := make([]*v1alpha2.RouteSpec, 0)
 
 	for path, pathItem := range spec.Paths {
@@ -55,7 +56,7 @@ func generateRouteSpec(method, path string) *v1alpha2.RouteSpec {
 	return &v1alpha2.RouteSpec{
 		Name: fmt.Sprintf("%s %s", method, path),
 		Condition: &v1alpha2.RequestMatch{
-			PathRegex: path,
+			PathRegex: profiles.PathToRegex(path),
 			Method:    method,
 		},
 	}
