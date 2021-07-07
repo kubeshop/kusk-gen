@@ -2,6 +2,7 @@ package linkerd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ghodss/yaml"
@@ -48,6 +49,10 @@ func generateServiceProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
 			routes = append(routes, generateRouteSpec(method, path))
 		}
 	}
+
+	sort.Slice(routes, func(i, j int) bool {
+		return routes[i].Name < routes[j].Name
+	})
 
 	return v1alpha2.ServiceProfileSpec{Routes: routes}
 }

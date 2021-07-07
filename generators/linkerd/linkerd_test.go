@@ -112,13 +112,13 @@ spec:
       pathRegex: /
     name: GET /
   - condition:
-      method: POST
-      pathRegex: /books
-    name: POST /books
-  - condition:
       method: GET
       pathRegex: /books/[^/]*
     name: GET /books/{id}
+  - condition:
+      method: POST
+      pathRegex: /books
+    name: POST /books
   - condition:
       method: POST
       pathRegex: /books/[^/]*/edit
