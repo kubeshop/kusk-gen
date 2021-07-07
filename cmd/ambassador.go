@@ -22,8 +22,6 @@ var (
 
 	ambassadorNamespace string
 	basePath            string
-	serviceName         string
-	serviceNamespace    string
 	trimPrefix          string
 	rootOnly            bool
 )
@@ -55,23 +53,6 @@ func init() {
 		"ambassador-namespace",
 		"",
 		"ambassador",
-		"",
-	)
-
-	ambassadorCmd.Flags().StringVarP(
-		&serviceName,
-		"service-name",
-		"",
-		"",
-		"",
-	)
-	ambassadorCmd.MarkFlagRequired("service-name")
-
-	ambassadorCmd.Flags().StringVarP(
-		&serviceNamespace,
-		"service-namespace",
-		"",
-		"default",
 		"",
 	)
 

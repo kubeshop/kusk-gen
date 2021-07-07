@@ -16,6 +16,9 @@ var (
 	apiSpecPath     string
 	apiSpecContents *openapi3.T
 
+	serviceName      string
+	serviceNamespace string
+
 	rootCmd = &cobra.Command{
 		Use:   "kusk",
 		Short: "Framework that makes an OpenAPI definition the source of truth for all API-related objects in a cluster (services, mappings, monitors, etc)",
@@ -43,6 +46,23 @@ func init() {
 		"file path to api spec file to generate mappings from. e.g. -in apispec.yaml",
 	)
 	rootCmd.MarkFlagRequired("in")
+
+	rootCmd.PersistentFlags().StringVarP(
+		&serviceName,
+		"service-name",
+		"",
+		"",
+		"",
+	)
+	rootCmd.MarkFlagRequired("service-name")
+
+	rootCmd.Flags().StringVarP(
+		&serviceNamespace,
+		"service-namespace",
+		"",
+		"default",
+		"",
+	)
 }
 
 func Execute() {
