@@ -34,7 +34,14 @@ func detectGenerators() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Ambassador Edge Stack detected: %v", ambassadorDetected)
+	fmt.Printf("Ambassador Edge Stack detected: %v\n", ambassadorDetected)
+
+	linkerdDetected, err := client.DetectLinkerd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Linkerd detected: %v\n", linkerdDetected)
 }
 
 func init() {
