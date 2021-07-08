@@ -8,15 +8,12 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	appsV1 "k8s.io/client-go/kubernetes/typed/apps/v1"
-	coreV1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 type Client struct {
-	appsV1 appsV1.AppsV1Interface
-	coreV1 coreV1.CoreV1Interface
+	cs *kubernetes.Clientset
 }
 
 func NewClient(kubeconfig string) (*Client, error) {
@@ -31,14 +28,11 @@ func NewClient(kubeconfig string) (*Client, error) {
 		return nil, fmt.Errorf("failed to create client: %w", err)
 	}
 
-	return &Client{
-		appsV1: cs.AppsV1(),
-		coreV1: cs.CoreV1(),
-	}, nil
+	return &Client{cs}, nil
 }
 
 func (c *Client) DetectAmbassador() (bool, error) {
-	ambassadorDeployment, err := c.appsV1.Deployments("ambassador").Get(context.Background(), "ambassador", metav1.GetOptions{})
+	ambassadorDeployment, err := c.cs.AppsV1().Deployments("ambassador").Get(context.Background(), "ambassador", metav1.GetOptions{})
 	if err != nil {
 		if errors.IsNotFound(err) {
 			return false, nil
@@ -54,7 +48,7 @@ func (c *Client) DetectAmbassador() (bool, error) {
 
 func (c *Client) DetectLinkerd() (bool, error) {
 	linkerdDeployments, err :=
-		c.appsV1.
+		c.cs.AppsV1().
 			Deployments("linkerd").
 			List(
 				context.Background(),
@@ -71,6 +65,10 @@ func (c *Client) DetectLinkerd() (bool, error) {
 		return false, fmt.Errorf("error fetching Linkerd deployments: %w", err)
 	}
 
+	if len(linkerdDeployments.Items) == 0 {
+		return false, nil
+	}
+
 	if expectedNumberOfLinkerdDeployments := 5; len(linkerdDeployments.Items) < expectedNumberOfLinkerdDeployments {
 		log.Printf(
 			"number of actual linkerd deployments (%d) less than expected (%d)",
@@ -80,7 +78,7 @@ func (c *Client) DetectLinkerd() (bool, error) {
 		return false, nil
 	}
 
-	linkerdServices, err := c.coreV1.
+	linkerdServices, err := c.cs.CoreV1().
 		Services("linkerd").
 		List(
 			context.Background(),
@@ -95,6 +93,10 @@ func (c *Client) DetectLinkerd() (bool, error) {
 		}
 
 		return false, fmt.Errorf("error fetching Linkerd services: %w", err)
+	}
+
+	if len(linkerdServices.Items) == 0 {
+		return false, nil
 	}
 
 	if expectedNumberOfLinkerdServices := 7; len(linkerdServices.Items) < expectedNumberOfLinkerdServices {
