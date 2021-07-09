@@ -71,5 +71,4 @@ func (c *Client) DetectLinkerd() (bool, error) {
 	}
 
 	return true, nil
-
 }
