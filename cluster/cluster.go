@@ -3,7 +3,6 @@ package cluster
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -64,7 +63,6 @@ func (c *Client) DetectLinkerd() (bool, error) {
 	}
 
 	if name, ok := linkerdController.ObjectMeta.Labels["app.kubernetes.io/name"]; !ok || name != "controller" {
-		log.Printf("WARN: ")
 		return false, nil
 	}
 
