@@ -41,21 +41,19 @@ func (c *Client) DetectAmbassador() (bool, error) {
 		return false, fmt.Errorf("error fetching Ambassador deployment: %w", err)
 	}
 
-	_, ambassadorPresent := ambassadorDeployment.ObjectMeta.Labels["app.kubernetes.io/name"]
+	if name, ok := ambassadorDeployment.ObjectMeta.Labels["app.kubernetes.io/name"]; !ok || name != "ambassador" {
+		return false, nil
+	}
 
-	return ambassadorPresent, nil
+	return true, nil
 }
 
 func (c *Client) DetectLinkerd() (bool, error) {
-	linkerdDeployments, err :=
+
+	linkerdController, err :=
 		c.cs.AppsV1().
 			Deployments("linkerd").
-			List(
-				context.Background(),
-				metav1.ListOptions{
-					LabelSelector: "app.kubernetes.io/part-of=Linkerd",
-				},
-			)
+			Get(context.Background(), "linkerd-controller", metav1.GetOptions{})
 
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -65,48 +63,15 @@ func (c *Client) DetectLinkerd() (bool, error) {
 		return false, fmt.Errorf("error fetching Linkerd deployments: %w", err)
 	}
 
-	if len(linkerdDeployments.Items) == 0 {
+	if name, ok := linkerdController.ObjectMeta.Labels["app.kubernetes.io/name"]; !ok || name != "controller" {
+		log.Printf("WARN: ")
 		return false, nil
 	}
 
-	if expectedNumberOfLinkerdDeployments := 5; len(linkerdDeployments.Items) < expectedNumberOfLinkerdDeployments {
-		log.Printf(
-			"number of actual linkerd deployments (%d) less than expected (%d)",
-			len(linkerdDeployments.Items),
-			expectedNumberOfLinkerdDeployments,
-		)
-		return false, nil
-	}
-
-	linkerdServices, err := c.cs.CoreV1().
-		Services("linkerd").
-		List(
-			context.Background(),
-			metav1.ListOptions{
-				LabelSelector: "linkerd.io/control-plane-ns=linkerd",
-			},
-		)
-
-	if err != nil {
-		if errors.IsNotFound(err) {
-			return false, nil
-		}
-
-		return false, fmt.Errorf("error fetching Linkerd services: %w", err)
-	}
-
-	if len(linkerdServices.Items) == 0 {
-		return false, nil
-	}
-
-	if expectedNumberOfLinkerdServices := 7; len(linkerdServices.Items) < expectedNumberOfLinkerdServices {
-		log.Printf(
-			"number of actual linkerd services (%d) less than expected (%d)",
-			len(linkerdServices.Items),
-			expectedNumberOfLinkerdServices,
-		)
+	if partOf, ok := linkerdController.ObjectMeta.Labels["app.kubernetes.io/part-of"]; !ok || partOf != "Linkerd" {
 		return false, nil
 	}
 
 	return true, nil
+
 }
