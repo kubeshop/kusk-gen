@@ -40,7 +40,35 @@ func (c *Client) DetectAmbassador() (bool, error) {
 		return false, fmt.Errorf("error fetching Ambassador deployment: %w", err)
 	}
 
-	_, ambassadorPresent := ambassadorDeployment.ObjectMeta.Labels["app.kubernetes.io/name"]
+	if name, ok := ambassadorDeployment.ObjectMeta.Labels["app.kubernetes.io/name"]; !ok || name != "ambassador" {
+		return false, nil
+	}
 
-	return ambassadorPresent, nil
+	return true, nil
+}
+
+func (c *Client) DetectLinkerd() (bool, error) {
+
+	linkerdController, err :=
+		c.cs.AppsV1().
+			Deployments("linkerd").
+			Get(context.Background(), "linkerd-controller", metav1.GetOptions{})
+
+	if err != nil {
+		if errors.IsNotFound(err) {
+			return false, nil
+		}
+
+		return false, fmt.Errorf("error fetching Linkerd deployments: %w", err)
+	}
+
+	if name, ok := linkerdController.ObjectMeta.Labels["app.kubernetes.io/name"]; !ok || name != "controller" {
+		return false, nil
+	}
+
+	if partOf, ok := linkerdController.ObjectMeta.Labels["app.kubernetes.io/part-of"]; !ok || partOf != "Linkerd" {
+		return false, nil
+	}
+
+	return true, nil
 }
