@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/manifoldco/promptui"
@@ -14,19 +15,10 @@ import (
 	"github.com/kubeshop/kusk/cluster"
 	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/generators/linkerd"
-	"github.com/kubeshop/kusk/spec"
 )
 
 func Interactive(apiSpec *openapi3.T) {
 	var err error
-
-	if apiSpec == nil {
-		specPath := promptFilePath("Path to Swagger/OpenAPI spec", "", true)
-		apiSpec, err = spec.ParseFromFile(specPath)
-		if err != nil {
-			log.Fatalf("Failed to parse spec: %s\n", err)
-		}
-	}
 
 	canConnectToCluster := confirm("Can Kusk connect to your current cluster to check for supported services")
 
@@ -117,7 +109,7 @@ func Interactive(apiSpec *openapi3.T) {
 	fmt.Fprintln(os.Stderr, "✔ Done!")
 
 	if confirm("Do you want to save mappings to a file (otherwise output to stdout)") {
-		saveToPath := promptFilePath("Save to", "", false)
+		saveToPath := promptFilePath("Save to", "generated.yaml", false)
 		err := os.WriteFile(saveToPath, []byte(mappings), 0666)
 
 		if err != nil {
@@ -200,8 +192,15 @@ func selectOneOf(label string, variants []string, withAdd bool) string {
 
 func promptString(label, defaultString string) string {
 	p := promptui.Prompt{
-		Label:   label,
-		Stdout:  os.Stderr,
+		Label:  label,
+		Stdout: os.Stderr,
+		Validate: func(s string) error {
+			if strings.TrimSpace(s) == "" {
+				return errors.New("should not be empty")
+			}
+
+			return nil
+		},
 		Default: defaultString,
 	}
 
@@ -216,15 +215,21 @@ func promptFilePath(label, defaultPath string, shouldExist bool) string {
 		Stdout:  os.Stderr,
 		Default: defaultPath,
 		Validate: func(fp string) error {
-			if shouldExist {
-				// check if file exists
-				f, err := os.Stat(fp)
-				if err == nil && !f.IsDir() {
-					return nil
-				}
+			if strings.TrimSpace(fp) == "" {
+				return errors.New("should not be empty")
 			}
 
-			return errors.New("stub error to fail validation")
+			if !shouldExist {
+				return nil
+			}
+
+			// check if file exists
+			f, err := os.Stat(fp)
+			if err == nil && !f.IsDir() {
+				return nil
+			}
+
+			return errors.New("should be an existing file")
 		},
 	}
 

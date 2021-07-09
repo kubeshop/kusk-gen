@@ -35,6 +35,9 @@ var (
 func init() {
 	rootCmd.AddCommand(linkerdCmd)
 
+	rootCmd.MarkFlagRequired("in")
+	rootCmd.MarkFlagRequired("service-name")
+
 	linkerdCmd.Flags().StringVarP(
 		&clusterDomain,
 		"cluster-domain",
