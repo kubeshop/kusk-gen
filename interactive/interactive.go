@@ -18,92 +18,28 @@ import (
 )
 
 func Interactive(apiSpec *openapi3.T) {
-	var err error
+	canConnectToCluster := false
+	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
 
-	canConnectToCluster := confirm("Can Kusk connect to your current cluster to check for supported services")
+	if fileExists(kubeConfigPath) {
+		fmt.Printf("⎈ kubeconfig detected in %s\n", kubeConfigPath)
 
-	var client *cluster.Client
-
-	var servicesToSuggest []string
-
-	if canConnectToCluster {
-		kubeconfig := promptFilePath("Path to kubeconfig", filepath.Join(homedir.HomeDir(), ".kube", "config"), true)
-
-		var err error
-		client, err = cluster.NewClient(kubeconfig)
-		if err != nil {
-			log.Fatalf("Failed to connect to cluster: %s\n", err)
-		}
-
-		fmt.Fprintln(os.Stderr, "Connecting to the cluster...")
-
-		ambassadorFound, err := client.DetectAmbassador()
-		if err != nil {
-			log.Fatalf("Failed to check if Ambassador is installed: %s\n", err)
-		}
-
-		linkerdFound, err := client.DetectLinkerd()
-		if err != nil {
-			log.Fatalf("Failed to check if Linkerd is installed: %s\n", err)
-		}
-
-		if ambassadorFound {
-			servicesToSuggest = append(servicesToSuggest, "ambassador")
-			fmt.Fprintln(os.Stderr, "✔ Ambassador installation found")
-		}
-
-		if linkerdFound {
-			servicesToSuggest = append(servicesToSuggest, "ambassador")
-			fmt.Fprintln(os.Stderr, "✔ Linkerd installation found")
-		}
-	} else {
-		// suggest all services we currently support
-		servicesToSuggest = []string{"ambassador", "linkerd"}
+		canConnectToCluster = confirm(
+			"Can Kusk connect to your current cluster to check for supported services and provide suggestions?",
+		)
 	}
-
-	var targetServiceNamespaceSuggestions []string
-	var targetServiceNamespace string
-
-	if canConnectToCluster {
-		targetServiceNamespaceSuggestions, err = client.ListNamespaces()
-		if err != nil {
-			log.Fatalf("Failed to list namespaces: %s\n", err)
-		}
-
-		targetServiceNamespace = selectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
-	} else {
-		targetServiceNamespace = promptString("Enter namespace with your service", "default")
-	}
-
-	var targetServiceSuggestions []string
-	var targetService string
-
-	if canConnectToCluster {
-		targetServiceSuggestions, err = client.ListServices(targetServiceNamespace)
-		if err != nil {
-			log.Fatalf("Failed to list namespaces: %s\n", err)
-		}
-
-		targetService = selectOneOf("Choose your service", targetServiceSuggestions, true)
-	} else {
-		targetService = promptString("Enter your service name", "")
-	}
-
-	service := selectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
 
 	var mappings string
+	var err error
 
-	switch service {
-	case "ambassador":
-		mappings, err = flowAmbassador(apiSpec, targetServiceNamespace, targetService)
-	case "linkerd":
-		mappings, err = flowLinkerd(apiSpec, targetServiceNamespace, targetService)
-	default:
-		log.Fatal("Unknown service")
+	if canConnectToCluster {
+		mappings, err = flowWithCluster(apiSpec, kubeConfigPath)
+	} else {
+		mappings, err = flowWithoutCluster(apiSpec)
 	}
 
 	if err != nil {
-		log.Fatalf("Failed to generate: %s\n", err)
+		log.Fatal(err)
 	}
 
 	fmt.Fprintln(os.Stderr, "✔ Done!")
@@ -120,6 +56,84 @@ func Interactive(apiSpec *openapi3.T) {
 	}
 
 	fmt.Println(mappings)
+}
+
+func flowWithCluster(apiSpec *openapi3.T, kubeConfigPath string) (string, error) {
+	var servicesToSuggest []string
+
+	client, err := cluster.NewClient(kubeConfigPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to cluster: %w", err)
+	}
+
+	fmt.Fprintln(os.Stderr, "Connecting to the cluster...")
+
+	ambassadorFound, err := client.DetectAmbassador()
+	if err != nil {
+		return "", fmt.Errorf("failed to check if Ambassador is installed: %w", err)
+	}
+
+	linkerdFound, err := client.DetectLinkerd()
+	if err != nil {
+		return "", fmt.Errorf("failed to check if Linkerd is installed: %w", err)
+	}
+
+	if ambassadorFound {
+		servicesToSuggest = append(servicesToSuggest, "ambassador")
+		fmt.Fprintln(os.Stderr, "✔ Ambassador installation found")
+	}
+
+	if linkerdFound {
+		servicesToSuggest = append(servicesToSuggest, "ambassador")
+		fmt.Fprintln(os.Stderr, "✔ Linkerd installation found")
+	}
+
+	var targetServiceNamespaceSuggestions []string
+	var targetServiceNamespace string
+
+	targetServiceNamespaceSuggestions, err = client.ListNamespaces()
+	if err != nil {
+		return "", fmt.Errorf("failed to list namespaces: %w", err)
+	}
+
+	targetServiceNamespace = selectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
+
+	var targetServiceSuggestions []string
+	var targetService string
+
+	targetServiceSuggestions, err = client.ListServices(targetServiceNamespace)
+	if err != nil {
+		return "", fmt.Errorf("failed to list namespaces: %w", err)
+	}
+
+	targetService = selectOneOf("Choose your service", targetServiceSuggestions, true)
+
+	service := selectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
+
+	switch service {
+	case "ambassador":
+		return flowAmbassador(apiSpec, targetServiceNamespace, targetService)
+	case "linkerd":
+		return flowLinkerd(apiSpec, targetServiceNamespace, targetService)
+	}
+
+	return "", fmt.Errorf("unknown service")
+}
+
+func flowWithoutCluster(apiSpec *openapi3.T) (string, error) {
+	targetServiceNamespace := promptString("Enter namespace with your service", "default")
+	targetService := promptString("Enter your service name", "")
+
+	service := selectOneOf("Choose a service you want Kusk generate manifests for", []string{"ambassador", "linkerd"}, false)
+
+	switch service {
+	case "ambassador":
+		return flowAmbassador(apiSpec, targetServiceNamespace, targetService)
+	case "linkerd":
+		return flowLinkerd(apiSpec, targetServiceNamespace, targetService)
+	}
+
+	return "", fmt.Errorf("unknown service")
 }
 
 func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
@@ -169,6 +183,11 @@ func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (st
 }
 
 func selectOneOf(label string, variants []string, withAdd bool) string {
+	if len(variants) == 0 {
+		// it's better to show a prompt
+		return promptString(label, "")
+	}
+
 	if withAdd {
 		p := promptui.SelectWithAdd{
 			Label:  label,
@@ -209,6 +228,16 @@ func promptString(label, defaultString string) string {
 	return res
 }
 
+func fileExists(path string) bool {
+	// check if file exists
+	f, err := os.Stat(path)
+	if err == nil && !f.IsDir() {
+		return true
+	}
+
+	return false
+}
+
 func promptFilePath(label, defaultPath string, shouldExist bool) string {
 	p := promptui.Prompt{
 		Label:   label,
@@ -223,9 +252,7 @@ func promptFilePath(label, defaultPath string, shouldExist bool) string {
 				return nil
 			}
 
-			// check if file exists
-			f, err := os.Stat(fp)
-			if err == nil && !f.IsDir() {
+			if fileExists(fp) {
 				return nil
 			}
 
