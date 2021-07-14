@@ -2,6 +2,7 @@ package nginxIngress
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ghodss/yaml"
@@ -22,8 +23,12 @@ var (
 type Options struct {
 	ServiceName      string
 	ServiceNamespace string
-	Path             string
-	Port             int32
+
+	Host          string
+	Path          string
+	RewriteTarget string
+	Port          int32
+	TrimPrefix    string
 }
 
 func Generate(options *Options, _ *openapi3.T) (string, error) {
@@ -34,23 +39,21 @@ func Generate(options *Options, _ *openapi3.T) (string, error) {
 			Kind:       ingressKind,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-ingress", options.ServiceName),
-			Namespace: options.ServiceNamespace,
-			Annotations: map[string]string{
-				//"kubernetes.io/ingress.class":                       ingressClassName,
-				"nginxIngress.ingress.kubernetes.io/rewrite-target": "/\\$1",
-			},
+			Name: fmt.Sprintf("%s-ingress", options.ServiceName),
+			Namespace:    options.ServiceNamespace,
+			Annotations:  generateAnnotations(options),
 		},
 		Spec: v1.IngressSpec{
 			IngressClassName: &ingressClassName,
 			Rules: []v1.IngressRule{
 				{
+					Host: options.Host,
 					IngressRuleValue: v1.IngressRuleValue{
 						HTTP: &v1.HTTPIngressRuleValue{
 							Paths: []v1.HTTPIngressPath{
 								{
 									PathType: &pathTypePrefix,
-									Path:     options.Path,
+									Path:     generatePath(options),
 									Backend: v1.IngressBackend{
 										Service: &v1.IngressServiceBackend{
 											Name: options.ServiceName,
@@ -71,4 +74,28 @@ func Generate(options *Options, _ *openapi3.T) (string, error) {
 	b, err := yaml.Marshal(ingress)
 
 	return string(b), err
+}
+
+func generatePath(options *Options) string {
+	if len(options.TrimPrefix) > 0 && strings.HasPrefix(options.Path, options.TrimPrefix) {
+		pathSuffixRegex := "(/|$)(.*)"
+
+		return options.Path + pathSuffixRegex
+	}
+
+	return options.Path
+}
+
+func generateAnnotations(options *Options) map[string]string {
+	rewriteTargetAnnotationKey := "nginx.ingress.kubernetes.io/rewrite-target"
+
+	annotations := map[string]string{}
+
+	if options.RewriteTarget != "" {
+		annotations[rewriteTargetAnnotationKey] = options.RewriteTarget
+	} else if len(options.TrimPrefix) > 0 && strings.HasPrefix(options.Path, options.TrimPrefix) {
+		annotations[rewriteTargetAnnotationKey] = "/$2"
+	}
+
+	return annotations
 }
