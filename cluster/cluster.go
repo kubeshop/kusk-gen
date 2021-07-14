@@ -30,6 +30,34 @@ func NewClient(kubeconfig string) (*Client, error) {
 	return &Client{cs}, nil
 }
 
+func (c *Client) ListServices(namespace string) ([]string, error) {
+	servicesList, err := c.cs.CoreV1().Services(namespace).List(context.Background(), metav1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch services: %w", err)
+	}
+
+	res := make([]string, len(servicesList.Items))
+	for i := range servicesList.Items {
+		res[i] = servicesList.Items[i].Name
+	}
+
+	return res, nil
+}
+
+func (c *Client) ListNamespaces() ([]string, error) {
+	namespacesList, err := c.cs.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch namespaces: %w", err)
+	}
+
+	res := make([]string, len(namespacesList.Items))
+	for i := range namespacesList.Items {
+		res[i] = namespacesList.Items[i].Name
+	}
+
+	return res, nil
+}
+
 func (c *Client) DetectAmbassador() (bool, error) {
 	ambassadorDeployment, err := c.cs.AppsV1().Deployments("ambassador").Get(context.Background(), "ambassador", metav1.GetOptions{})
 	if err != nil {
