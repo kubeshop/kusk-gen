@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/kusk/generators/nginxIngress"
+	"github.com/kubeshop/kusk/generators/nginx_ingress"
 )
 
 var (
@@ -21,7 +21,7 @@ var (
 		Short: "Generates nginx-ingress resources from provided OpenAPI spec",
 		Long:  "",
 		Run: func(cmd *cobra.Command, args []string) {
-			ingress, err := nginxIngress.Generate(&nginxIngress.Options{
+			ingress, err := nginx_ingress.Generate(&nginx_ingress.Options{
 				ServiceName:      serviceName,
 				ServiceNamespace: serviceNamespace,
 				Host:             ingressHost,

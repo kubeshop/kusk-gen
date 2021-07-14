@@ -1,4 +1,4 @@
-package nginxIngress
+package nginx_ingress
 
 import (
 	"fmt"
@@ -32,7 +32,6 @@ type Options struct {
 }
 
 func Generate(options *Options, _ *openapi3.T) (string, error) {
-
 	ingress := v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: ingressAPIVersion,
