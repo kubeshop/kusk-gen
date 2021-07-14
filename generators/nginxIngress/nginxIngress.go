@@ -39,9 +39,9 @@ func Generate(options *Options, _ *openapi3.T) (string, error) {
 			Kind:       ingressKind,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: fmt.Sprintf("%s-ingress", options.ServiceName),
-			Namespace:    options.ServiceNamespace,
-			Annotations:  generateAnnotations(options),
+			Name:        fmt.Sprintf("%s-ingress", options.ServiceName),
+			Namespace:   options.ServiceNamespace,
+			Annotations: generateAnnotations(options),
 		},
 		Spec: v1.IngressSpec{
 			IngressClassName: &ingressClassName,

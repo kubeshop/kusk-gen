@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	ingressPath string
-	ingressPort int32
-	ingressHost string
+	ingressPath          string
+	ingressPort          int32
+	ingressHost          string
 	ingressRewriteTarget string
 
 	// nginxIngressCmd represents the nginxIngress command
