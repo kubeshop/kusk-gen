@@ -12,6 +12,8 @@ import (
 var (
 	ingressPath string
 	ingressPort int32
+	ingressHost string
+	ingressRewriteTarget string
 
 	// nginxIngressCmd represents the nginxIngress command
 	nginxIngressCmd = &cobra.Command{
@@ -22,8 +24,11 @@ var (
 			ingress, err := nginxIngress.Generate(&nginxIngress.Options{
 				ServiceName:      serviceName,
 				ServiceNamespace: serviceNamespace,
+				Host:             ingressHost,
 				Path:             ingressPath,
+				RewriteTarget:    ingressRewriteTarget,
 				Port:             ingressPort,
+				TrimPrefix:       trimPrefix,
 			}, apiSpecContents)
 
 			if err != nil {
@@ -42,7 +47,7 @@ func init() {
 		&ingressPath,
 		"path",
 		"",
-		"",
+		"/",
 		"",
 	)
 	nginxIngressCmd.MarkFlagRequired("path")
@@ -52,6 +57,30 @@ func init() {
 		"port",
 		"p",
 		80,
+		"",
+	)
+
+	nginxIngressCmd.Flags().StringVarP(
+		&ingressHost,
+		"host",
+		"",
+		"",
+		"",
+	)
+
+	nginxIngressCmd.Flags().StringVarP(
+		&trimPrefix,
+		"trim-prefix",
+		"",
+		"",
+		"",
+	)
+
+	nginxIngressCmd.Flags().StringVarP(
+		&ingressRewriteTarget,
+		"rewrite-target",
+		"",
+		"",
 		"",
 	)
 }
