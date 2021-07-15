@@ -76,7 +76,9 @@ func Generate(options *Options, _ *openapi3.T) (string, error) {
 }
 
 func generatePath(options *Options) string {
-	if len(options.TrimPrefix) > 0 && strings.HasPrefix(options.Path, options.TrimPrefix) {
+	if len(options.TrimPrefix) > 0 &&
+		strings.HasPrefix(options.Path, options.TrimPrefix) &&
+		options.RewriteTarget == "" {
 		pathSuffixRegex := "(/|$)(.*)"
 
 		return options.Path + pathSuffixRegex
