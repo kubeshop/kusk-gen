@@ -56,7 +56,7 @@ func init() {
 	)
 	rootCmd.MarkFlagRequired("service-name")
 
-	rootCmd.Flags().StringVarP(
+	rootCmd.PersistentFlags().StringVarP(
 		&serviceNamespace,
 		"service-namespace",
 		"",
