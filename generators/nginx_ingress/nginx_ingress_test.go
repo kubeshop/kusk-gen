@@ -28,10 +28,10 @@ var testCases = []testCase{
 	{
 		name: "root base path and no trim prefix",
 		options: &Options{
-			ServiceName: "webapp",
+			ServiceName:      "webapp",
 			ServiceNamespace: "default",
-			Path: "/",
-			Port: 80,
+			Path:             "/",
+			Port:             80,
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -58,10 +58,10 @@ status:
 	{
 		name: "non-root path and no trim prefix",
 		options: &Options{
-			ServiceName: "webapp",
+			ServiceName:      "webapp",
 			ServiceNamespace: "default",
-			Path: "/somepath",
-			Port: 80,
+			Path:             "/somepath",
+			Port:             80,
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -88,11 +88,11 @@ status:
 	{
 		name: "non-root path and trim prefix",
 		options: &Options{
-			ServiceName: "webapp",
+			ServiceName:      "webapp",
 			ServiceNamespace: "default",
-			Path: "/somepath",
-			TrimPrefix: "/somepath",
-			Port: 80,
+			Path:             "/somepath",
+			TrimPrefix:       "/somepath",
+			Port:             80,
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -121,12 +121,12 @@ status:
 	{
 		name: "non-root path and trim prefix and specified re-write target",
 		options: &Options{
-			ServiceName: "webapp",
+			ServiceName:      "webapp",
 			ServiceNamespace: "default",
-			Path: "/somepath",
-			TrimPrefix: "/somepath",
-			RewriteTarget: "/someotherpath",
-			Port: 80,
+			Path:             "/somepath",
+			TrimPrefix:       "/somepath",
+			RewriteTarget:    "/someotherpath",
+			Port:             80,
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
