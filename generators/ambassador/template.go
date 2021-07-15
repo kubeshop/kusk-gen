@@ -3,8 +3,8 @@ package ambassador
 type mappingTemplateData struct {
 	MappingName string
 
-	AmbassadorNamespace string
-	ServiceURL          string
+	MappingNamespace string
+	ServiceURL       string
 
 	BasePath   string
 	TrimPrefix string
@@ -21,7 +21,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: {{.MappingName}}
-  namespace: {{.AmbassadorNamespace}}
+  namespace: {{.MappingNamespace}}
 spec:
   prefix: "{{.BasePath}}{{.Path}}" 
 

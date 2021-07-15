@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/generators/linkerd"
 )
 
@@ -17,10 +18,11 @@ var (
 		Use:   "linkerd",
 		Short: "Generates service profiles for your service",
 		Run: func(cmd *cobra.Command, args []string) {
-			profiles, err := linkerd.Generate(&linkerd.Options{
-				ServiceName:      serviceName,
-				ServiceNamespace: serviceNamespace,
-				ClusterDomain:    clusterDomain,
+			profiles, err := linkerd.Generate(generators.Options{
+				Namespace:              serviceNamespace,
+				TargetServiceName:      serviceName,
+				TargetServiceNamespace: serviceNamespace,
+				ClusterDomain:          clusterDomain,
 			}, apiSpecContents)
 
 			if err != nil {

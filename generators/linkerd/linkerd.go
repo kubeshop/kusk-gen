@@ -10,15 +10,11 @@ import (
 	"github.com/linkerd/linkerd2/pkg/k8s"
 	"github.com/linkerd/linkerd2/pkg/profiles"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/kubeshop/kusk/generators"
 )
 
-type Options struct {
-	ServiceNamespace string
-	ServiceName      string
-	ClusterDomain    string
-}
-
-func Generate(options *Options, spec *openapi3.T) (string, error) {
+func Generate(options generators.Options, spec *openapi3.T) (string, error) {
 	profile := &v1alpha2.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: k8s.ServiceProfileAPIVersion,
@@ -27,11 +23,11 @@ func Generate(options *Options, spec *openapi3.T) (string, error) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name: fmt.Sprintf(
 				"%s.%s.svc.%s",
-				options.ServiceName,
-				options.ServiceNamespace,
+				options.TargetServiceName,
+				options.TargetServiceNamespace,
 				options.ClusterDomain,
 			),
-			Namespace: options.ServiceNamespace,
+			Namespace: options.Namespace,
 		},
 		Spec: generateServiceProfileSpec(spec),
 	}

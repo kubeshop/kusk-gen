@@ -12,7 +12,7 @@ type testCase struct {
 	res     string
 }
 
-func TestGenerate(t *testing.T) {
+func TestNGINXIngress(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)

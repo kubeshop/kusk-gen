@@ -2,13 +2,14 @@ package ambassador
 
 import (
 	"bytes"
-	"fmt"
 	"regexp"
 	"sort"
 	"strings"
 	"text/template"
 
 	"github.com/getkin/kin-openapi/openapi3"
+
+	"github.com/kubeshop/kusk/generators"
 )
 
 var (
@@ -79,14 +80,14 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 }
 
 func getServiceURL(options *Options) string {
-	if options.ServicePort > 0 {
-		return fmt.Sprintf("%s.%s:%d", options.ServiceName, options.ServiceNamespace, options.ServicePort)
+	if options.TargetServicePort > 0 {
+		return fmt.Sprintf("%s.%s:%d", options.TargetServiceName, options.TargetServiceNamespace, options.ServicePort)
 	}
 
-	return fmt.Sprintf("%s.%s", options.ServiceName, options.ServiceNamespace)
+	return fmt.Sprintf("%s.%s", options.TargetServiceName, options.TargetServiceNamespace)
 }
 
-func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
+func GenerateMappings(options generators.Options, spec *openapi3.T) (string, error) {
 	if options.AmbassadorNamespace == "" {
 		options.AmbassadorNamespace = "ambassador"
 	}
@@ -95,18 +96,7 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 
 	serviceURL := getServiceURL(&options)
 
-	if options.RootOnly && options.BasePath != "" {
-		// generate a single mapping for the service
-		op := mappingTemplateData{
-			MappingName:         options.ServiceName,
-			AmbassadorNamespace: options.AmbassadorNamespace,
-			ServiceURL:          serviceURL,
-			BasePath:            options.BasePath,
-			TrimPrefix:          options.TrimPrefix,
-		}
-
-		mappings = append(mappings, op)
-	} else {
+	if options.SplitPaths {
 		// generate a mapping for each operation
 
 		for path, pathItem := range spec.Paths {
@@ -114,14 +104,14 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 				mappingPath, regex := generateMappingPath(path, operation)
 
 				op := mappingTemplateData{
-					MappingName:         generateMappingName(options.ServiceName, method, path, operation),
-					AmbassadorNamespace: options.AmbassadorNamespace,
-					ServiceURL:          serviceURL,
-					BasePath:            options.BasePath,
-					TrimPrefix:          options.TrimPrefix,
-					Method:              method,
-					Path:                mappingPath,
-					Regex:               regex,
+					MappingName:      generateMappingName(options.TargetServiceName, method, path, operation),
+					MappingNamespace: options.Namespace,
+					ServiceURL:       serviceURL,
+					BasePath:         options.BasePath,
+					TrimPrefix:       options.TrimPrefix,
+					Method:           method,
+					Path:             mappingPath,
+					Regex:            regex,
 				}
 
 				mappings = append(mappings, op)

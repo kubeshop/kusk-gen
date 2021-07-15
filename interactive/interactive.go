@@ -13,6 +13,7 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	"github.com/kubeshop/kusk/cluster"
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/generators/linkerd"
 )
@@ -145,22 +146,22 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 	basePath := selectOneOf("Base path prefix", basePathSuggestions, true)
 	trimPrefix := promptString("Prefix to trim from the URL (rewrite)", basePath)
 
-	rootOnly := false
+	separateMappings := false
 
 	if basePath != "" {
-		rootOnly = confirm("Generate one mapping for all endpoints")
+		separateMappings = confirm("Generate mapping for each endpoint separately?")
 	}
 
 	fmt.Fprintln(os.Stderr, "Generating mappings...")
 
 	mappings, err := ambassador.GenerateMappings(
-		ambassador.Options{
-			AmbassadorNamespace: "ambassador",
-			ServiceNamespace:    targetNamespace,
-			ServiceName:         targetService,
-			BasePath:            basePath,
-			TrimPrefix:          trimPrefix,
-			RootOnly:            rootOnly,
+		generators.Options{
+			Namespace:              targetNamespace,
+			TargetServiceNamespace: targetNamespace,
+			TargetServiceName:      targetService,
+			BasePath:               basePath,
+			TrimPrefix:             trimPrefix,
+			SplitPaths:             separateMappings,
 		},
 		apiSpec,
 	)
@@ -175,10 +176,11 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	clusterDomain := promptString("Cluster domain", "cluster.local")
 
-	return linkerd.Generate(&linkerd.Options{
-		ServiceNamespace: targetNamespace,
-		ServiceName:      targetService,
-		ClusterDomain:    clusterDomain,
+	return linkerd.Generate(generators.Options{
+		Namespace:              targetNamespace,
+		TargetServiceNamespace: targetNamespace,
+		TargetServiceName:      targetService,
+		ClusterDomain:          clusterDomain,
 	}, apiSpec)
 }
 

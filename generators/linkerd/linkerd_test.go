@@ -5,12 +5,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/spec"
 )
 
 type testCase struct {
 	name    string
-	options *Options
+	options generators.Options
 	spec    string
 	res     string
 }
@@ -33,10 +34,11 @@ func TestLinkerd(t *testing.T) {
 var testCases = []testCase{
 	{
 		name: "simple routes",
-		options: &Options{
-			ServiceNamespace: "default",
-			ServiceName:      "webapp",
-			ClusterDomain:    "cluster.local",
+		options: generators.Options{
+			Namespace:              "default",
+			TargetServiceNamespace: "default",
+			TargetServiceName:      "webapp",
+			ClusterDomain:          "cluster.local",
 		},
 		spec: `openapi: 3.0.1
 paths:
@@ -66,10 +68,11 @@ spec:
 	},
 	{
 		name: "routes with variables",
-		options: &Options{
-			ServiceNamespace: "default",
-			ServiceName:      "webapp",
-			ClusterDomain:    "cluster.local",
+		options: generators.Options{
+			Namespace:              "default",
+			TargetServiceNamespace: "default",
+			TargetServiceName:      "webapp",
+			ClusterDomain:          "cluster.local",
 		},
 		spec: `openapi: 3.0.1
 paths:
