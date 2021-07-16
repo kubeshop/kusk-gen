@@ -30,6 +30,7 @@ func generateMappings() {
 	mappings, err := ambassador.GenerateMappings(ambassador.Options{
 		ServiceNamespace: serviceNamespace,
 		ServiceName:      serviceName,
+		ServicePort:      servicePort,
 		BasePath:         basePath,
 		TrimPrefix:       trimPrefix,
 		RootOnly:         rootOnly,

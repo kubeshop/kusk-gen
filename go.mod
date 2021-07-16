@@ -8,6 +8,7 @@ require (
 	github.com/googleapis/gnostic v0.5.5 // indirect
 	github.com/linkerd/linkerd2 v0.5.1-0.20210701172824-d3cc21da777c
 	github.com/manifoldco/promptui v0.8.0
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/cobra v1.2.0
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect

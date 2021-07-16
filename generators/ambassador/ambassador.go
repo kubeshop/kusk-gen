@@ -2,6 +2,7 @@ package ambassador
 
 import (
 	"bytes"
+	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -77,6 +78,14 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 	return strings.ToLower(res.String())
 }
 
+func getServiceURL(options *Options) string {
+	if options.ServicePort != 80 && options.ServicePort > 0 {
+		return fmt.Sprintf("%s.%s:%d", options.ServiceName, options.ServiceNamespace, options.ServicePort)
+	}
+
+	return fmt.Sprintf("%s.%s", options.ServiceName, options.ServiceNamespace)
+}
+
 func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 	if options.AmbassadorNamespace == "" {
 		options.AmbassadorNamespace = "ambassador"
@@ -84,13 +93,14 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 
 	var mappings []mappingTemplateData
 
+	serviceURL := getServiceURL(&options)
+
 	if options.RootOnly && options.BasePath != "" {
 		// generate a single mapping for the service
 		op := mappingTemplateData{
 			MappingName:         options.ServiceName,
 			AmbassadorNamespace: options.AmbassadorNamespace,
-			ServiceNamespace:    options.ServiceNamespace,
-			ServiceName:         options.ServiceName,
+			ServiceURI:          serviceURL,
 			BasePath:            options.BasePath,
 			TrimPrefix:          options.TrimPrefix,
 		}
@@ -106,8 +116,7 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 				op := mappingTemplateData{
 					MappingName:         generateMappingName(options.ServiceName, method, path, operation),
 					AmbassadorNamespace: options.AmbassadorNamespace,
-					ServiceNamespace:    options.ServiceNamespace,
-					ServiceName:         options.ServiceName,
+					ServiceURI:          serviceURL,
 					BasePath:            options.BasePath,
 					TrimPrefix:          options.TrimPrefix,
 					Method:              method,

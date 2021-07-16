@@ -6,6 +6,7 @@ type Options struct {
 
 	ServiceNamespace string
 	ServiceName      string
+	ServicePort      int32
 
 	// BasePath determines the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route)
 	BasePath string
