@@ -100,7 +100,7 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 		op := mappingTemplateData{
 			MappingName:         options.ServiceName,
 			AmbassadorNamespace: options.AmbassadorNamespace,
-			ServiceURI:          serviceURL,
+			ServiceURL:          serviceURL,
 			BasePath:            options.BasePath,
 			TrimPrefix:          options.TrimPrefix,
 		}
@@ -116,7 +116,7 @@ func GenerateMappings(options Options, spec *openapi3.T) (string, error) {
 				op := mappingTemplateData{
 					MappingName:         generateMappingName(options.ServiceName, method, path, operation),
 					AmbassadorNamespace: options.AmbassadorNamespace,
-					ServiceURI:          serviceURL,
+					ServiceURL:          serviceURL,
 					BasePath:            options.BasePath,
 					TrimPrefix:          options.TrimPrefix,
 					Method:              method,
