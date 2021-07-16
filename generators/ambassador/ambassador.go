@@ -79,7 +79,7 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 }
 
 func getServiceURL(options *Options) string {
-	if options.ServicePort != 80 && options.ServicePort > 0 {
+	if options.ServicePort > 0 {
 		return fmt.Sprintf("%s.%s:%d", options.ServiceName, options.ServiceNamespace, options.ServicePort)
 	}
 
