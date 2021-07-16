@@ -685,4 +685,80 @@ spec:
   rewrite: ""
 `,
 	},
+	{
+		name: "port specified",
+		options: Options{
+			AmbassadorNamespace: "",
+			ServiceNamespace:    "default",
+			ServiceName:         "petstore",
+			ServicePort:         443,
+			BasePath:            "",
+			TrimPrefix:          "",
+			RootOnly:            false,
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-updatepet
+  namespace: ambassador
+spec:
+  prefix: "/pet"
+  method: PUT
+  service: petstore.default:443
+  rewrite: ""
+`,
+	},
+	{
+		name: "port 0 specified",
+		options: Options{
+			AmbassadorNamespace: "",
+			ServiceNamespace:    "default",
+			ServiceName:         "petstore",
+			ServicePort:         0,
+			BasePath:            "",
+			TrimPrefix:          "",
+			RootOnly:            false,
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-updatepet
+  namespace: ambassador
+spec:
+  prefix: "/pet"
+  method: PUT
+  service: petstore.default
+  rewrite: ""
+`,
+	},
 }

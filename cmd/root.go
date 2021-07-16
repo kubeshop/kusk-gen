@@ -18,6 +18,7 @@ var (
 
 	serviceName      string
 	serviceNamespace string
+	servicePort      int32
 
 	rootCmd = &cobra.Command{
 		Use:   "kusk",
@@ -61,6 +62,14 @@ func init() {
 		"service-namespace",
 		"",
 		"default",
+		"",
+	)
+
+	rootCmd.PersistentFlags().Int32VarP(
+		&servicePort,
+		"port",
+		"",
+		80,
 		"",
 	)
 }

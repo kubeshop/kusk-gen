@@ -4,8 +4,7 @@ type mappingTemplateData struct {
 	MappingName string
 
 	AmbassadorNamespace string
-	ServiceNamespace    string
-	ServiceName         string
+	ServiceURL          string
 
 	BasePath   string
 	TrimPrefix string
@@ -34,7 +33,7 @@ spec:
   method: {{.Method}}
   {{end}}
 
-  service: {{.ServiceName}}.{{.ServiceNamespace}}
+  service: {{.ServiceURL}}
 
   {{if .TrimPrefix}}
   regex_rewrite:
