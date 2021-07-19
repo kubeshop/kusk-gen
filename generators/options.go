@@ -1,8 +1,12 @@
 package generators
 
-type Options struct {
+type ClusterOptions struct {
 	// ClusterDomain is the base DNS domain for the cluster. Default value is "cluster.local".
 	ClusterDomain string
+}
+
+type Options struct {
+	Cluster *ClusterOptions
 
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string

@@ -180,7 +180,9 @@ func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (st
 		Namespace:              targetNamespace,
 		TargetServiceNamespace: targetNamespace,
 		TargetServiceName:      targetService,
-		ClusterDomain:          clusterDomain,
+		Cluster: &generators.ClusterOptions{
+			ClusterDomain: clusterDomain,
+		},
 	}, apiSpec)
 }
 

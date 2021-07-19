@@ -38,7 +38,9 @@ var testCases = []testCase{
 			Namespace:              "default",
 			TargetServiceNamespace: "default",
 			TargetServiceName:      "webapp",
-			ClusterDomain:          "cluster.local",
+			Cluster: &generators.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
 		},
 		spec: `openapi: 3.0.1
 paths:
@@ -72,7 +74,9 @@ spec:
 			Namespace:              "default",
 			TargetServiceNamespace: "default",
 			TargetServiceName:      "webapp",
-			ClusterDomain:          "cluster.local",
+			Cluster: &generators.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
 		},
 		spec: `openapi: 3.0.1
 paths:

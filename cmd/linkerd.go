@@ -22,7 +22,9 @@ var (
 				Namespace:              serviceNamespace,
 				TargetServiceName:      serviceName,
 				TargetServiceNamespace: serviceNamespace,
-				ClusterDomain:          clusterDomain,
+				Cluster: &generators.ClusterOptions{
+					ClusterDomain: clusterDomain,
+				},
 			}, apiSpecContents)
 
 			if err != nil {

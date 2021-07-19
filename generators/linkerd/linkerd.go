@@ -25,7 +25,7 @@ func Generate(options generators.Options, spec *openapi3.T) (string, error) {
 				"%s.%s.svc.%s",
 				options.TargetServiceName,
 				options.TargetServiceNamespace,
-				options.ClusterDomain,
+				options.Cluster.ClusterDomain,
 			),
 			Namespace: options.Namespace,
 		},
