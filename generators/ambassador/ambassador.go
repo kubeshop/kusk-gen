@@ -2,6 +2,7 @@ package ambassador
 
 import (
 	"bytes"
+	"fmt"
 	"regexp"
 	"sort"
 	"strings"
@@ -79,19 +80,20 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 	return strings.ToLower(res.String())
 }
 
-func getServiceURL(options *Options) string {
+func getServiceURL(options *generators.Options) string {
 	if options.TargetServicePort > 0 {
-		return fmt.Sprintf("%s.%s:%d", options.TargetServiceName, options.TargetServiceNamespace, options.ServicePort)
+		return fmt.Sprintf(
+			"%s.%s:%d",
+			options.TargetServiceName,
+			options.TargetServiceNamespace,
+			options.TargetServicePort,
+		)
 	}
 
 	return fmt.Sprintf("%s.%s", options.TargetServiceName, options.TargetServiceNamespace)
 }
 
 func GenerateMappings(options generators.Options, spec *openapi3.T) (string, error) {
-	if options.AmbassadorNamespace == "" {
-		options.AmbassadorNamespace = "ambassador"
-	}
-
 	var mappings []mappingTemplateData
 
 	serviceURL := getServiceURL(&options)
@@ -117,6 +119,16 @@ func GenerateMappings(options generators.Options, spec *openapi3.T) (string, err
 				mappings = append(mappings, op)
 			}
 		}
+	} else {
+		op := mappingTemplateData{
+			MappingName:      options.TargetServiceName,
+			MappingNamespace: options.Namespace,
+			ServiceURL:       serviceURL,
+			BasePath:         options.BasePath,
+			TrimPrefix:       options.TrimPrefix,
+		}
+
+		mappings = append(mappings, op)
 	}
 
 	// We need to sort mappings as in the process of conversion of YAML to JSON

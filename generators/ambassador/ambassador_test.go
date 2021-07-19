@@ -688,14 +688,14 @@ spec:
 	},
 	{
 		name: "port specified",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			ServicePort:         443,
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace:              "default",
+			TargetServiceNamespace: "default",
+			TargetServiceName:      "petstore",
+			TargetServicePort:      443,
+			BasePath:               "",
+			TrimPrefix:             "",
+			SplitPaths:             true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -716,7 +716,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-updatepet
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet"
   method: PUT
@@ -726,14 +726,14 @@ spec:
 	},
 	{
 		name: "port 0 specified",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			ServicePort:         0,
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace:              "default",
+			TargetServiceNamespace: "default",
+			TargetServiceName:      "petstore",
+			TargetServicePort:      0,
+			BasePath:               "",
+			TrimPrefix:             "",
+			SplitPaths:             true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -754,7 +754,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-updatepet
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet"
   method: PUT

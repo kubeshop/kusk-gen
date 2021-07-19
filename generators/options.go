@@ -13,6 +13,8 @@ type Options struct {
 	// TargetServiceNamespace is the upstream Service.
 	TargetServiceName string
 
+	TargetServicePort int32
+
 	// BasePath is the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route).
 	// Default value is "/".
 	BasePath string

@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/generators/ambassador"
 )
 
