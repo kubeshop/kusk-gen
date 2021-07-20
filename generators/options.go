@@ -31,16 +31,34 @@ type PathOptions struct {
 	Split bool
 }
 
+type IngressOptions struct {
+	// Host is an ingress host rule.
+	// See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules for additional documentation.
+	Host string
+}
+
+type NGINXIngressOptions struct {
+	// RewriteTarget is a custom rewrite target for ingress-nginx.
+	// See https://kubernetes.github.io/ingress-nginx/examples/rewrite/ for additional documentation.
+	RewriteTarget string
+}
+
 type Options struct {
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string
 
-	// Service is a set of options of a target service to receive traffic
+	// Service is a set of options of a target service to receive traffic.
 	Service *ServiceOptions
 
-	// Path is a set of options to configure service endpoints paths
+	// Path is a set of options to configure service endpoints paths.
 	Path *PathOptions
 
-	// Cluster is a set of cluster-wide options
+	// Cluster is a set of cluster-wide options.
 	Cluster *ClusterOptions
+
+	// Ingress is a set of Ingress-related options.
+	Ingress *IngressOptions
+
+	// NGINXIngress is a set of custom nginx-ingress options.
+	NGINXIngress *NGINXIngressOptions
 }
