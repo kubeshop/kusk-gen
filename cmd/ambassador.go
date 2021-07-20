@@ -35,9 +35,11 @@ func generateMappings() {
 			Name:      serviceName,
 			Port:      servicePort,
 		},
-		BasePath:   basePath,
-		TrimPrefix: trimPrefix,
-		SplitPaths: !rootOnly,
+		Path: &generators.PathOptions{
+			Base:       basePath,
+			TrimPrefix: trimPrefix,
+			Split:      !rootOnly,
+		},
 	}, apiSpecContents)
 
 	if err != nil {

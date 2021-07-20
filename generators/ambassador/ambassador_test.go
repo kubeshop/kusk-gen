@@ -40,9 +40,11 @@ var testCases = []testCase{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -79,9 +81,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 {
@@ -126,9 +130,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -165,9 +171,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -213,9 +221,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -260,9 +270,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "/api/v3",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "/api/v3",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -307,9 +319,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "/api/v3",
-			TrimPrefix: "",
-			SplitPaths: false,
+			Path: &generators.PathOptions{
+				Base:       "/api/v3",
+				TrimPrefix: "",
+				Split:      false,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -358,9 +372,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "/petstore/api/v3",
-			TrimPrefix: "/petstore",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "/petstore/api/v3",
+				TrimPrefix: "/petstore",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -407,9 +423,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 swagger: "2.0"
@@ -539,9 +557,11 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 {
@@ -715,9 +735,11 @@ spec:
 				Name:      "petstore",
 				Port:      443,
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -755,9 +777,11 @@ spec:
 				Name:      "petstore",
 				Port:      0,
 			},
-			BasePath:   "",
-			TrimPrefix: "",
-			SplitPaths: true,
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2

@@ -16,25 +16,31 @@ type ServiceOptions struct {
 	Port int32
 }
 
-type Options struct {
-	// Namespace for the generated resource. Default value is "default".
-	Namespace string
-
-	// Cluster is a set of cluster-wide options
-	Cluster *ClusterOptions
-
-	// Service is a set of options of a target service to receive traffic
-	Service *ServiceOptions
-
-	// BasePath is the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route).
+type PathOptions struct {
+	// Base is the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route).
 	// Default value is "/".
-	BasePath string
+	Base string
 
 	// TrimPrefix is the prefix that would be omitted from the URL when request is being forwarded
-	// to the upstream service, i.e. given that BasePath is set to "/petstore/api/v3", TrimPrefix is set to "/petstore",
+	// to the upstream service, i.e. given that Base is set to "/petstore/api/v3", TrimPrefix is set to "/petstore",
 	// path that would be generated is "/petstore/api/v3/pets", URL that the upstream service would receive
 	// is "/api/v3/pets".
 	TrimPrefix string
 
-	SplitPaths bool
+	// Split forces Kusk to generate a separate resource for each Path or Operation, where appropriate.
+	Split bool
+}
+
+type Options struct {
+	// Namespace for the generated resource. Default value is "default".
+	Namespace string
+
+	// Service is a set of options of a target service to receive traffic
+	Service *ServiceOptions
+
+	// Path is a set of options to configure service endpoints paths
+	Path *PathOptions
+
+	// Cluster is a set of cluster-wide options
+	Cluster *ClusterOptions
 }

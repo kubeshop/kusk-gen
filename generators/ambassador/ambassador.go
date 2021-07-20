@@ -98,7 +98,7 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 
 	serviceURL := getServiceURL(options)
 
-	if options.SplitPaths {
+	if options.Path.Split {
 		// generate a mapping for each operation
 
 		for path, pathItem := range spec.Paths {
@@ -109,8 +109,8 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 					MappingName:      generateMappingName(options.Service.Name, method, path, operation),
 					MappingNamespace: options.Namespace,
 					ServiceURL:       serviceURL,
-					BasePath:         options.BasePath,
-					TrimPrefix:       options.TrimPrefix,
+					BasePath:         options.Path.Base,
+					TrimPrefix:       options.Path.TrimPrefix,
 					Method:           method,
 					Path:             mappingPath,
 					Regex:            regex,
@@ -124,8 +124,8 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 			MappingName:      options.Service.Name,
 			MappingNamespace: options.Namespace,
 			ServiceURL:       serviceURL,
-			BasePath:         options.BasePath,
-			TrimPrefix:       options.TrimPrefix,
+			BasePath:         options.Path.Base,
+			TrimPrefix:       options.Path.TrimPrefix,
 		}
 
 		mappings = append(mappings, op)

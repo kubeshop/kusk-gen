@@ -161,9 +161,11 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 				Namespace: targetNamespace,
 				Name:      targetService,
 			},
-			BasePath:   basePath,
-			TrimPrefix: trimPrefix,
-			SplitPaths: separateMappings,
+			Path: &generators.PathOptions{
+				Base:       basePath,
+				TrimPrefix: trimPrefix,
+				Split:      separateMappings,
+			},
 		},
 		apiSpec,
 	)
