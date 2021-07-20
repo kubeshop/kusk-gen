@@ -1,6 +1,8 @@
 package ambassador
 
 type mappingTemplateData struct {
+	ApiVersion  string
+	Kind        string
 	MappingName string
 
 	AmbassadorNamespace string
@@ -9,20 +11,25 @@ type mappingTemplateData struct {
 	BasePath   string
 	TrimPrefix string
 
-	Method  string
-	Path    string
-	Regex   bool
-	Rewrite bool
+	Hostname string
+	Method   string
+	Path     string
+	Regex    bool
+	Rewrite  bool
 }
 
 var mappingTemplateRaw = `{{range .}}
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: {{.ApiVersion}}
+kind: {{.Kind}}
 metadata:
   name: {{.MappingName}}
   namespace: {{.AmbassadorNamespace}}
 spec:
+  {{if .Hostname}}
+  hostname: "{{.Hostname}}"
+  {{end}}
+
   prefix: "{{.BasePath}}{{.Path}}" 
 
   {{if .Regex}}

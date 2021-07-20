@@ -24,6 +24,8 @@ var (
 	basePath            string
 	trimPrefix          string
 	rootOnly            bool
+	usePreRelease       bool
+	hostname            string
 )
 
 func generateMappings() {
@@ -34,6 +36,8 @@ func generateMappings() {
 		BasePath:         basePath,
 		TrimPrefix:       trimPrefix,
 		RootOnly:         rootOnly,
+		UsePreRelease:    usePreRelease,
+		Hostname:         hostname,
 	}, apiSpecContents)
 
 	if err != nil {
@@ -78,6 +82,22 @@ func init() {
 		"trim-prefix",
 		"",
 		"",
+		"",
+	)
+
+	ambassadorCmd.Flags().BoolVarP(
+		&usePreRelease,
+		"pre-release",
+		"",
+		false,
+		"--pre-release. Generates pre-release version of mappings",
+	)
+
+	ambassadorCmd.Flags().StringVarP(
+		&hostname,
+		"hostname",
+		"",
+		"*",
 		"",
 	)
 }

@@ -19,4 +19,9 @@ type Options struct {
 	// RootOnly determines whether the mappings will be generated for each route (default)
 	// or for the root prefix only (requires both BasePath and RootOnly options to be set)
 	RootOnly bool
+
+	UsePreRelease bool
+
+	// Ambassador 2.0 supports a hostname field in the AmbassadorMapping resource
+	Hostname string
 }
