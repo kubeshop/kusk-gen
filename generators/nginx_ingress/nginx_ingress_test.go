@@ -4,15 +4,17 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/kubeshop/kusk/generators"
 )
 
 type testCase struct {
 	name    string
-	options *Options
+	options *generators.Options
 	res     string
 }
 
-func TestGenerate(t *testing.T) {
+func TestNGINXIngress(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
@@ -27,11 +29,16 @@ func TestGenerate(t *testing.T) {
 var testCases = []testCase{
 	{
 		name: "root base path and no trim prefix",
-		options: &Options{
-			ServiceName:      "webapp",
-			ServiceNamespace: "default",
-			Path:             "/",
-			Port:             80,
+		options: &generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+				Port:      80,
+			},
+			Path: &generators.PathOptions{
+				Base: "/",
+			},
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -57,11 +64,16 @@ status:
 	},
 	{
 		name: "non-root path and no trim prefix",
-		options: &Options{
-			ServiceName:      "webapp",
-			ServiceNamespace: "default",
-			Path:             "/somepath",
-			Port:             80,
+		options: &generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+				Port:      80,
+			},
+			Path: &generators.PathOptions{
+				Base: "/somepath",
+			},
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -87,12 +99,17 @@ status:
 	},
 	{
 		name: "non-root path and trim prefix",
-		options: &Options{
-			ServiceName:      "webapp",
-			ServiceNamespace: "default",
-			Path:             "/somepath",
-			TrimPrefix:       "/somepath",
-			Port:             80,
+		options: &generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+				Port:      80,
+			},
+			Path: &generators.PathOptions{
+				Base:       "/somepath",
+				TrimPrefix: "/somepath",
+			},
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -120,13 +137,20 @@ status:
 	},
 	{
 		name: "non-root path and trim prefix and specified re-write target",
-		options: &Options{
-			ServiceName:      "webapp",
-			ServiceNamespace: "default",
-			Path:             "/somepath",
-			TrimPrefix:       "/somepath",
-			RewriteTarget:    "/someotherpath",
-			Port:             80,
+		options: &generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+				Port:      80,
+			},
+			Path: &generators.PathOptions{
+				Base:       "/somepath",
+				TrimPrefix: "/somepath",
+			},
+			NGINXIngress: &generators.NGINXIngressOptions{
+				RewriteTarget: "/someotherpath",
+			},
 		},
 		res: `apiVersion: networking.k8s.io/v1
 kind: Ingress

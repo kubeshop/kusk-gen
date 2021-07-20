@@ -5,12 +5,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/spec"
 )
 
 type testCase struct {
 	name    string
-	options Options
+	options generators.Options
 	spec    string
 	res     string
 }
@@ -23,7 +24,7 @@ func TestAmbassador(t *testing.T) {
 			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			mappings, err := GenerateMappings(testCase.options, spec)
+			mappings, err := Generate(&testCase.options, spec)
 			r.NoError(err)
 			r.Equal(testCase.res, mappings)
 		})
@@ -33,13 +34,17 @@ func TestAmbassador(t *testing.T) {
 var testCases = []testCase{
 	{
 		name: "basic",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -60,7 +65,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-updatepet
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet"
   method: PUT
@@ -70,13 +75,17 @@ spec:
 	},
 	{
 		name: "basic-json",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 {
@@ -105,7 +114,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-updatepet
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet"
   method: PUT
@@ -115,13 +124,17 @@ spec:
 	},
 	{
 		name: "basic-namespace",
-		options: Options{
-			AmbassadorNamespace: "amb",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "amb",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -152,13 +165,17 @@ spec:
 	},
 	{
 		name: "parameter",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -187,7 +204,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-uploadfile
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
@@ -198,13 +215,17 @@ spec:
 	},
 	{
 		name: "empty-operationId",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -232,7 +253,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
@@ -243,13 +264,17 @@ spec:
 	},
 	{
 		name: "basepath",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "/api/v3",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "/api/v3",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -277,7 +302,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
@@ -288,13 +313,17 @@ spec:
 	},
 	{
 		name: "basepath-rootonly",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "/api/v3",
-			TrimPrefix:          "",
-			RootOnly:            true,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "/api/v3",
+				TrimPrefix: "",
+				Split:      false,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -328,7 +357,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/api/v3"
   service: petstore.default
@@ -337,13 +366,17 @@ spec:
 	},
 	{
 		name: "basepath-trimprefix",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "/petstore/api/v3",
-			TrimPrefix:          "/petstore",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "/petstore/api/v3",
+				TrimPrefix: "/petstore",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -371,7 +404,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/petstore/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
@@ -384,13 +417,17 @@ spec:
 	},
 	{
 		name: "swagger-yaml",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 swagger: "2.0"
@@ -481,7 +518,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-createpets
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pets"
   method: POST
@@ -492,7 +529,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-listpets
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pets"
   method: GET
@@ -503,7 +540,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-showpetbyid
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
@@ -514,13 +551,17 @@ spec:
 	},
 	{
 		name: "swagger-json",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 {
@@ -654,7 +695,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-createpets
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pets"
   method: POST
@@ -665,7 +706,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-listpets
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pets"
   method: GET
@@ -676,7 +717,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-showpetbyid
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
@@ -687,14 +728,18 @@ spec:
 	},
 	{
 		name: "port specified",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			ServicePort:         443,
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+				Port:      443,
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -715,7 +760,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-updatepet
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet"
   method: PUT
@@ -725,14 +770,18 @@ spec:
 	},
 	{
 		name: "port 0 specified",
-		options: Options{
-			AmbassadorNamespace: "",
-			ServiceNamespace:    "default",
-			ServiceName:         "petstore",
-			ServicePort:         0,
-			BasePath:            "",
-			TrimPrefix:          "",
-			RootOnly:            false,
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+				Port:      0,
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
 		},
 		spec: `
 openapi: 3.0.2
@@ -753,7 +802,7 @@ apiVersion: getambassador.io/v2
 kind: Mapping
 metadata:
   name: petstore-updatepet
-  namespace: ambassador
+  namespace: default
 spec:
   prefix: "/pet"
   method: PUT

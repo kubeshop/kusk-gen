@@ -8,6 +8,8 @@ import (
 	"github.com/ghodss/yaml"
 	v1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/kubeshop/kusk/generators"
 )
 
 const (
@@ -20,33 +22,28 @@ var (
 	pathTypePrefix   = v1.PathTypePrefix
 )
 
-type Options struct {
-	ServiceName      string
-	ServiceNamespace string
+func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
+	host := ""
 
-	Host          string
-	Path          string
-	RewriteTarget string
-	Port          int32
-	TrimPrefix    string
-}
+	if options.Ingress != nil {
+		host = options.Ingress.Host
+	}
 
-func Generate(options *Options, _ *openapi3.T) (string, error) {
 	ingress := v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: ingressAPIVersion,
 			Kind:       ingressKind,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        fmt.Sprintf("%s-ingress", options.ServiceName),
-			Namespace:   options.ServiceNamespace,
+			Name:        fmt.Sprintf("%s-ingress", options.Service.Name),
+			Namespace:   options.Namespace,
 			Annotations: generateAnnotations(options),
 		},
 		Spec: v1.IngressSpec{
 			IngressClassName: &ingressClassName,
 			Rules: []v1.IngressRule{
 				{
-					Host: options.Host,
+					Host: host,
 					IngressRuleValue: v1.IngressRuleValue{
 						HTTP: &v1.HTTPIngressRuleValue{
 							Paths: []v1.HTTPIngressPath{
@@ -55,9 +52,9 @@ func Generate(options *Options, _ *openapi3.T) (string, error) {
 									Path:     generatePath(options),
 									Backend: v1.IngressBackend{
 										Service: &v1.IngressServiceBackend{
-											Name: options.ServiceName,
+											Name: options.Service.Name,
 											Port: v1.ServiceBackendPort{
-												Number: options.Port,
+												Number: options.Service.Port,
 											},
 										},
 									},
@@ -75,26 +72,26 @@ func Generate(options *Options, _ *openapi3.T) (string, error) {
 	return string(b), err
 }
 
-func generatePath(options *Options) string {
-	if len(options.TrimPrefix) > 0 &&
-		strings.HasPrefix(options.Path, options.TrimPrefix) &&
-		options.RewriteTarget == "" {
+func generatePath(options *generators.Options) string {
+	if len(options.Path.TrimPrefix) > 0 &&
+		strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) &&
+		(options.NGINXIngress == nil || options.NGINXIngress.RewriteTarget == "") {
 		pathSuffixRegex := "(/|$)(.*)"
 
-		return options.Path + pathSuffixRegex
+		return options.Path.Base + pathSuffixRegex
 	}
 
-	return options.Path
+	return options.Path.Base
 }
 
-func generateAnnotations(options *Options) map[string]string {
+func generateAnnotations(options *generators.Options) map[string]string {
 	rewriteTargetAnnotationKey := "nginx.ingress.kubernetes.io/rewrite-target"
 
 	annotations := map[string]string{}
 
-	if options.RewriteTarget != "" {
-		annotations[rewriteTargetAnnotationKey] = options.RewriteTarget
-	} else if len(options.TrimPrefix) > 0 && strings.HasPrefix(options.Path, options.TrimPrefix) {
+	if options.NGINXIngress != nil && options.NGINXIngress.RewriteTarget != "" {
+		annotations[rewriteTargetAnnotationKey] = options.NGINXIngress.RewriteTarget
+	} else if len(options.Path.TrimPrefix) > 0 && strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) {
 		annotations[rewriteTargetAnnotationKey] = "/$2"
 	}
 
