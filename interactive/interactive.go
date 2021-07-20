@@ -156,12 +156,14 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 
 	mappings, err := ambassador.GenerateMappings(
 		generators.Options{
-			Namespace:              targetNamespace,
-			TargetServiceNamespace: targetNamespace,
-			TargetServiceName:      targetService,
-			BasePath:               basePath,
-			TrimPrefix:             trimPrefix,
-			SplitPaths:             separateMappings,
+			Namespace: targetNamespace,
+			Service: &generators.ServiceOptions{
+				Namespace: targetNamespace,
+				Name:      targetService,
+			},
+			BasePath:   basePath,
+			TrimPrefix: trimPrefix,
+			SplitPaths: separateMappings,
 		},
 		apiSpec,
 	)
@@ -177,9 +179,11 @@ func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (st
 	clusterDomain := promptString("Cluster domain", "cluster.local")
 
 	return linkerd.Generate(generators.Options{
-		Namespace:              targetNamespace,
-		TargetServiceNamespace: targetNamespace,
-		TargetServiceName:      targetService,
+		Namespace: targetNamespace,
+		Service: &generators.ServiceOptions{
+			Namespace: targetNamespace,
+			Name:      targetService,
+		},
 		Cluster: &generators.ClusterOptions{
 			ClusterDomain: clusterDomain,
 		},

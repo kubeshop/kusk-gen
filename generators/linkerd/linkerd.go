@@ -23,8 +23,8 @@ func Generate(options generators.Options, spec *openapi3.T) (string, error) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name: fmt.Sprintf(
 				"%s.%s.svc.%s",
-				options.TargetServiceName,
-				options.TargetServiceNamespace,
+				options.Service.Name,
+				options.Service.Namespace,
 				options.Cluster.ClusterDomain,
 			),
 			Namespace: options.Namespace,

@@ -35,9 +35,11 @@ var testCases = []testCase{
 	{
 		name: "simple routes",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "webapp",
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
 			Cluster: &generators.ClusterOptions{
 				ClusterDomain: "cluster.local",
 			},
@@ -71,9 +73,11 @@ spec:
 	{
 		name: "routes with variables",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "webapp",
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
 			Cluster: &generators.ClusterOptions{
 				ClusterDomain: "cluster.local",
 			},

@@ -29,13 +29,15 @@ var (
 
 func generateMappings() {
 	mappings, err := ambassador.GenerateMappings(generators.Options{
-		Namespace:              serviceNamespace,
-		TargetServiceNamespace: serviceNamespace,
-		TargetServiceName:      serviceName,
-		TargetServicePort:      servicePort,
-		BasePath:               basePath,
-		TrimPrefix:             trimPrefix,
-		SplitPaths:             !rootOnly,
+		Namespace: serviceNamespace,
+		Service: &generators.ServiceOptions{
+			Namespace: serviceNamespace,
+			Name:      serviceName,
+			Port:      servicePort,
+		},
+		BasePath:   basePath,
+		TrimPrefix: trimPrefix,
+		SplitPaths: !rootOnly,
 	}, apiSpecContents)
 
 	if err != nil {

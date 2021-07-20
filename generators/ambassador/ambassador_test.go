@@ -35,12 +35,14 @@ var testCases = []testCase{
 	{
 		name: "basic",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -72,12 +74,14 @@ spec:
 	{
 		name: "basic-json",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 {
@@ -117,12 +121,14 @@ spec:
 	{
 		name: "basic-namespace",
 		options: generators.Options{
-			Namespace:              "amb",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "amb",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -154,12 +160,14 @@ spec:
 	{
 		name: "parameter",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -200,12 +208,14 @@ spec:
 	{
 		name: "empty-operationId",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -245,12 +255,14 @@ spec:
 	{
 		name: "basepath",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "/api/v3",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "/api/v3",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -290,12 +302,14 @@ spec:
 	{
 		name: "basepath-rootonly",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "/api/v3",
-			TrimPrefix:             "",
-			SplitPaths:             false,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "/api/v3",
+			TrimPrefix: "",
+			SplitPaths: false,
 		},
 		spec: `
 openapi: 3.0.2
@@ -339,12 +353,14 @@ spec:
 	{
 		name: "basepath-trimprefix",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "/petstore/api/v3",
-			TrimPrefix:             "/petstore",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "/petstore/api/v3",
+			TrimPrefix: "/petstore",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -386,12 +402,14 @@ spec:
 	{
 		name: "swagger-yaml",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 swagger: "2.0"
@@ -516,12 +534,14 @@ spec:
 	{
 		name: "swagger-json",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 {
@@ -689,13 +709,15 @@ spec:
 	{
 		name: "port specified",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			TargetServicePort:      443,
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+				Port:      443,
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2
@@ -727,13 +749,15 @@ spec:
 	{
 		name: "port 0 specified",
 		options: generators.Options{
-			Namespace:              "default",
-			TargetServiceNamespace: "default",
-			TargetServiceName:      "petstore",
-			TargetServicePort:      0,
-			BasePath:               "",
-			TrimPrefix:             "",
-			SplitPaths:             true,
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+				Port:      0,
+			},
+			BasePath:   "",
+			TrimPrefix: "",
+			SplitPaths: true,
 		},
 		spec: `
 openapi: 3.0.2

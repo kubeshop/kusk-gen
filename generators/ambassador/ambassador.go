@@ -81,16 +81,16 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 }
 
 func getServiceURL(options *generators.Options) string {
-	if options.TargetServicePort > 0 {
+	if options.Service.Port > 0 {
 		return fmt.Sprintf(
 			"%s.%s:%d",
-			options.TargetServiceName,
-			options.TargetServiceNamespace,
-			options.TargetServicePort,
+			options.Service.Name,
+			options.Service.Namespace,
+			options.Service.Port,
 		)
 	}
 
-	return fmt.Sprintf("%s.%s", options.TargetServiceName, options.TargetServiceNamespace)
+	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
 }
 
 func GenerateMappings(options generators.Options, spec *openapi3.T) (string, error) {
@@ -106,7 +106,7 @@ func GenerateMappings(options generators.Options, spec *openapi3.T) (string, err
 				mappingPath, regex := generateMappingPath(path, operation)
 
 				op := mappingTemplateData{
-					MappingName:      generateMappingName(options.TargetServiceName, method, path, operation),
+					MappingName:      generateMappingName(options.Service.Name, method, path, operation),
 					MappingNamespace: options.Namespace,
 					ServiceURL:       serviceURL,
 					BasePath:         options.BasePath,
@@ -121,7 +121,7 @@ func GenerateMappings(options generators.Options, spec *openapi3.T) (string, err
 		}
 	} else {
 		op := mappingTemplateData{
-			MappingName:      options.TargetServiceName,
+			MappingName:      options.Service.Name,
 			MappingNamespace: options.Namespace,
 			ServiceURL:       serviceURL,
 			BasePath:         options.BasePath,

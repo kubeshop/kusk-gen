@@ -5,19 +5,26 @@ type ClusterOptions struct {
 	ClusterDomain string
 }
 
-type Options struct {
-	Cluster *ClusterOptions
+type ServiceOptions struct {
+	// Namespace is the namespace containing the upstream Service.
+	Namespace string
 
+	// Name is the upstream Service's name.
+	Name string
+
+	// Port is the upstream Service's port. Default value is 80.
+	Port int32
+}
+
+type Options struct {
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string
 
-	// TargetServiceNamespace is the namespace containing the upstream Service.
-	TargetServiceNamespace string
+	// Cluster is a set of cluster-wide options
+	Cluster *ClusterOptions
 
-	// TargetServiceNamespace is the upstream Service.
-	TargetServiceName string
-
-	TargetServicePort int32
+	// Service is a set of options of a target service to receive traffic
+	Service *ServiceOptions
 
 	// BasePath is the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route).
 	// Default value is "/".

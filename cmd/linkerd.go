@@ -19,9 +19,11 @@ var (
 		Short: "Generates service profiles for your service",
 		Run: func(cmd *cobra.Command, args []string) {
 			profiles, err := linkerd.Generate(generators.Options{
-				Namespace:              serviceNamespace,
-				TargetServiceName:      serviceName,
-				TargetServiceNamespace: serviceNamespace,
+				Namespace: serviceNamespace,
+				Service: &generators.ServiceOptions{
+					Name:      serviceName,
+					Namespace: serviceNamespace,
+				},
 				Cluster: &generators.ClusterOptions{
 					ClusterDomain: clusterDomain,
 				},
