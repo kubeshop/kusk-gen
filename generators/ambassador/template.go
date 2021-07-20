@@ -23,7 +23,7 @@ metadata:
   name: {{.MappingName}}
   namespace: {{.MappingNamespace}}
 spec:
-  prefix: "{{.Base}}{{.Path}}" 
+  prefix: "{{.BasePath}}{{.Path}}" 
 
   {{if .Regex}}
   prefix_regex: true
