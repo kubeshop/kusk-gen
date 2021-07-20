@@ -24,7 +24,7 @@ func TestLinkerd(t *testing.T) {
 			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			profile, err := Generate(testCase.options, spec)
+			profile, err := Generate(&testCase.options, spec)
 			r.NoError(err)
 			r.Equal(testCase.res, profile)
 		})

@@ -14,7 +14,7 @@ import (
 	"github.com/kubeshop/kusk/generators"
 )
 
-func Generate(options generators.Options, spec *openapi3.T) (string, error) {
+func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 	profile := &v1alpha2.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: k8s.ServiceProfileAPIVersion,

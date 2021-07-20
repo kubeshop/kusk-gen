@@ -28,7 +28,7 @@ var (
 )
 
 func generateMappings() {
-	mappings, err := ambassador.GenerateMappings(generators.Options{
+	mappings, err := ambassador.Generate(&generators.Options{
 		Namespace: serviceNamespace,
 		Service: &generators.ServiceOptions{
 			Namespace: serviceNamespace,

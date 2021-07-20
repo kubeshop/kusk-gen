@@ -24,7 +24,7 @@ func TestAmbassador(t *testing.T) {
 			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			mappings, err := GenerateMappings(testCase.options, spec)
+			mappings, err := Generate(&testCase.options, spec)
 			r.NoError(err)
 			r.Equal(testCase.res, mappings)
 		})

@@ -154,8 +154,8 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 
 	fmt.Fprintln(os.Stderr, "Generating mappings...")
 
-	mappings, err := ambassador.GenerateMappings(
-		generators.Options{
+	mappings, err := ambassador.Generate(
+		&generators.Options{
 			Namespace: targetNamespace,
 			Service: &generators.ServiceOptions{
 				Namespace: targetNamespace,
@@ -178,7 +178,7 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	clusterDomain := promptString("Cluster domain", "cluster.local")
 
-	return linkerd.Generate(generators.Options{
+	return linkerd.Generate(&generators.Options{
 		Namespace: targetNamespace,
 		Service: &generators.ServiceOptions{
 			Namespace: targetNamespace,

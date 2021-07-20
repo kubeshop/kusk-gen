@@ -93,10 +93,10 @@ func getServiceURL(options *generators.Options) string {
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
 }
 
-func GenerateMappings(options generators.Options, spec *openapi3.T) (string, error) {
+func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 	var mappings []mappingTemplateData
 
-	serviceURL := getServiceURL(&options)
+	serviceURL := getServiceURL(options)
 
 	if options.SplitPaths {
 		// generate a mapping for each operation
