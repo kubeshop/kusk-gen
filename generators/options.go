@@ -48,17 +48,17 @@ type Options struct {
 	Namespace string
 
 	// Service is a set of options of a target service to receive traffic.
-	Service *ServiceOptions
+	Service ServiceOptions
 
 	// Path is a set of options to configure service endpoints paths.
-	Path *PathOptions
+	Path PathOptions
 
 	// Cluster is a set of cluster-wide options.
-	Cluster *ClusterOptions
+	Cluster ClusterOptions
 
 	// Ingress is a set of Ingress-related options.
-	Ingress *IngressOptions
+	Ingress IngressOptions
 
 	// NGINXIngress is a set of custom nginx-ingress options.
-	NGINXIngress *NGINXIngressOptions
+	NGINXIngress NGINXIngressOptions
 }

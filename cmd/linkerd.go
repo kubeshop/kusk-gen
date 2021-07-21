@@ -20,11 +20,11 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			profiles, err := linkerd.Generate(&generators.Options{
 				Namespace: serviceNamespace,
-				Service: &generators.ServiceOptions{
+				Service: generators.ServiceOptions{
 					Name:      serviceName,
 					Namespace: serviceNamespace,
 				},
-				Cluster: &generators.ClusterOptions{
+				Cluster: generators.ClusterOptions{
 					ClusterDomain: clusterDomain,
 				},
 			}, apiSpecContents)

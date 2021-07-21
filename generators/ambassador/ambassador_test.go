@@ -36,11 +36,11 @@ var testCases = []testCase{
 		name: "basic",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -77,11 +77,11 @@ spec:
 		name: "basic-json",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -126,11 +126,11 @@ spec:
 		name: "basic-namespace",
 		options: generators.Options{
 			Namespace: "amb",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -167,11 +167,11 @@ spec:
 		name: "parameter",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -217,11 +217,11 @@ spec:
 		name: "empty-operationId",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -266,11 +266,11 @@ spec:
 		name: "basepath",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/api/v3",
 				TrimPrefix: "",
 				Split:      true,
@@ -315,11 +315,11 @@ spec:
 		name: "basepath-rootonly",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/api/v3",
 				TrimPrefix: "",
 				Split:      false,
@@ -368,11 +368,11 @@ spec:
 		name: "basepath-trimprefix",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/petstore/api/v3",
 				TrimPrefix: "/petstore",
 				Split:      true,
@@ -419,11 +419,11 @@ spec:
 		name: "swagger-yaml",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -553,11 +553,11 @@ spec:
 		name: "swagger-json",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -730,12 +730,12 @@ spec:
 		name: "port specified",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 				Port:      443,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -772,12 +772,12 @@ spec:
 		name: "port 0 specified",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 				Port:      0,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,

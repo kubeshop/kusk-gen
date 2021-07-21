@@ -10,7 +10,7 @@ import (
 
 type testCase struct {
 	name    string
-	options *generators.Options
+	options generators.Options
 	res     string
 }
 
@@ -19,7 +19,7 @@ func TestNGINXIngress(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
 
-			profile, err := Generate(testCase.options, nil)
+			profile, err := Generate(&testCase.options, nil)
 			r.NoError(err)
 			r.Equal(testCase.res, profile)
 		})
@@ -29,14 +29,14 @@ func TestNGINXIngress(t *testing.T) {
 var testCases = []testCase{
 	{
 		name: "root base path and no trim prefix",
-		options: &generators.Options{
+		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "webapp",
 				Port:      80,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base: "/",
 			},
 		},
@@ -64,14 +64,14 @@ status:
 	},
 	{
 		name: "non-root path and no trim prefix",
-		options: &generators.Options{
+		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "webapp",
 				Port:      80,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base: "/somepath",
 			},
 		},
@@ -99,14 +99,14 @@ status:
 	},
 	{
 		name: "non-root path and trim prefix",
-		options: &generators.Options{
+		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "webapp",
 				Port:      80,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/somepath",
 				TrimPrefix: "/somepath",
 			},
@@ -137,18 +137,18 @@ status:
 	},
 	{
 		name: "non-root path and trim prefix and specified re-write target",
-		options: &generators.Options{
+		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "webapp",
 				Port:      80,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/somepath",
 				TrimPrefix: "/somepath",
 			},
-			NGINXIngress: &generators.NGINXIngressOptions{
+			NGINXIngress: generators.NGINXIngressOptions{
 				RewriteTarget: "/someotherpath",
 			},
 		},

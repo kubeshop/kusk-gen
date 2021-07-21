@@ -23,12 +23,6 @@ var (
 )
 
 func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
-	host := ""
-
-	if options.Ingress != nil {
-		host = options.Ingress.Host
-	}
-
 	ingress := v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: ingressAPIVersion,
@@ -43,7 +37,7 @@ func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
 			IngressClassName: &ingressClassName,
 			Rules: []v1.IngressRule{
 				{
-					Host: host,
+					Host: options.Ingress.Host,
 					IngressRuleValue: v1.IngressRuleValue{
 						HTTP: &v1.HTTPIngressRuleValue{
 							Paths: []v1.HTTPIngressPath{
@@ -75,7 +69,7 @@ func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
 func generatePath(options *generators.Options) string {
 	if len(options.Path.TrimPrefix) > 0 &&
 		strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) &&
-		(options.NGINXIngress == nil || options.NGINXIngress.RewriteTarget == "") {
+		options.NGINXIngress.RewriteTarget == "" {
 		pathSuffixRegex := "(/|$)(.*)"
 
 		return options.Path.Base + pathSuffixRegex
@@ -89,7 +83,7 @@ func generateAnnotations(options *generators.Options) map[string]string {
 
 	annotations := map[string]string{}
 
-	if options.NGINXIngress != nil && options.NGINXIngress.RewriteTarget != "" {
+	if options.NGINXIngress.RewriteTarget != "" {
 		annotations[rewriteTargetAnnotationKey] = options.NGINXIngress.RewriteTarget
 	} else if len(options.Path.TrimPrefix) > 0 && strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) {
 		annotations[rewriteTargetAnnotationKey] = "/$2"
