@@ -1,5 +1,9 @@
 package generators
 
+import (
+	"github.com/go-ozzo/ozzo-validation/v4"
+)
+
 type ClusterOptions struct {
 	// ClusterDomain is the base DNS domain for the cluster. Default value is "cluster.local".
 	ClusterDomain string
@@ -61,4 +65,27 @@ type Options struct {
 
 	// NGINXIngress is a set of custom nginx-ingress options.
 	NGINXIngress NGINXIngressOptions
+}
+
+func (o *Options) fillDefaults() {
+	if o.Namespace == "" {
+		o.Namespace = "default"
+	}
+
+	if o.Path.Base == "" {
+		o.Path.Base = "/"
+	}
+
+	if o.Cluster.ClusterDomain == "" {
+		o.Cluster.ClusterDomain = "cluster.local"
+	}
+}
+
+func (o *Options) Validate() error {
+	err := validation.ValidateStruct(o,
+		validation.Field(&o.Namespace, validation.Required),
+		validation.Field(&o.Service.Name, validation.Required),
+	)
+
+	return err
 }
