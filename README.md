@@ -28,7 +28,7 @@ Use "kusk [command] --help" for more information about a command.
 ### Example
 For a quick minimal example, run the following
 ```shell
-./kusk -i examples/petstore.yaml ambassador --service-name petstore
+./kusk -i examples/petstore/petstore.yaml ambassador --service-name petstore
 ```
 
 ## Development
