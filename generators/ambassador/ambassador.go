@@ -94,6 +94,19 @@ func getServiceURL(options *generators.Options) string {
 }
 
 func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
+	apiVersion := "getambassador.io/v2"
+	kind := "Mapping"
+
+	if ambassador := options.Ambassador; ambassador != nil && ambassador.UsePreRelease {
+		apiVersion = "x.getambassador.io/v3alpha1"
+		kind = "AmbassadorMapping"
+	}
+
+	var hostName string
+	if ingress := options.Ingress; ingress != nil {
+		hostName = ingress.Host
+	}
+
 	var mappings []mappingTemplateData
 
 	serviceURL := getServiceURL(options)
@@ -106,6 +119,8 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 				mappingPath, regex := generateMappingPath(path, operation)
 
 				op := mappingTemplateData{
+					ApiVersion:       apiVersion,
+					Kind:             kind,
 					MappingName:      generateMappingName(options.Service.Name, method, path, operation),
 					MappingNamespace: options.Namespace,
 					ServiceURL:       serviceURL,
@@ -114,6 +129,7 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 					Method:           method,
 					Path:             mappingPath,
 					Regex:            regex,
+					Hostname:         hostName,
 				}
 
 				mappings = append(mappings, op)
@@ -121,11 +137,14 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 		}
 	} else {
 		op := mappingTemplateData{
+			ApiVersion:       apiVersion,
+			Kind:             kind,
 			MappingName:      options.Service.Name,
 			MappingNamespace: options.Namespace,
 			ServiceURL:       serviceURL,
 			BasePath:         options.Path.Base,
 			TrimPrefix:       options.Path.TrimPrefix,
+			Hostname:         hostName,
 		}
 
 		mappings = append(mappings, op)

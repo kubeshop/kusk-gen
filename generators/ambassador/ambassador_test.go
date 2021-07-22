@@ -810,4 +810,92 @@ spec:
   rewrite: ""
 `,
 	},
+	{
+		name: "Use Pre release",
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
+			Ambassador: &generators.AmbassadorOptions{UsePreRelease: true},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+`,
+		res: `
+---
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
+metadata:
+  name: petstore-updatepet
+  namespace: default
+spec:
+  prefix: "/pet"
+  method: PUT
+  service: petstore.default
+  rewrite: ""
+`,
+	},
+	{
+		name: "Use Pre release host name specified",
+		options: generators.Options{
+			Namespace: "default",
+			Service: &generators.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Path: &generators.PathOptions{
+				Base:       "",
+				TrimPrefix: "",
+				Split:      true,
+			},
+			Ingress: &generators.IngressOptions{
+				Host: "somehost.org",
+			},
+			Ambassador: &generators.AmbassadorOptions{UsePreRelease: true},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+`,
+		res: `
+---
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
+metadata:
+  name: petstore-updatepet
+  namespace: default
+spec:
+  hostname: "somehost.org"
+  prefix: "/pet"
+  method: PUT
+  service: petstore.default
+  rewrite: ""
+`,
+	},
 }

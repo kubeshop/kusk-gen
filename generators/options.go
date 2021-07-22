@@ -43,6 +43,10 @@ type NGINXIngressOptions struct {
 	RewriteTarget string
 }
 
+type AmbassadorOptions struct {
+	UsePreRelease bool
+}
+
 type Options struct {
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string
@@ -61,4 +65,7 @@ type Options struct {
 
 	// NGINXIngress is a set of custom nginx-ingress options.
 	NGINXIngress *NGINXIngressOptions
+
+	// Ambassador is a set of custom Ambassador options.
+	Ambassador *AmbassadorOptions
 }
