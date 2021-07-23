@@ -12,7 +12,7 @@ import (
 )
 
 type Client struct {
-	cs *kubernetes.Clientset
+	cs kubernetes.Interface
 }
 
 func NewClient(kubeconfig string) (*Client, error) {
