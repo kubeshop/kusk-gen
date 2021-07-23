@@ -1,4 +1,4 @@
-package generators
+package options
 
 type NGINXIngressOptions struct {
 	// RewriteTarget is a custom rewrite target for ingress-nginx.

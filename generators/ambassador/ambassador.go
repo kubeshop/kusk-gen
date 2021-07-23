@@ -10,7 +10,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 
-	"github.com/kubeshop/kusk/generators"
+	"github.com/kubeshop/kusk/options"
 )
 
 var (
@@ -80,7 +80,7 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 	return strings.ToLower(res.String())
 }
 
-func getServiceURL(options *generators.Options) string {
+func getServiceURL(options *options.Options) string {
 	if options.Service.Port > 0 {
 		return fmt.Sprintf(
 			"%s.%s:%d",
@@ -93,7 +93,7 @@ func getServiceURL(options *generators.Options) string {
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
 }
 
-func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
+func Generate(options *options.Options, spec *openapi3.T) (string, error) {
 	if err := options.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}

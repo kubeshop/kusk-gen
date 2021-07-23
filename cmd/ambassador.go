@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/generators/ambassador"
+	"github.com/kubeshop/kusk/options"
 )
 
 // ambassadorCmd represents the ambassador command
@@ -28,19 +28,19 @@ var (
 )
 
 func generateMappings() {
-	mappings, err := ambassador.Generate(&generators.Options{
+	mappings, err := ambassador.Generate(&options.Options{
 		Namespace: serviceNamespace,
-		Service: generators.ServiceOptions{
+		Service: options.ServiceOptions{
 			Namespace: serviceNamespace,
 			Name:      serviceName,
 			Port:      servicePort,
 		},
-		Path: generators.PathOptions{
+		Path: options.PathOptions{
 			Base:       basePath,
 			TrimPrefix: trimPrefix,
 			Split:      !rootOnly,
 		},
-	}, apiSpecContents)
+	}, apiSpec)
 
 	if err != nil {
 		log.Fatal(err)

@@ -9,16 +9,20 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
 
+	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )
 
 var (
-	apiSpecPath     string
-	apiSpecContents *openapi3.T
+	apiSpecPath string
+	apiSpec     *openapi3.T
 
 	serviceName      string
 	serviceNamespace string
 	servicePort      int32
+
+	// this object initially gets filled with whatever we were able to found in x-kusk extension
+	opts *options.Options
 
 	rootCmd = &cobra.Command{
 		Use:   "kusk",
@@ -30,7 +34,13 @@ var (
 			}
 
 			var err error
-			apiSpecContents, err = spec.ParseFromFile(apiSpecPath)
+
+			apiSpec, err = spec.ParseFromFile(apiSpecPath)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			opts, err = spec.GetOptions(apiSpec)
 			if err != nil {
 				log.Fatal(err)
 			}

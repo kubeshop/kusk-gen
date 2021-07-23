@@ -7,8 +7,10 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/googleapis/gnostic v0.5.5 // indirect
+	github.com/knadh/koanf v1.2.0 // indirect
 	github.com/linkerd/linkerd2 v0.5.1-0.20210701172824-d3cc21da777c
 	github.com/manifoldco/promptui v0.8.0
+	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/spf13/cobra v1.2.0
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect

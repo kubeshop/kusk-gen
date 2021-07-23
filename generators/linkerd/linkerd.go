@@ -11,10 +11,10 @@ import (
 	"github.com/linkerd/linkerd2/pkg/profiles"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/kubeshop/kusk/generators"
+	"github.com/kubeshop/kusk/options"
 )
 
-func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
+func Generate(options *options.Options, spec *openapi3.T) (string, error) {
 	if err := options.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}

@@ -1,4 +1,4 @@
-package generators
+package options
 
 import (
 	"github.com/go-ozzo/ozzo-validation/v4"
