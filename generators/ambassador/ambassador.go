@@ -94,12 +94,20 @@ func getServiceURL(options *generators.Options) string {
 }
 
 func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
+	if err := options.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate options: %w", err)
+	}
+
 	var mappings []mappingTemplateData
 
 	serviceURL := getServiceURL(options)
 
 	if options.Path.Split {
 		// generate a mapping for each operation
+		basePath := options.Path.Base
+		if basePath == "/" {
+			basePath = ""
+		}
 
 		for path, pathItem := range spec.Paths {
 			for method, operation := range pathItem.Operations() {
@@ -109,7 +117,7 @@ func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
 					MappingName:      generateMappingName(options.Service.Name, method, path, operation),
 					MappingNamespace: options.Namespace,
 					ServiceURL:       serviceURL,
-					BasePath:         options.Path.Base,
+					BasePath:         basePath,
 					TrimPrefix:       options.Path.TrimPrefix,
 					Method:           method,
 					Path:             mappingPath,

@@ -36,11 +36,11 @@ var testCases = []testCase{
 		name: "basic",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -69,7 +69,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -77,11 +77,11 @@ spec:
 		name: "basic-json",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -118,7 +118,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -126,11 +126,11 @@ spec:
 		name: "basic-namespace",
 		options: generators.Options{
 			Namespace: "amb",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -159,7 +159,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -167,11 +167,11 @@ spec:
 		name: "parameter",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -209,7 +209,7 @@ spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -217,11 +217,11 @@ spec:
 		name: "empty-operationId",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -258,7 +258,7 @@ spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -266,11 +266,11 @@ spec:
 		name: "basepath",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/api/v3",
 				TrimPrefix: "",
 				Split:      true,
@@ -307,7 +307,7 @@ spec:
   prefix: "/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -315,11 +315,11 @@ spec:
 		name: "basepath-rootonly",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/api/v3",
 				TrimPrefix: "",
 				Split:      false,
@@ -360,7 +360,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/api/v3"
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -368,11 +368,11 @@ spec:
 		name: "basepath-trimprefix",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "/petstore/api/v3",
 				TrimPrefix: "/petstore",
 				Split:      true,
@@ -409,7 +409,7 @@ spec:
   prefix: "/petstore/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   regex_rewrite:
     pattern: '/petstore(.*)'
     substitution: '\1'
@@ -419,11 +419,11 @@ spec:
 		name: "swagger-yaml",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -522,7 +522,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -533,7 +533,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -545,7 +545,7 @@ spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -553,11 +553,11 @@ spec:
 		name: "swagger-json",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -699,7 +699,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -710,7 +710,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -722,7 +722,7 @@ spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -730,12 +730,12 @@ spec:
 		name: "port specified",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 				Port:      443,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -772,12 +772,12 @@ spec:
 		name: "port 0 specified",
 		options: generators.Options{
 			Namespace: "default",
-			Service: &generators.ServiceOptions{
+			Service: generators.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 				Port:      0,
 			},
-			Path: &generators.PathOptions{
+			Path: generators.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -806,7 +806,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},

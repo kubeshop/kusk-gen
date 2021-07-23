@@ -1,64 +1,63 @@
 package generators
 
-type ClusterOptions struct {
-	// ClusterDomain is the base DNS domain for the cluster. Default value is "cluster.local".
-	ClusterDomain string
-}
-
-type ServiceOptions struct {
-	// Namespace is the namespace containing the upstream Service.
-	Namespace string
-
-	// Name is the upstream Service's name.
-	Name string
-
-	// Port is the upstream Service's port. Default value is 80.
-	Port int32
-}
-
-type PathOptions struct {
-	// Base is the preceding prefix for the route (i.e. /your-prefix/here/rest/of/the/route).
-	// Default value is "/".
-	Base string
-
-	// TrimPrefix is the prefix that would be omitted from the URL when request is being forwarded
-	// to the upstream service, i.e. given that Base is set to "/petstore/api/v3", TrimPrefix is set to "/petstore",
-	// path that would be generated is "/petstore/api/v3/pets", URL that the upstream service would receive
-	// is "/api/v3/pets".
-	TrimPrefix string
-
-	// Split forces Kusk to generate a separate resource for each Path or Operation, where appropriate.
-	Split bool
-}
-
-type IngressOptions struct {
-	// Host is an ingress host rule.
-	// See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules for additional documentation.
-	Host string
-}
-
-type NGINXIngressOptions struct {
-	// RewriteTarget is a custom rewrite target for ingress-nginx.
-	// See https://kubernetes.github.io/ingress-nginx/examples/rewrite/ for additional documentation.
-	RewriteTarget string
-}
+import (
+	v "github.com/go-ozzo/ozzo-validation/v4"
+)
 
 type Options struct {
 	// Namespace for the generated resource. Default value is "default".
-	Namespace string
+	Namespace string `yaml:"namespace"`
 
 	// Service is a set of options of a target service to receive traffic.
-	Service *ServiceOptions
+	Service ServiceOptions `yaml:"service"`
 
 	// Path is a set of options to configure service endpoints paths.
-	Path *PathOptions
+	Path PathOptions `yaml:"path"`
 
 	// Cluster is a set of cluster-wide options.
-	Cluster *ClusterOptions
+	Cluster ClusterOptions `yaml:"cluster"`
 
 	// Ingress is a set of Ingress-related options.
-	Ingress *IngressOptions
+	Ingress IngressOptions `yaml:"ingress"`
 
 	// NGINXIngress is a set of custom nginx-ingress options.
-	NGINXIngress *NGINXIngressOptions
+	NGINXIngress NGINXIngressOptions `yaml:"nginx_ingress"`
+}
+
+func (o *Options) fillDefaults() {
+	if o.Namespace == "" {
+		o.Namespace = "default"
+	}
+
+	if o.Path.Base == "" {
+		o.Path.Base = "/"
+	}
+
+	if o.Cluster.ClusterDomain == "" {
+		o.Cluster.ClusterDomain = "cluster.local"
+	}
+
+	if o.Service.Port == 0 {
+		o.Service.Port = 80
+	}
+}
+
+func (o *Options) Validate() error {
+	return v.ValidateStruct(o,
+		v.Field(&o.Service, v.Required),
+		v.Field(&o.Namespace, v.Required),
+	)
+}
+
+func (o *Options) FillDefaultsAndValidate() error {
+	o.fillDefaults()
+
+	return v.Validate([]v.Validatable{
+		o,
+		&o.Service,
+		&o.Path,
+		&o.Cluster,
+		&o.Ingress,
+		&o.NGINXIngress,
+	})
 }

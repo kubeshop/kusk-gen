@@ -24,19 +24,19 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			ingress, err := nginx_ingress.Generate(&generators.Options{
 				Namespace: serviceNamespace,
-				Service: &generators.ServiceOptions{
+				Service: generators.ServiceOptions{
 					Name:      serviceName,
 					Namespace: serviceNamespace,
 					Port:      ingressPort,
 				},
-				Ingress: &generators.IngressOptions{
+				Ingress: generators.IngressOptions{
 					Host: ingressHost,
 				},
-				Path: &generators.PathOptions{
+				Path: generators.PathOptions{
 					Base:       ingressPath,
 					TrimPrefix: trimPrefix,
 				},
-				NGINXIngress: &generators.NGINXIngressOptions{
+				NGINXIngress: generators.NGINXIngressOptions{
 					RewriteTarget: ingressRewriteTarget,
 				},
 			}, apiSpecContents)

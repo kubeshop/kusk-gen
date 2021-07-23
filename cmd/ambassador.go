@@ -30,12 +30,12 @@ var (
 func generateMappings() {
 	mappings, err := ambassador.Generate(&generators.Options{
 		Namespace: serviceNamespace,
-		Service: &generators.ServiceOptions{
+		Service: generators.ServiceOptions{
 			Namespace: serviceNamespace,
 			Name:      serviceName,
 			Port:      servicePort,
 		},
-		Path: &generators.PathOptions{
+		Path: generators.PathOptions{
 			Base:       basePath,
 			TrimPrefix: trimPrefix,
 			Split:      !rootOnly,
