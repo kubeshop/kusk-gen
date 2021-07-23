@@ -15,6 +15,10 @@ import (
 )
 
 func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
+	if err := options.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate options: %w", err)
+	}
+
 	profile := &v1alpha2.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: k8s.ServiceProfileAPIVersion,

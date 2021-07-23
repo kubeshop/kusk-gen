@@ -36,6 +36,10 @@ func (o *Options) fillDefaults() {
 	if o.Cluster.ClusterDomain == "" {
 		o.Cluster.ClusterDomain = "cluster.local"
 	}
+
+	if o.Service.Port == 0 {
+		o.Service.Port = 80
+	}
 }
 
 func (o *Options) Validate() error {

@@ -69,7 +69,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -118,7 +118,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -159,7 +159,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -209,7 +209,7 @@ spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -258,7 +258,7 @@ spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -307,7 +307,7 @@ spec:
   prefix: "/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -360,7 +360,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/api/v3"
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -409,7 +409,7 @@ spec:
   prefix: "/petstore/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   regex_rewrite:
     pattern: '/petstore(.*)'
     substitution: '\1'
@@ -522,7 +522,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -533,7 +533,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -545,7 +545,7 @@ spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -699,7 +699,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: POST
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -710,7 +710,7 @@ metadata:
 spec:
   prefix: "/pets"
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 ---
 apiVersion: getambassador.io/v2
@@ -722,7 +722,7 @@ spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
   method: GET
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},
@@ -806,7 +806,7 @@ metadata:
 spec:
   prefix: "/pet"
   method: PUT
-  service: petstore.default
+  service: petstore.default:80
   rewrite: ""
 `,
 	},

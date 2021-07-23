@@ -94,6 +94,10 @@ func getServiceURL(options *generators.Options) string {
 }
 
 func Generate(options *generators.Options, spec *openapi3.T) (string, error) {
+	if err := options.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate options: %w", err)
+	}
+
 	var mappings []mappingTemplateData
 
 	serviceURL := getServiceURL(options)

@@ -23,6 +23,10 @@ var (
 )
 
 func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
+	if err := options.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate options: %w", err)
+	}
+
 	ingress := v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: ingressAPIVersion,
