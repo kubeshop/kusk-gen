@@ -34,7 +34,7 @@ func getOptions() (*options.Options, error) {
 func init() {
 	var apiSpecPath string
 
-	for _, gen := range generators.Registry {
+	addGenerator := func(gen generators.Interface) {
 		cmd := &cobra.Command{
 			Use:   gen.Cmd(),
 			Short: gen.ShortDescription(),
@@ -98,14 +98,12 @@ func init() {
 			"default",
 			"namespace for generated resources",
 		)
-		cmd.MarkFlagRequired("namespace")
 
 		cmd.Flags().String(
 			"service.name",
 			"",
 			"target Service name",
 		)
-		cmd.MarkFlagRequired("service.name")
 
 		cmd.Flags().String(
 			"service.namespace",
@@ -122,7 +120,13 @@ func init() {
 		// add generator-specific flags
 		cmd.Flags().AddFlagSet(gen.Flags())
 
+		cmd.Flags().SortFlags = false
+
 		// register command
 		rootCmd.AddCommand(cmd)
+	}
+
+	for _, gen := range generators.Registry {
+		addGenerator(gen)
 	}
 }

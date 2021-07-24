@@ -182,7 +182,9 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	clusterDomain := promptString("Cluster domain", "cluster.local")
 
-	return linkerd.Generate(&options.Options{
+	var ld linkerd.Generator
+
+	return ld.Generate(&options.Options{
 		Namespace: targetNamespace,
 		Service: options.ServiceOptions{
 			Namespace: targetNamespace,

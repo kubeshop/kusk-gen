@@ -15,11 +15,13 @@ type testCase struct {
 }
 
 func TestNGINXIngress(t *testing.T) {
+	var gen Generator
+
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
 
-			profile, err := Generate(&testCase.options, nil)
+			profile, err := gen.Generate(&testCase.options, nil)
 			r.NoError(err)
 			r.Equal(testCase.res, profile)
 		})

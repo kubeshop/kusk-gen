@@ -12,33 +12,41 @@ import (
 	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/options"
 )
 
-type Generator struct {
+func init() {
+	generators.Registry["linkerd"] = &Generator{}
 }
 
-func (g Generator) Cmd() string {
-	panic("implement me")
+type Generator struct{}
+
+func (g *Generator) Cmd() string {
+	return "linkerd"
 }
 
-func (g Generator) Flags() *pflag.FlagSet {
-	panic("implement me")
+func (g *Generator) Flags() *pflag.FlagSet {
+	fs := pflag.NewFlagSet("linkerd", pflag.ExitOnError)
+
+	fs.String(
+		"cluster.cluster_domain",
+		"cluster.local",
+		"kubernetes cluster domain",
+	)
+
+	return fs
 }
 
-func (g Generator) ShortDescription() string {
-	panic("implement me")
+func (g *Generator) ShortDescription() string {
+	return "Generates Linkerd Service Profiles for your service"
 }
 
-func (g Generator) LongDescription() string {
-	panic("implement me")
+func (g *Generator) LongDescription() string {
+	return g.ShortDescription()
 }
 
-func (g Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
-	panic("implement me")
-}
-
-func Generate(options *options.Options, spec *openapi3.T) (string, error) {
+func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
 	if err := options.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
@@ -57,7 +65,7 @@ func Generate(options *options.Options, spec *openapi3.T) (string, error) {
 			),
 			Namespace: options.Namespace,
 		},
-		Spec: generateServiceProfileSpec(spec),
+		Spec: g.generateServiceProfileSpec(spec),
 	}
 
 	b, err := yaml.Marshal(profile)
@@ -65,12 +73,12 @@ func Generate(options *options.Options, spec *openapi3.T) (string, error) {
 	return string(b), err
 }
 
-func generateServiceProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
+func (g *Generator) generateServiceProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
 	routes := make([]*v1alpha2.RouteSpec, 0)
 
 	for path, pathItem := range spec.Paths {
 		for method := range pathItem.Operations() {
-			routes = append(routes, generateRouteSpec(method, path))
+			routes = append(routes, g.generateRouteSpec(method, path))
 		}
 	}
 
@@ -81,7 +89,7 @@ func generateServiceProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
 	return v1alpha2.ServiceProfileSpec{Routes: routes}
 }
 
-func generateRouteSpec(method, path string) *v1alpha2.RouteSpec {
+func (g *Generator) generateRouteSpec(method, path string) *v1alpha2.RouteSpec {
 	return &v1alpha2.RouteSpec{
 		Name: fmt.Sprintf("%s %s", method, path),
 		Condition: &v1alpha2.RequestMatch{

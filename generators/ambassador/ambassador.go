@@ -30,11 +30,10 @@ func init() {
 	generators.Registry["ambassador"] = &Generator{}
 }
 
-type Generator struct {
-}
+type Generator struct{}
 
 func (g *Generator) ShortDescription() string {
-	return "Generates ambassador mappings for your cluster from the provided API specification"
+	return "Generates Ambassador Mappings for your service"
 }
 
 func (g *Generator) LongDescription() string {
@@ -48,7 +47,91 @@ func (g *Generator) Cmd() string {
 func (g *Generator) Flags() *pflag.FlagSet {
 	fs := pflag.NewFlagSet("ambassador", pflag.ExitOnError)
 
+	fs.String(
+		"path.base",
+		"/",
+		"a base path for Service endpoints",
+	)
+
+	fs.String(
+		"path.trim_prefix",
+		"",
+		"a prefix to trim from the URL before forwarding to the upstream Service",
+	)
+
+	fs.Bool(
+		"path.split",
+		false,
+		"force Kusk to generate a separate Mapping for each operation",
+	)
+
 	return fs
+}
+
+func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
+	if err := options.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate options: %w", err)
+	}
+
+	var mappings []mappingTemplateData
+
+	serviceURL := g.getServiceURL(options)
+
+	if options.Path.Split {
+		// generate a mapping for each operation
+		basePath := options.Path.Base
+		if basePath == "/" {
+			basePath = ""
+		}
+
+		for path, pathItem := range spec.Paths {
+			for method, operation := range pathItem.Operations() {
+				mappingPath, regex := g.generateMappingPath(path, operation)
+
+				op := mappingTemplateData{
+					MappingName:      g.generateMappingName(options.Service.Name, method, path, operation),
+					MappingNamespace: options.Namespace,
+					ServiceURL:       serviceURL,
+					BasePath:         basePath,
+					TrimPrefix:       options.Path.TrimPrefix,
+					Method:           method,
+					Path:             mappingPath,
+					Regex:            regex,
+				}
+
+				mappings = append(mappings, op)
+			}
+		}
+	} else {
+		op := mappingTemplateData{
+			MappingName:      options.Service.Name,
+			MappingNamespace: options.Namespace,
+			ServiceURL:       serviceURL,
+			BasePath:         options.Path.Base,
+			TrimPrefix:       options.Path.TrimPrefix,
+		}
+
+		mappings = append(mappings, op)
+	}
+
+	// We need to sort mappings as in the process of conversion of YAML to JSON
+	// the Go map's access mechanics randomize the order and therefore the output is shuffled.
+	// Not only it makes tests fail, it would also affect people who would use this in order to
+	// generate manifests and use them in GitOps processes
+	sort.Slice(mappings, func(i, j int) bool {
+		return mappings[i].MappingName < mappings[j].MappingName
+	})
+
+	var buf bytes.Buffer
+
+	err := mappingTemplate.Execute(&buf, mappings)
+	if err != nil {
+		return "", err
+	}
+
+	res := buf.String()
+
+	return reDuplicateNewlines.ReplaceAllString(res, "\n"), nil
 }
 
 // generateMappingPath returns the final pattern that should go to mapping
@@ -118,70 +201,4 @@ func (g *Generator) getServiceURL(options *options.Options) string {
 	}
 
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
-}
-
-func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
-	if err := options.FillDefaultsAndValidate(); err != nil {
-		return "", fmt.Errorf("failed to validate options: %w", err)
-	}
-
-	var mappings []mappingTemplateData
-
-	serviceURL := g.getServiceURL(options)
-
-	if options.Path.Split {
-		// generate a mapping for each operation
-		basePath := options.Path.Base
-		if basePath == "/" {
-			basePath = ""
-		}
-
-		for path, pathItem := range spec.Paths {
-			for method, operation := range pathItem.Operations() {
-				mappingPath, regex := g.generateMappingPath(path, operation)
-
-				op := mappingTemplateData{
-					MappingName:      g.generateMappingName(options.Service.Name, method, path, operation),
-					MappingNamespace: options.Namespace,
-					ServiceURL:       serviceURL,
-					BasePath:         basePath,
-					TrimPrefix:       options.Path.TrimPrefix,
-					Method:           method,
-					Path:             mappingPath,
-					Regex:            regex,
-				}
-
-				mappings = append(mappings, op)
-			}
-		}
-	} else {
-		op := mappingTemplateData{
-			MappingName:      options.Service.Name,
-			MappingNamespace: options.Namespace,
-			ServiceURL:       serviceURL,
-			BasePath:         options.Path.Base,
-			TrimPrefix:       options.Path.TrimPrefix,
-		}
-
-		mappings = append(mappings, op)
-	}
-
-	// We need to sort mappings as in the process of conversion of YAML to JSON
-	// the Go map's access mechanics randomize the order and therefore the output is shuffled.
-	// Not only it makes tests fail, it would also affect people who would use this in order to
-	// generate manifests and use them in GitOps processes
-	sort.Slice(mappings, func(i, j int) bool {
-		return mappings[i].MappingName < mappings[j].MappingName
-	})
-
-	var buf bytes.Buffer
-
-	err := mappingTemplate.Execute(&buf, mappings)
-	if err != nil {
-		return "", err
-	}
-
-	res := buf.String()
-
-	return reDuplicateNewlines.ReplaceAllString(res, "\n"), nil
 }

@@ -17,6 +17,8 @@ type testCase struct {
 }
 
 func TestLinkerd(t *testing.T) {
+	var gen Generator
+
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
@@ -24,7 +26,7 @@ func TestLinkerd(t *testing.T) {
 			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			profile, err := Generate(&testCase.options, spec)
+			profile, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)
 			r.Equal(testCase.res, profile)
 		})
