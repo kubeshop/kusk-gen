@@ -21,7 +21,7 @@ type Options struct {
 	Ingress IngressOptions `yaml:"ingress,omitempty" json:"ingress,omitempty"`
 
 	// NGINXIngress is a set of custom nginx-ingress options.
-	NGINXIngress NGINXIngressOptions `mapstructure:"nginx_ingress" yaml:"nginx_ingress,omitempty" json:"nginx_ingress,omitempty"`
+	NGINXIngress NGINXIngressOptions `yaml:"nginx_ingress,omitempty" json:"nginx_ingress,omitempty"`
 }
 
 func (o *Options) fillDefaults() {

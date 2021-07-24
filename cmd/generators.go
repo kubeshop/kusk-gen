@@ -7,7 +7,6 @@ import (
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/posflag"
 	"github.com/knadh/koanf/providers/structs"
-	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 
 	"github.com/kubeshop/kusk/generators"
@@ -24,7 +23,8 @@ var (
 func getOptions() (*options.Options, error) {
 	var res options.Options
 
-	if err := mapstructure.Decode(k.Raw(), &res); err != nil {
+	err := k.UnmarshalWithConf("", &res, koanf.UnmarshalConf{Tag: "yaml"})
+	if err != nil {
 		return nil, fmt.Errorf("failed to decode options: %w", err)
 	}
 

@@ -13,7 +13,7 @@ type PathOptions struct {
 	// to the upstream service, i.e. given that Base is set to "/petstore/api/v3", TrimPrefix is set to "/petstore",
 	// path that would be generated is "/petstore/api/v3/pets", URL that the upstream service would receive
 	// is "/api/v3/pets".
-	TrimPrefix string `mapstructure:"trim_prefix" yaml:"trim_prefix,omitempty" json:"trim_prefix,omitempty" json:"trim_prefix,omitempty"`
+	TrimPrefix string `yaml:"trim_prefix,omitempty" json:"trim_prefix,omitempty"`
 
 	// Split forces Kusk to generate a separate resource for each Path or Operation, where appropriate.
 	Split bool `yaml:"split,omitempty" json:"split,omitempty"`
