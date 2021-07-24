@@ -9,10 +9,34 @@ import (
 	"github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha2"
 	"github.com/linkerd/linkerd2/pkg/k8s"
 	"github.com/linkerd/linkerd2/pkg/profiles"
+	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kubeshop/kusk/options"
 )
+
+type Generator struct {
+}
+
+func (g Generator) Cmd() string {
+	panic("implement me")
+}
+
+func (g Generator) Flags() *pflag.FlagSet {
+	panic("implement me")
+}
+
+func (g Generator) ShortDescription() string {
+	panic("implement me")
+}
+
+func (g Generator) LongDescription() string {
+	panic("implement me")
+}
+
+func (g Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
+	panic("implement me")
+}
 
 func Generate(options *options.Options, spec *openapi3.T) (string, error) {
 	if err := options.FillDefaultsAndValidate(); err != nil {

@@ -6,13 +6,13 @@ import (
 
 type ServiceOptions struct {
 	// Namespace is the namespace containing the upstream Service.
-	Namespace string `yaml:"namespace"`
+	Namespace string `yaml:"namespace,omitempty"`
 
 	// Name is the upstream Service's name.
-	Name string `yaml:"name"`
+	Name string `yaml:"name,omitempty"`
 
 	// Port is the upstream Service's port. Default value is 80.
-	Port int32 `yaml:"port"`
+	Port int32 `yaml:"port,omitempty"`
 }
 
 func (o *ServiceOptions) Validate() error {

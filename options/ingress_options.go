@@ -8,7 +8,7 @@ import (
 type IngressOptions struct {
 	// Host is an ingress host rule.
 	// See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules for additional documentation.
-	Host string `yaml:"host"`
+	Host string `yaml:"host,omitempty"`
 }
 
 func (o *IngressOptions) Validate() error {

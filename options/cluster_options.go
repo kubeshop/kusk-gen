@@ -6,7 +6,7 @@ import (
 
 type ClusterOptions struct {
 	// ClusterDomain is the base DNS domain for the cluster. Default value is "cluster.local".
-	ClusterDomain string `yaml:"cluster_domain"`
+	ClusterDomain string `mapstructure:"cluster_domain" yaml:"cluster_domain,omitempty"`
 }
 
 func (o *ClusterOptions) Validate() error {

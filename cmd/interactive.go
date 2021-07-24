@@ -11,7 +11,7 @@ var (
 		Use:   "interactive",
 		Short: "Connects to current Kubernetes cluster and lists available generators",
 		Run: func(cmd *cobra.Command, args []string) {
-			interactive.Interactive(apiSpec)
+			interactive.Interactive(nil) // TODO:
 		},
 	}
 )

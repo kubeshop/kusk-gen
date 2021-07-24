@@ -9,7 +9,9 @@ import (
 	"text/template"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/spf13/pflag"
 
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/options"
 )
 
@@ -24,9 +26,34 @@ func init() {
 	mappingTemplate = template.Must(mappingTemplate.Parse(mappingTemplateRaw))
 }
 
+func init() {
+	generators.Registry["ambassador"] = &Generator{}
+}
+
+type Generator struct {
+}
+
+func (g *Generator) ShortDescription() string {
+	return "Generates ambassador mappings for your cluster from the provided API specification"
+}
+
+func (g *Generator) LongDescription() string {
+	return g.ShortDescription()
+}
+
+func (g *Generator) Cmd() string {
+	return "ambassador"
+}
+
+func (g *Generator) Flags() *pflag.FlagSet {
+	fs := pflag.NewFlagSet("ambassador", pflag.ExitOnError)
+
+	return fs
+}
+
 // generateMappingPath returns the final pattern that should go to mapping
 // and whether the regex should be used
-func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
+func (g *Generator) generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	containsPathParameter := false
 	for _, param := range op.Parameters {
 		if param.Value.In == "path" {
@@ -61,7 +88,7 @@ func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	return path, true
 }
 
-func generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
+func (g *Generator) generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
 	var res strings.Builder
 
 	if operation.OperationID != "" {
@@ -80,7 +107,7 @@ func generateMappingName(serviceName, method, path string, operation *openapi3.O
 	return strings.ToLower(res.String())
 }
 
-func getServiceURL(options *options.Options) string {
+func (g *Generator) getServiceURL(options *options.Options) string {
 	if options.Service.Port > 0 {
 		return fmt.Sprintf(
 			"%s.%s:%d",
@@ -93,14 +120,14 @@ func getServiceURL(options *options.Options) string {
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
 }
 
-func Generate(options *options.Options, spec *openapi3.T) (string, error) {
+func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
 	if err := options.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
 
 	var mappings []mappingTemplateData
 
-	serviceURL := getServiceURL(options)
+	serviceURL := g.getServiceURL(options)
 
 	if options.Path.Split {
 		// generate a mapping for each operation
@@ -111,10 +138,10 @@ func Generate(options *options.Options, spec *openapi3.T) (string, error) {
 
 		for path, pathItem := range spec.Paths {
 			for method, operation := range pathItem.Operations() {
-				mappingPath, regex := generateMappingPath(path, operation)
+				mappingPath, regex := g.generateMappingPath(path, operation)
 
 				op := mappingTemplateData{
-					MappingName:      generateMappingName(options.Service.Name, method, path, operation),
+					MappingName:      g.generateMappingName(options.Service.Name, method, path, operation),
 					MappingNamespace: options.Namespace,
 					ServiceURL:       serviceURL,
 					BasePath:         basePath,

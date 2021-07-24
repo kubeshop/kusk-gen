@@ -154,7 +154,9 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 
 	fmt.Fprintln(os.Stderr, "Generating mappings...")
 
-	mappings, err := ambassador.Generate(
+	var ag ambassador.Generator
+
+	mappings, err := ag.Generate(
 		&options.Options{
 			Namespace: targetNamespace,
 			Service: options.ServiceOptions{
