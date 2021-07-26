@@ -13,9 +13,9 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	"github.com/kubeshop/kusk/cluster"
-	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/generators/linkerd"
+	"github.com/kubeshop/kusk/options"
 )
 
 func Interactive(apiSpec *openapi3.T) {
@@ -154,14 +154,16 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 
 	fmt.Fprintln(os.Stderr, "Generating mappings...")
 
-	mappings, err := ambassador.Generate(
-		&generators.Options{
+	var ag ambassador.Generator
+
+	mappings, err := ag.Generate(
+		&options.Options{
 			Namespace: targetNamespace,
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: targetNamespace,
 				Name:      targetService,
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       basePath,
 				TrimPrefix: trimPrefix,
 				Split:      separateMappings,
@@ -180,13 +182,15 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	clusterDomain := promptString("Cluster domain", "cluster.local")
 
-	return linkerd.Generate(&generators.Options{
+	var ld linkerd.Generator
+
+	return ld.Generate(&options.Options{
 		Namespace: targetNamespace,
-		Service: generators.ServiceOptions{
+		Service: options.ServiceOptions{
 			Namespace: targetNamespace,
 			Name:      targetService,
 		},
-		Cluster: generators.ClusterOptions{
+		Cluster: options.ClusterOptions{
 			ClusterDomain: clusterDomain,
 		},
 	}, apiSpec)

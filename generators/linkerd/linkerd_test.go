@@ -5,18 +5,20 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/kubeshop/kusk/generators"
+	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )
 
 type testCase struct {
 	name    string
-	options generators.Options
+	options options.Options
 	spec    string
 	res     string
 }
 
 func TestLinkerd(t *testing.T) {
+	var gen Generator
+
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
@@ -24,7 +26,7 @@ func TestLinkerd(t *testing.T) {
 			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			profile, err := Generate(&testCase.options, spec)
+			profile, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)
 			r.Equal(testCase.res, profile)
 		})
@@ -34,13 +36,13 @@ func TestLinkerd(t *testing.T) {
 var testCases = []testCase{
 	{
 		name: "simple routes",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "webapp",
 			},
-			Cluster: generators.ClusterOptions{
+			Cluster: options.ClusterOptions{
 				ClusterDomain: "cluster.local",
 			},
 		},
@@ -72,13 +74,13 @@ spec:
 	},
 	{
 		name: "routes with variables",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "webapp",
 			},
-			Cluster: generators.ClusterOptions{
+			Cluster: options.ClusterOptions{
 				ClusterDomain: "cluster.local",
 			},
 		},

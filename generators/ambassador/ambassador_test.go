@@ -5,18 +5,20 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/kubeshop/kusk/generators"
+	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )
 
 type testCase struct {
 	name    string
-	options generators.Options
+	options options.Options
 	spec    string
 	res     string
 }
 
 func TestAmbassador(t *testing.T) {
+	var gen Generator
+
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
@@ -24,7 +26,7 @@ func TestAmbassador(t *testing.T) {
 			spec, err := spec.Parse([]byte(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			mappings, err := Generate(&testCase.options, spec)
+			mappings, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)
 			r.Equal(testCase.res, mappings)
 		})
@@ -34,13 +36,13 @@ func TestAmbassador(t *testing.T) {
 var testCases = []testCase{
 	{
 		name: "basic",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -51,6 +53,10 @@ openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
   version: 1.0.5
+x-kusk:
+  namespace: notdefault
+  service:
+    name: petstore
 paths:
   "/pet":
     put:
@@ -75,13 +81,13 @@ spec:
 	},
 	{
 		name: "basic-json",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -124,13 +130,13 @@ spec:
 	},
 	{
 		name: "basic-namespace",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "amb",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -165,13 +171,13 @@ spec:
 	},
 	{
 		name: "parameter",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -215,13 +221,13 @@ spec:
 	},
 	{
 		name: "empty-operationId",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -264,13 +270,13 @@ spec:
 	},
 	{
 		name: "basepath",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "/api/v3",
 				TrimPrefix: "",
 				Split:      true,
@@ -313,13 +319,13 @@ spec:
 	},
 	{
 		name: "basepath-rootonly",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "/api/v3",
 				TrimPrefix: "",
 				Split:      false,
@@ -366,13 +372,13 @@ spec:
 	},
 	{
 		name: "basepath-trimprefix",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "/petstore/api/v3",
 				TrimPrefix: "/petstore",
 				Split:      true,
@@ -417,13 +423,13 @@ spec:
 	},
 	{
 		name: "swagger-yaml",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -551,13 +557,13 @@ spec:
 	},
 	{
 		name: "swagger-json",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -728,14 +734,14 @@ spec:
 	},
 	{
 		name: "port specified",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 				Port:      443,
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,
@@ -770,14 +776,14 @@ spec:
 	},
 	{
 		name: "port 0 specified",
-		options: generators.Options{
+		options: options.Options{
 			Namespace: "default",
-			Service: generators.ServiceOptions{
+			Service: options.ServiceOptions{
 				Namespace: "default",
 				Name:      "petstore",
 				Port:      0,
 			},
-			Path: generators.PathOptions{
+			Path: options.PathOptions{
 				Base:       "",
 				TrimPrefix: "",
 				Split:      true,

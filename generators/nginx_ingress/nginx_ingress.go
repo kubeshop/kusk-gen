@@ -6,10 +6,12 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ghodss/yaml"
+	"github.com/spf13/pflag"
 	v1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kubeshop/kusk/generators"
+	"github.com/kubeshop/kusk/options"
 )
 
 const (
@@ -22,7 +24,61 @@ var (
 	pathTypePrefix   = v1.PathTypePrefix
 )
 
-func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
+func init() {
+	generators.Registry["nginx-ingress"] = &Generator{}
+}
+
+type Generator struct{}
+
+func (g *Generator) Cmd() string {
+	return "nginx-ingress"
+}
+
+func (g *Generator) Flags() *pflag.FlagSet {
+	fs := pflag.NewFlagSet("nginx-ingress", pflag.ExitOnError)
+
+	fs.String(
+		"path.base",
+		"/",
+		"a base path for Service endpoints",
+	)
+
+	fs.String(
+		"path.trim_prefix",
+		"",
+		"a prefix to trim from the URL before forwarding to the upstream Service",
+	)
+
+	fs.String(
+		"path.base",
+		"/",
+		"a base path for Service endpoints",
+	)
+
+	fs.String(
+		"ingress.host",
+		"",
+		"an Ingress Host to listen on",
+	)
+
+	fs.String(
+		"nginx_ingress.rewrite_target",
+		"",
+		"a custom NGINX rewrite target",
+	)
+
+	return fs
+}
+
+func (g *Generator) ShortDescription() string {
+	return "Generates nginx-ingress resources"
+}
+
+func (g *Generator) LongDescription() string {
+	return g.ShortDescription()
+}
+
+func (g *Generator) Generate(options *options.Options, _ *openapi3.T) (string, error) {
 	if err := options.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
@@ -35,7 +91,7 @@ func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        fmt.Sprintf("%s-ingress", options.Service.Name),
 			Namespace:   options.Namespace,
-			Annotations: generateAnnotations(options),
+			Annotations: g.generateAnnotations(options),
 		},
 		Spec: v1.IngressSpec{
 			IngressClassName: &ingressClassName,
@@ -47,7 +103,7 @@ func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
 							Paths: []v1.HTTPIngressPath{
 								{
 									PathType: &pathTypePrefix,
-									Path:     generatePath(options),
+									Path:     g.generatePath(options),
 									Backend: v1.IngressBackend{
 										Service: &v1.IngressServiceBackend{
 											Name: options.Service.Name,
@@ -70,7 +126,7 @@ func Generate(options *generators.Options, _ *openapi3.T) (string, error) {
 	return string(b), err
 }
 
-func generatePath(options *generators.Options) string {
+func (g *Generator) generatePath(options *options.Options) string {
 	if len(options.Path.TrimPrefix) > 0 &&
 		strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) &&
 		options.NGINXIngress.RewriteTarget == "" {
@@ -82,7 +138,7 @@ func generatePath(options *generators.Options) string {
 	return options.Path.Base
 }
 
-func generateAnnotations(options *generators.Options) map[string]string {
+func (g *Generator) generateAnnotations(options *options.Options) map[string]string {
 	rewriteTargetAnnotationKey := "nginx.ingress.kubernetes.io/rewrite-target"
 
 	annotations := map[string]string{}
