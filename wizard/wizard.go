@@ -1,4 +1,4 @@
-package interactive
+package wizard
 
 import (
 	"errors"
@@ -18,7 +18,7 @@ import (
 	"github.com/kubeshop/kusk/options"
 )
 
-func Interactive(apiSpec *openapi3.T) {
+func Start(apiSpec *openapi3.T) {
 	canConnectToCluster := false
 	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
 

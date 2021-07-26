@@ -5,15 +5,15 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/kusk/interactive"
 	"github.com/kubeshop/kusk/spec"
+	"github.com/kubeshop/kusk/wizard"
 )
 
 func init() {
 	var apiSpecPath string
 
-	interactiveCmd := &cobra.Command{
-		Use:   "interactive",
+	wizardCmd := &cobra.Command{
+		Use:   "wizard",
 		Short: "Connects to current Kubernetes cluster and lists available generators",
 		Run: func(cmd *cobra.Command, args []string) {
 			// parse OpenAPI spec
@@ -22,19 +22,19 @@ func init() {
 				log.Fatal(err)
 			}
 
-			interactive.Interactive(apiSpec)
+			wizard.Start(apiSpec)
 		},
 	}
 
 	// add common required flags
-	interactiveCmd.Flags().StringVarP(
+	wizardCmd.Flags().StringVarP(
 		&apiSpecPath,
 		"in",
 		"i",
 		"",
 		"file path to api spec file to generate mappings from. e.g. --in apispec.yaml",
 	)
-	interactiveCmd.MarkFlagRequired("in")
+	wizardCmd.MarkFlagRequired("in")
 
-	rootCmd.AddCommand(interactiveCmd)
+	rootCmd.AddCommand(wizardCmd)
 }
