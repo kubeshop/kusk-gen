@@ -15,9 +15,11 @@ import (
 )
 
 var (
-	// this object initially gets filled with whatever we were able to found in x-kusk extension
+	// this object initially gets filled with whatever we were able to find in x-kusk extension
 	// each flag can then override settings
 	k = koanf.New(".")
+
+	apiSpecPath string
 )
 
 func getOptions() (*options.Options, error) {
@@ -32,8 +34,6 @@ func getOptions() (*options.Options, error) {
 }
 
 func init() {
-	var apiSpecPath string
-
 	addGenerator := func(gen generators.Interface) {
 		cmd := &cobra.Command{
 			Use:   gen.Cmd(),
@@ -51,13 +51,13 @@ func init() {
 				}
 
 				// parse x-kusk top-level extension
-				options, err := spec.GetOptions(apiSpec)
+				kuskExtensionOpts, err := spec.GetOptions(apiSpec)
 				if err != nil {
 					log.Fatal(err)
 				}
 
 				// populate koanf object with the extension content
-				err = k.Load(structs.Provider(*options, "yaml"), nil)
+				err = k.Load(structs.Provider(*kuskExtensionOpts, "yaml"), nil)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -83,43 +83,9 @@ func init() {
 			},
 		}
 
-		// add common required flags
-		cmd.Flags().StringVarP(
-			&apiSpecPath,
-			"in",
-			"i",
-			"",
-			"file path to api spec file to generate mappings from. e.g. --in apispec.yaml",
-		)
-		cmd.MarkFlagRequired("in")
-
-		cmd.Flags().String(
-			"namespace",
-			"default",
-			"namespace for generated resources",
-		)
-
-		cmd.Flags().String(
-			"service.name",
-			"",
-			"target Service name",
-		)
-
-		cmd.Flags().String(
-			"service.namespace",
-			"default",
-			"namespace containing the target Service",
-		)
-
-		cmd.Flags().Int32(
-			"service.port",
-			80,
-			"target Service port",
-		)
-
+		addGlobalFlags(cmd)
 		// add generator-specific flags
 		cmd.Flags().AddFlagSet(gen.Flags())
-
 		cmd.Flags().SortFlags = false
 
 		// register command
@@ -129,4 +95,40 @@ func init() {
 	for _, gen := range generators.Registry {
 		addGenerator(gen)
 	}
+}
+
+func addGlobalFlags(cmd *cobra.Command) {
+	// add global required flags
+	cmd.Flags().StringVarP(
+		&apiSpecPath,
+		"in",
+		"i",
+		"",
+		"file path to api spec file to generate mappings from. e.g. --in apispec.yaml",
+	)
+	cmd.MarkFlagRequired("in")
+
+	cmd.Flags().String(
+		"namespace",
+		"default",
+		"namespace for generated resources",
+	)
+
+	cmd.Flags().String(
+		"service.name",
+		"",
+		"target Service name",
+	)
+
+	cmd.Flags().String(
+		"service.namespace",
+		"default",
+		"namespace containing the target Service",
+	)
+
+	cmd.Flags().Int32(
+		"service.port",
+		80,
+		"target Service port",
+	)
 }
