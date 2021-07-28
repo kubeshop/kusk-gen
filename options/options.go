@@ -5,6 +5,8 @@ import (
 )
 
 type Options struct {
+	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string `yaml:"namespace,omitempty" json:"namespace,omitempty"`
 
@@ -22,6 +24,11 @@ type Options struct {
 
 	// NGINXIngress is a set of custom nginx-ingress options.
 	NGINXIngress NGINXIngressOptions `yaml:"nginx_ingress,omitempty" json:"nginx_ingress,omitempty"`
+
+	// TODO(kyle) add rate limiting and retries
+
+	PathOperations       map[string]Options
+	HTTPMethodOperations map[string]Options
 }
 
 func (o *Options) fillDefaults() {
@@ -39,6 +46,14 @@ func (o *Options) fillDefaults() {
 
 	if o.Service.Port == 0 {
 		o.Service.Port = 80
+	}
+
+	if o.PathOperations == nil {
+		o.PathOperations = map[string]Options{}
+	}
+
+	if o.HTTPMethodOperations == nil {
+		o.HTTPMethodOperations = map[string]Options{}
 	}
 }
 
