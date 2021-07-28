@@ -37,6 +37,7 @@ tags:
       description: Find out more about our store
       url: http://swagger.io
 x-kusk:
+  disabled: false
   service:
     name: petstore
     port: 80
@@ -45,7 +46,11 @@ x-kusk:
     trim_prefix: /petstore
 paths:
   "/pet":
+    x-kusk:
+      disabled: false
     put:
+      x-kusk:
+        disabled: true
       tags:
         - pet
       summary: Update an existing pet
