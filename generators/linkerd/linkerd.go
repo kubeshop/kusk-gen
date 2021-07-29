@@ -51,6 +51,11 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
 
+	// if kusk is disabled at the global level, exit immediately
+	if options.Disabled {
+		return "", nil
+	}
+
 	profile := &v1alpha2.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: k8s.ServiceProfileAPIVersion,
@@ -65,7 +70,7 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 			),
 			Namespace: options.Namespace,
 		},
-		Spec: g.generateServiceProfileSpec(spec),
+		Spec: g.generateServiceProfileSpec(options, spec),
 	}
 
 	b, err := yaml.Marshal(profile)
@@ -73,11 +78,18 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 	return string(b), err
 }
 
-func (g *Generator) generateServiceProfileSpec(spec *openapi3.T) v1alpha2.ServiceProfileSpec {
+func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *openapi3.T) v1alpha2.ServiceProfileSpec {
 	routes := make([]*v1alpha2.RouteSpec, 0)
 
 	for path, pathItem := range spec.Paths {
+		if pathDisabled(path, options) {
+			continue
+		}
+
 		for method := range pathItem.Operations() {
+			if methodDisabled(path, method, options) {
+				continue
+			}
 			routes = append(routes, g.generateRouteSpec(method, path))
 		}
 	}
@@ -87,6 +99,21 @@ func (g *Generator) generateServiceProfileSpec(spec *openapi3.T) v1alpha2.Servic
 	})
 
 	return v1alpha2.ServiceProfileSpec{Routes: routes}
+}
+
+func pathDisabled(path string, options *options.Options) bool {
+	pathOpts, pathOptsPresent := options.PathOperations[path]
+	return pathOptsPresent && pathOpts.Disabled
+}
+
+func methodDisabled(path, method string, options *options.Options) bool {
+	pathOpts, pathOptsPresent := options.PathOperations[path]
+	if pathOptsPresent {
+		methodOpts, methodOptsPresent := pathOpts.HTTPMethodOperations[method]
+		return methodOptsPresent && methodOpts.Disabled
+	}
+
+	return false
 }
 
 func (g *Generator) generateRouteSpec(method, path string) *v1alpha2.RouteSpec {

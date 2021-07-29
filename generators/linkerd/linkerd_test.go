@@ -138,4 +138,151 @@ spec:
     name: POST /books/{id}/edit
 `,
 	},
+	{
+		name: "path disabled",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
+			Cluster: options.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
+			PathOperations: map[string]options.Options{
+				"/books": {
+					Disabled: true,
+				},
+			},
+		},
+		spec: `openapi: 3.0.1
+paths:
+  /:
+    get: {}
+
+  /books:
+    x-kusk:
+      disabled: true
+    post: {}
+
+  /books/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /books/{id}/edit:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: webapp.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /
+    name: GET /
+  - condition:
+      method: GET
+      pathRegex: /books/[^/]*
+    name: GET /books/{id}
+  - condition:
+      method: POST
+      pathRegex: /books/[^/]*/edit
+    name: POST /books/{id}/edit
+`,
+	},
+	{
+		name: "method disabled",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
+			Cluster: options.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
+			PathOperations: map[string]options.Options{
+				"/books": {
+					HTTPMethodOperations: map[string]options.Options{
+						"GET": {
+							Disabled: true,
+						},
+					},
+				},
+			},
+		},
+		spec: `openapi: 3.0.1
+paths:
+  /:
+    get: {}
+
+  /books:
+    post: {}
+    get:
+      x-kusk:
+        disabled: true
+
+  /books/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /books/{id}/edit:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: webapp.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /
+    name: GET /
+  - condition:
+      method: GET
+      pathRegex: /books/[^/]*
+    name: GET /books/{id}
+  - condition:
+      method: POST
+      pathRegex: /books
+    name: POST /books
+  - condition:
+      method: POST
+      pathRegex: /books/[^/]*/edit
+    name: POST /books/{id}/edit
+`,
+	},
 }
