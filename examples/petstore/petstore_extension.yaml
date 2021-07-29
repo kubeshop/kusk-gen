@@ -38,6 +38,21 @@ tags:
       url: http://swagger.io
 x-kusk:
   disabled: false
+  ingress:
+    cors:
+      origins:
+      - http://foo.example
+      - http://bar.example
+      methods:
+      - POST
+      - GET
+      - OPTIONS
+      headers:
+      - Content-Type
+      credentials: true
+      exposed_headers:
+      - X-Custom-Header
+      max_age: 86400
   service:
     name: petstore
     port: 80
