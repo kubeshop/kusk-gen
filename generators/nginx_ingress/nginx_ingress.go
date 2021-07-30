@@ -50,12 +50,6 @@ func (g *Generator) Flags() *pflag.FlagSet {
 	)
 
 	fs.String(
-		"path.base",
-		"/",
-		"a base path for Service endpoints",
-	)
-
-	fs.String(
 		"ingress.host",
 		"",
 		"an Ingress Host to listen on",

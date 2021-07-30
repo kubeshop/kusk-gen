@@ -10,6 +10,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/kubeshop/kusk/generators"
+	_ "github.com/kubeshop/kusk/generators/ambassador"
+	_ "github.com/kubeshop/kusk/generators/linkerd"
+	_ "github.com/kubeshop/kusk/generators/nginx_ingress"
 	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )
