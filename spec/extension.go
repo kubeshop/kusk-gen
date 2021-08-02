@@ -12,18 +12,29 @@ import (
 
 const kuskExtensionKey = "x-kusk"
 
+func GetPathOptions(path *openapi3.PathItem) (*options.SubOptions, error) {
+	var res options.SubOptions
+
+	err := parseExtension(&path.ExtensionProps, &res)
+
+	return &res, err
+}
+
+func GetOperationOptions(operation *openapi3.Operation) (*options.SubOptions, error) {
+	var res options.SubOptions
+
+	err := parseExtension(&operation.ExtensionProps, &res)
+
+	return &res, err
+}
+
 // GetOptions would retrieve and parse x-kusk top-level OpenAPI extension
 // that contains Kusk options. If there's no extension found, an empty object will be returned.
 func GetOptions(spec *openapi3.T) (*options.Options, error) {
 	var res options.Options
 
-	if extension, ok := spec.Extensions[kuskExtensionKey]; ok {
-		if kuskExtension, ok := extension.(json.RawMessage); ok {
-			err := yaml.Unmarshal(kuskExtension, &res)
-			if err != nil {
-				return nil, fmt.Errorf("failed to parse extension: %w", err)
-			}
-		}
+	if err := parseExtension(&spec.ExtensionProps, &res); err != nil {
+		return nil, err
 	}
 
 	for pathString, path := range spec.Paths {
@@ -71,4 +82,17 @@ func GetOptions(spec *openapi3.T) (*options.Options, error) {
 	}
 
 	return &res, nil
+}
+
+func parseExtension(extensionProps *openapi3.ExtensionProps, target interface{}) error {
+	if extension, ok := extensionProps.Extensions[kuskExtensionKey]; ok {
+		if kuskExtension, ok := extension.(json.RawMessage); ok {
+			err := yaml.Unmarshal(kuskExtension, target)
+			if err != nil {
+				return fmt.Errorf("failed to parse extension: %w", err)
+			}
+		}
+	}
+
+	return nil
 }

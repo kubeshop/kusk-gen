@@ -4,6 +4,14 @@ import (
 	v "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+// SubOptions allow user to overwrite certain options at path/operation level
+// using x-kusk extension
+type SubOptions struct {
+	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+
+	CORS CORSOptions `yaml:"cors,omitempty" json:"cors,omitempty"`
+}
+
 type Options struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
