@@ -816,4 +816,280 @@ spec:
   rewrite: ""
 `,
 	},
+	{
+		name: "path-disabled",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			PathSubOptions: map[string]options.SubOptions{
+				"/pet": {
+					Disabled: true,
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    x-kusk:
+      disabled: true
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+  "/pet/{petId}/uploadImage":
+    post:
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-uploadfile
+  namespace: default
+spec:
+  prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
+  prefix_regex: true
+  method: POST
+  service: petstore.default:80
+  rewrite: ""
+`,
+	},
+	{
+		name: "operation-disabled",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			OperationSubOptions: map[string]options.SubOptions{
+				"PUT/pet": {
+					Disabled: true,
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      x-kusk:
+        disabled: true
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+  "/pet/{petId}/uploadImage":
+    post:
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-uploadfile
+  namespace: default
+spec:
+  prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
+  prefix_regex: true
+  method: POST
+  service: petstore.default:80
+  rewrite: ""
+`,
+	},
+	{
+		name: "cors-global",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Ingress: options.IngressOptions{
+				CORS: options.CORSOptions{
+					Origins:       []string{"http://foo.example", "http://bar.example"},
+					Methods:       []string{"POST", "GET", "OPTIONS"},
+					Headers:       []string{"Content-Type"},
+					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+					Credentials:   nil,
+					MaxAge:        120,
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+  "/pet/{petId}/uploadImage":
+    post:
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore
+  namespace: default
+spec:
+  prefix: "/"
+  service: petstore.default:80
+  rewrite: ""
+  cors:
+    origins: http://foo.example,http://bar.example
+    methods: POST,GET,OPTIONS
+    headers: Content-Type
+    exposed_headers: X-Custom-Header,X-Other-Custom-Header
+    credentials: false
+    max_age: 120
+`,
+	},
+	{
+		name: "cors-path-override",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Ingress: options.IngressOptions{
+				CORS: options.CORSOptions{
+					Origins:       []string{"http://foo.example", "http://bar.example"},
+					Methods:       []string{"POST", "GET", "OPTIONS"},
+					Headers:       []string{"Content-Type"},
+					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+					Credentials:   nil,
+					MaxAge:        120,
+				},
+			},
+			PathSubOptions: map[string]options.SubOptions{
+				"/pet": {
+					CORS: options.CORSOptions{
+						Origins:       []string{"http://bar.example"},
+						Methods:       []string{"POST"},
+						Headers:       []string{"Content-Type"},
+						ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+						Credentials:   nil,
+						MaxAge:        240,
+					},
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+  "/pet/{petId}/uploadImage":
+    post:
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-updatepet
+  namespace: default
+spec:
+  prefix: "/pet"
+  method: PUT
+  service: petstore.default:80
+  rewrite: ""
+  cors:
+    origins: http://bar.example
+    methods: POST
+    headers: Content-Type
+    exposed_headers: X-Custom-Header,X-Other-Custom-Header
+    credentials: false
+    max_age: 240
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-uploadfile
+  namespace: default
+spec:
+  prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
+  prefix_regex: true
+  method: POST
+  service: petstore.default:80
+  rewrite: ""
+  cors:
+    origins: http://foo.example,http://bar.example
+    methods: POST,GET,OPTIONS
+    headers: Content-Type
+    exposed_headers: X-Custom-Header,X-Other-Custom-Header
+    credentials: false
+    max_age: 120
+`,
+	},
 }

@@ -149,7 +149,7 @@ spec:
 			Cluster: options.ClusterOptions{
 				ClusterDomain: "cluster.local",
 			},
-			PathOperations: map[string]options.Options{
+			PathSubOptions: map[string]options.SubOptions{
 				"/books": {
 					Disabled: true,
 				},
@@ -208,7 +208,7 @@ spec:
 `,
 	},
 	{
-		name: "method disabled",
+		name: "operation disabled",
 		options: options.Options{
 			Namespace: "default",
 			Service: options.ServiceOptions{
@@ -218,13 +218,9 @@ spec:
 			Cluster: options.ClusterOptions{
 				ClusterDomain: "cluster.local",
 			},
-			PathOperations: map[string]options.Options{
-				"/books": {
-					HTTPMethodOperations: map[string]options.Options{
-						"GET": {
-							Disabled: true,
-						},
-					},
+			OperationSubOptions: map[string]options.SubOptions{
+				"GET/books": {
+					Disabled: true,
 				},
 			},
 		},

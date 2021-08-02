@@ -22,19 +22,6 @@ func TestGetOptions(t *testing.T) {
 			res:  options.Options{},
 		},
 		{
-			name: "global options set",
-			spec: &openapi3.T{
-				ExtensionProps: openapi3.ExtensionProps{
-					Extensions: map[string]interface{}{
-						kuskExtensionKey: json.RawMessage(`{"disabled":true}`),
-					},
-				},
-			},
-			res: options.Options{
-				Disabled: true,
-			},
-		},
-		{
 			name: "path level options set",
 			spec: &openapi3.T{
 				Paths: openapi3.Paths{
@@ -48,7 +35,7 @@ func TestGetOptions(t *testing.T) {
 				},
 			},
 			res: options.Options{
-				PathOperations: map[string]options.Options{
+				PathSubOptions: map[string]options.SubOptions{
 					"/pet": {
 						Disabled: true,
 					},
@@ -56,7 +43,7 @@ func TestGetOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "HTTP method level options set",
+			name: "operation level options set",
 			spec: &openapi3.T{
 				Paths: openapi3.Paths{
 					"/pet": &openapi3.PathItem{
@@ -71,13 +58,9 @@ func TestGetOptions(t *testing.T) {
 				},
 			},
 			res: options.Options{
-				PathOperations: map[string]options.Options{
-					"/pet": {
-						HTTPMethodOperations: map[string]options.Options{
-							"PUT": {
-								Disabled: true,
-							},
-						},
+				OperationSubOptions: map[string]options.SubOptions{
+					"PUT/pet": {
+						Disabled: true,
 					},
 				},
 			},

@@ -4,9 +4,15 @@ import (
 	v "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-type Options struct {
+// SubOptions allow user to overwrite certain options at path/operation level
+// using x-kusk extension
+type SubOptions struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
+	CORS CORSOptions `yaml:"cors,omitempty" json:"cors,omitempty"`
+}
+
+type Options struct {
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string `yaml:"namespace,omitempty" json:"namespace,omitempty"`
 
@@ -25,10 +31,13 @@ type Options struct {
 	// NGINXIngress is a set of custom nginx-ingress options.
 	NGINXIngress NGINXIngressOptions `yaml:"nginx_ingress,omitempty" json:"nginx_ingress,omitempty"`
 
-	// TODO(kyle) add rate limiting and retries
+	// PathSubOptions allow to overwrite specific subset of Options for a given path.
+	// They are filled during extension parsing, the map key is path.
+	PathSubOptions map[string]SubOptions `yaml:"-" json:"-"`
 
-	PathOperations       map[string]Options
-	HTTPMethodOperations map[string]Options
+	// OperationSubOptions allow to overwrite specific subset of Options for a given operation.
+	// They are filled during extension parsing, the map key is method+path.
+	OperationSubOptions map[string]SubOptions `yaml:"-" json:"-"`
 }
 
 func (o *Options) fillDefaults() {
@@ -46,14 +55,6 @@ func (o *Options) fillDefaults() {
 
 	if o.Service.Port == 0 {
 		o.Service.Port = 80
-	}
-
-	if o.PathOperations == nil {
-		o.PathOperations = map[string]Options{}
-	}
-
-	if o.HTTPMethodOperations == nil {
-		o.HTTPMethodOperations = map[string]Options{}
 	}
 }
 

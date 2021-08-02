@@ -51,11 +51,6 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
 
-	// if kusk is disabled at the global level, exit immediately
-	if options.Disabled {
-		return "", nil
-	}
-
 	profile := &v1alpha2.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: k8s.ServiceProfileAPIVersion,
@@ -86,10 +81,11 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 			continue
 		}
 
-		for method := range pathItem.Operations() {
-			if methodDisabled(path, method, options) {
+		for method, _ := range pathItem.Operations() {
+			if operationDisabled(method+path, options) {
 				continue
 			}
+
 			routes = append(routes, g.generateRouteSpec(method, path))
 		}
 	}
@@ -102,18 +98,13 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 }
 
 func pathDisabled(path string, options *options.Options) bool {
-	pathOpts, pathOptsPresent := options.PathOperations[path]
-	return pathOptsPresent && pathOpts.Disabled
+	pathOpts, ok := options.PathSubOptions[path]
+	return ok && pathOpts.Disabled
 }
 
-func methodDisabled(path, method string, options *options.Options) bool {
-	pathOpts, pathOptsPresent := options.PathOperations[path]
-	if pathOptsPresent {
-		methodOpts, methodOptsPresent := pathOpts.HTTPMethodOperations[method]
-		return methodOptsPresent && methodOpts.Disabled
-	}
-
-	return false
+func operationDisabled(operation string, options *options.Options) bool {
+	operationOpts, ok := options.OperationSubOptions[operation]
+	return ok && operationOpts.Disabled
 }
 
 func (g *Generator) generateRouteSpec(method, path string) *v1alpha2.RouteSpec {

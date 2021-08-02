@@ -1,5 +1,15 @@
 package ambassador
 
+type corsTemplateData struct {
+	Origins        string
+	Methods        string
+	Headers        string
+	ExposedHeaders string
+
+	Credentials bool
+	MaxAge      string
+}
+
 type mappingTemplateData struct {
 	MappingName string
 
@@ -13,6 +23,10 @@ type mappingTemplateData struct {
 	Path    string
 	Regex   bool
 	Rewrite bool
+
+	CORSEnabled bool
+
+	CORS corsTemplateData
 }
 
 var mappingTemplateRaw = `{{range .}}
@@ -41,6 +55,16 @@ spec:
     substitution: '\1'
   {{else}}
   rewrite: ""
+  {{end}}
+
+  {{if .CORSEnabled}}
+  cors:
+    origins: {{.CORS.Origins}}
+    methods: {{.CORS.Methods}}
+    headers: {{.CORS.Headers}}
+    exposed_headers: {{.CORS.ExposedHeaders}}
+    credentials: {{.CORS.Credentials}}
+    max_age: {{.CORS.MaxAge}}
   {{end}}
 
 {{end}}
