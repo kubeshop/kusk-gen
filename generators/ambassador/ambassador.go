@@ -112,6 +112,31 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					Regex:            regex,
 				}
 
+				var corsOpts options.CORSOptions
+
+				// take global CORS options
+				corsOpts = opts.Ingress.CORS
+
+				// if path-level CORS options are different, override with them
+				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+					if !reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
+						corsOpts = pathSubOpts.CORS
+					}
+				}
+
+				// if operation-level CORS options are different, override them
+				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
+					if !reflect.DeepEqual(corsOpts, opSubOpts.CORS) {
+						corsOpts = opSubOpts.CORS
+					}
+				}
+
+				// if final CORS options are not empty, include them
+				if !reflect.DeepEqual(options.CORSOptions{}, corsOpts) {
+					op.CORSEnabled = true
+					op.CORS = g.corsTemplateData(&corsOpts)
+				}
+
 				mappings = append(mappings, op)
 			}
 		}
@@ -122,6 +147,12 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			ServiceURL:       serviceURL,
 			BasePath:         opts.Path.Base,
 			TrimPrefix:       opts.Path.TrimPrefix,
+		}
+
+		// if global CORS options are defined, take them
+		if !reflect.DeepEqual(options.CORSOptions{}, opts.Ingress.CORS) {
+			op.CORSEnabled = true
+			op.CORS = g.corsTemplateData(&opts.Ingress.CORS)
 		}
 
 		mappings = append(mappings, op)
@@ -228,8 +259,8 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 				return true
 			}
 
-			// a path have non-zero, different from global scope CORS options
-			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) && !reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+			// a path has different from global scope CORS options
+			if !reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
 				return true
 			}
 		}
@@ -241,8 +272,8 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 					return true
 				}
 
-				// a path have non-zero, different from global scope CORS options
-				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) && !reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+				// an operation has different from global CORS options
+				if !reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
 					return true
 				}
 			}
@@ -250,4 +281,20 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	}
 
 	return false
+}
+
+func (g *Generator) corsTemplateData(corsOpts *options.CORSOptions) corsTemplateData {
+	res := corsTemplateData{
+		Origins:        strings.Join(corsOpts.Origins, ","),
+		Methods:        strings.Join(corsOpts.Methods, ","),
+		Headers:        strings.Join(corsOpts.Headers, ","),
+		ExposedHeaders: strings.Join(corsOpts.ExposeHeaders, ","),
+		MaxAge:         fmt.Sprint(corsOpts.MaxAge),
+	}
+
+	if corsOpts.Credentials != nil {
+		res.Credentials = *corsOpts.Credentials
+	}
+
+	return res
 }
