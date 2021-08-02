@@ -3,6 +3,7 @@ package ambassador
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 	"regexp"
 	"sort"
 	"strings"
@@ -68,32 +69,44 @@ func (g *Generator) Flags() *pflag.FlagSet {
 	return fs
 }
 
-func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string, error) {
-	if err := options.FillDefaultsAndValidate(); err != nil {
+func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, error) {
+	if err := opts.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
 
 	var mappings []mappingTemplateData
 
-	serviceURL := g.getServiceURL(options)
+	serviceURL := g.getServiceURL(opts)
 
-	if options.Path.Split {
+	if g.shouldSplit(opts, spec) {
 		// generate a mapping for each operation
-		basePath := options.Path.Base
+		basePath := opts.Path.Base
 		if basePath == "/" {
 			basePath = ""
 		}
 
 		for path, pathItem := range spec.Paths {
+			if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
+				if pathSubOptions.Disabled {
+					continue
+				}
+			}
+
 			for method, operation := range pathItem.Operations() {
+				if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
+					if opSubOptions.Disabled {
+						continue
+					}
+				}
+
 				mappingPath, regex := g.generateMappingPath(path, operation)
 
 				op := mappingTemplateData{
-					MappingName:      g.generateMappingName(options.Service.Name, method, path, operation),
-					MappingNamespace: options.Namespace,
+					MappingName:      g.generateMappingName(opts.Service.Name, method, path, operation),
+					MappingNamespace: opts.Namespace,
 					ServiceURL:       serviceURL,
 					BasePath:         basePath,
-					TrimPrefix:       options.Path.TrimPrefix,
+					TrimPrefix:       opts.Path.TrimPrefix,
 					Method:           method,
 					Path:             mappingPath,
 					Regex:            regex,
@@ -104,11 +117,11 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 		}
 	} else {
 		op := mappingTemplateData{
-			MappingName:      options.Service.Name,
-			MappingNamespace: options.Namespace,
+			MappingName:      opts.Service.Name,
+			MappingNamespace: opts.Namespace,
 			ServiceURL:       serviceURL,
-			BasePath:         options.Path.Base,
-			TrimPrefix:       options.Path.TrimPrefix,
+			BasePath:         opts.Path.Base,
+			TrimPrefix:       opts.Path.TrimPrefix,
 		}
 
 		mappings = append(mappings, op)
@@ -201,4 +214,40 @@ func (g *Generator) getServiceURL(options *options.Options) string {
 	}
 
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
+}
+
+func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
+	if opts.Path.Split {
+		return true
+	}
+
+	for path, pathItem := range spec.Paths {
+		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
+			// a path is disabled
+			if pathSubOptions.Disabled {
+				return true
+			}
+
+			// a path have non-zero, different from global scope CORS options
+			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) && !reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+				return true
+			}
+		}
+
+		for method := range pathItem.Operations() {
+			if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
+				// an operation is disabled
+				if opSubOptions.Disabled {
+					return true
+				}
+
+				// a path have non-zero, different from global scope CORS options
+				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) && !reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
