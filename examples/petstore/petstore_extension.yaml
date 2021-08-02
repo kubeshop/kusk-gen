@@ -50,7 +50,7 @@ x-kusk:
       headers:
       - Content-Type
       credentials: true
-      exposed_headers:
+      expose_headers:
       - X-Custom-Header
       max_age: 86400
   service:

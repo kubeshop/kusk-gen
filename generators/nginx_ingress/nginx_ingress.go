@@ -131,17 +131,3 @@ func (g *Generator) generatePath(options *options.Options) string {
 
 	return options.Path.Base
 }
-
-func (g *Generator) generateAnnotations(options *options.Options) map[string]string {
-	rewriteTargetAnnotationKey := "nginx.ingress.kubernetes.io/rewrite-target"
-
-	annotations := map[string]string{}
-
-	if options.NGINXIngress.RewriteTarget != "" {
-		annotations[rewriteTargetAnnotationKey] = options.NGINXIngress.RewriteTarget
-	} else if len(options.Path.TrimPrefix) > 0 && strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) {
-		annotations[rewriteTargetAnnotationKey] = "/$2"
-	}
-
-	return annotations
-}
