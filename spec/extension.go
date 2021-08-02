@@ -54,7 +54,7 @@ func GetOptions(spec *openapi3.T) (*options.Options, error) {
 		for method, operation := range pathItem.Operations() {
 			operationSubOptions, ok, err := getOperationOptions(operation)
 			if err != nil {
-				return nil, fmt.Errorf("failed to extract path suboptions: %w", err)
+				return nil, fmt.Errorf("failed to extract operation suboptions: %w", err)
 			}
 
 			if ok {
