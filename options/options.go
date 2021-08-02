@@ -31,7 +31,12 @@ type Options struct {
 	// NGINXIngress is a set of custom nginx-ingress options.
 	NGINXIngress NGINXIngressOptions `yaml:"nginx_ingress,omitempty" json:"nginx_ingress,omitempty"`
 
-	PathSubOptions      map[string]SubOptions `yaml:"-" json:"-"`
+	// PathSubOptions allow to overwrite specific subset of Options for a given path.
+	// They are filled during extension parsing, the map key is path.
+	PathSubOptions map[string]SubOptions `yaml:"-" json:"-"`
+
+	// OperationSubOptions allow to overwrite specific subset of Options for a given operation.
+	// They are filled during extension parsing, the map key is method+path.
 	OperationSubOptions map[string]SubOptions `yaml:"-" json:"-"`
 }
 
