@@ -73,6 +73,50 @@ spec:
 `,
 	},
 	{
+		name: "simple routes with prefix",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
+			Cluster: options.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
+			Path: options.PathOptions{
+				Base: "/prefix",
+			},
+		},
+		spec: `openapi: 3.0.1
+x-kusk:
+  path:
+    base: /prefix
+paths:
+  /:
+    get: {}
+
+  /authors:
+    post: {}
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: webapp.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /prefix/
+    name: GET /prefix/
+  - condition:
+      method: POST
+      pathRegex: /prefix/authors
+    name: POST /prefix/authors
+`,
+	},
+	{
 		name: "routes with variables",
 		options: options.Options{
 			Namespace: "default",

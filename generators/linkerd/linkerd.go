@@ -3,6 +3,7 @@ package linkerd
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ghodss/yaml"
@@ -33,6 +34,12 @@ func (g *Generator) Flags() *pflag.FlagSet {
 		"cluster.cluster_domain",
 		"cluster.local",
 		"kubernetes cluster domain",
+	)
+
+	fs.String(
+		"path.base",
+		"/",
+		"a base prefix for Service endpoints",
 	)
 
 	return fs
@@ -86,7 +93,7 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 				continue
 			}
 
-			routes = append(routes, g.generateRouteSpec(method, path))
+			routes = append(routes, g.generateRouteSpec(method, path, options))
 		}
 	}
 
@@ -107,7 +114,9 @@ func operationDisabled(operation string, options *options.Options) bool {
 	return ok && operationOpts.Disabled
 }
 
-func (g *Generator) generateRouteSpec(method, path string) *v1alpha2.RouteSpec {
+func (g *Generator) generateRouteSpec(method, path string, options *options.Options) *v1alpha2.RouteSpec {
+	path = strings.TrimSuffix(options.Path.Base, "/") + "/" + strings.TrimPrefix(path, "/")
+
 	return &v1alpha2.RouteSpec{
 		Name: fmt.Sprintf("%s %s", method, path),
 		Condition: &v1alpha2.RequestMatch{
