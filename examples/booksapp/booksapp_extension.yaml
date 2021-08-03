@@ -1,0 +1,93 @@
+openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  ingress:
+    cors:
+      origins:
+        - http://foo.example
+        - http://bar.example
+      methods:
+        - POST
+        - GET
+        - OPTIONS
+      headers:
+        - Content-Type
+      credentials: true
+      expose_headers:
+        - X-Custom-Header
+      max_age: 86400
+  service:
+    name: booksapp
+    namespace: booksapp
+    port: 7000
+paths:
+  /:
+    get: {}
+
+  /books:
+    post: {}
+
+  /books/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /books/{id}/edit:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+
+  /books/{id}/delete:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /authors:
+    post: {}
+
+  /authors/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /authors/{id}/edit:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /authors/{id}/delete:
+    post:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
