@@ -2,6 +2,7 @@ package nginx_ingress
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -72,37 +73,45 @@ func (g *Generator) LongDescription() string {
 	return g.ShortDescription()
 }
 
-func (g *Generator) Generate(options *options.Options, _ *openapi3.T) (string, error) {
-	if err := options.FillDefaultsAndValidate(); err != nil {
-		return "", fmt.Errorf("failed to validate options: %w", err)
+func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, error) {
+	if err := opts.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate opts: %w", err)
 	}
 
-	ingress := v1.Ingress{
+	ingresses := make([]v1.Ingress, 0)
+
+	for path, subOpts := range opts.PathSubOptions {
+		if g.shouldSplit(opts, &subOpts) {
+			fmt.Printf("should split on path: %s", path)
+		}
+	}
+
+	ingresses = append(ingresses, v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: ingressAPIVersion,
 			Kind:       ingressKind,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        fmt.Sprintf("%s-ingress", options.Service.Name),
-			Namespace:   options.Namespace,
-			Annotations: g.generateAnnotations(options),
+			Name:        fmt.Sprintf("%s-ingress", opts.Service.Name),
+			Namespace:   opts.Namespace,
+			Annotations: g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.Ingress.CORS),
 		},
 		Spec: v1.IngressSpec{
 			IngressClassName: &ingressClassName,
 			Rules: []v1.IngressRule{
 				{
-					Host: options.Ingress.Host,
+					Host: opts.Ingress.Host,
 					IngressRuleValue: v1.IngressRuleValue{
 						HTTP: &v1.HTTPIngressRuleValue{
 							Paths: []v1.HTTPIngressPath{
 								{
 									PathType: &pathTypePrefix,
-									Path:     g.generatePath(options),
+									Path:     g.generatePath(&opts.Path, &opts.NGINXIngress),
 									Backend: v1.IngressBackend{
 										Service: &v1.IngressServiceBackend{
-											Name: options.Service.Name,
+											Name: opts.Service.Name,
 											Port: v1.ServiceBackendPort{
-												Number: options.Service.Port,
+												Number: opts.Service.Port,
 											},
 										},
 									},
@@ -113,21 +122,25 @@ func (g *Generator) Generate(options *options.Options, _ *openapi3.T) (string, e
 				},
 			},
 		},
-	}
+	})
 
-	b, err := yaml.Marshal(ingress)
+	b, err := yaml.Marshal(ingresses)
 
 	return string(b), err
 }
 
-func (g *Generator) generatePath(options *options.Options) string {
-	if len(options.Path.TrimPrefix) > 0 &&
-		strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) &&
-		options.NGINXIngress.RewriteTarget == "" {
+func (g *Generator) shouldSplit(opts *options.Options, subOpts *options.SubOptions) bool {
+	return !reflect.DeepEqual(opts.Ingress.CORS, subOpts.CORS)
+}
+
+func (g *Generator) generatePath(path *options.PathOptions, nginx *options.NGINXIngressOptions) string {
+	if len(path.TrimPrefix) > 0 &&
+		strings.HasPrefix(path.Base, path.TrimPrefix) &&
+		nginx.RewriteTarget == "" {
 		pathSuffixRegex := "(/|$)(.*)"
 
-		return options.Path.Base + pathSuffixRegex
+		return path.Base + pathSuffixRegex
 	}
 
-	return options.Path.Base
+	return path.Base
 }
