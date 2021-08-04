@@ -27,6 +27,9 @@ type mappingTemplateData struct {
 	CORSEnabled bool
 
 	CORS corsTemplateData
+
+	RequestTimeout uint32
+	IdleTimeout    uint32
 }
 
 var mappingTemplateRaw = `{{range .}}
@@ -65,6 +68,14 @@ spec:
     exposed_headers: {{.CORS.ExposedHeaders}}
     credentials: {{.CORS.Credentials}}
     max_age: {{.CORS.MaxAge}}
+  {{end}}
+
+  {{if .RequestTimeout}}
+  timeout_ms: {{.RequestTimeout}}
+  {{end}}
+
+  {{if .IdleTimeout}}
+  idle_timeout_ms {{.IdleTimeout}}
   {{end}}
 
 {{end}}

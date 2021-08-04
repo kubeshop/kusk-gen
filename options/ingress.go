@@ -1,7 +1,7 @@
 package options
 
 import (
-	"github.com/go-ozzo/ozzo-validation/v4"
+	v "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
@@ -25,8 +25,22 @@ type CORSOptions struct {
 	MaxAge      int   `yaml:"max_age,omitempty" json:"max_age,omitempty"`
 }
 
+func (o *CORSOptions) Validate() error {
+	return nil
+}
+
 func (o *IngressOptions) Validate() error {
-	return validation.ValidateStruct(o,
-		validation.Field(&o.Host, is.Host),
+	err := v.ValidateStruct(o,
+		v.Field(&o.Host, is.Host),
 	)
+
+	if err != nil {
+		return err
+	}
+
+	if err := v.Validate(&o.CORS); err != nil {
+		return err
+	}
+
+	return nil
 }

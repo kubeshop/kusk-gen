@@ -15,6 +15,17 @@ type ServiceOptions struct {
 	Port int32 `yaml:"port,omitempty" json:"port,omitempty"`
 }
 
+type TimeoutOptions struct {
+	// RequestTimeout is total request timeout
+	RequestTimeout uint32 `yaml:"request_timeout,omitempty" json:"request_timeout,omitempty"`
+	// IdleTimeout is timeout for idle connection
+	IdleTimeout uint32 `yaml:"idle_timeout,omitempty" json:"idle_timeout,omitempty"`
+}
+
+func (o *TimeoutOptions) Validate() error {
+	return nil
+}
+
 func (o *ServiceOptions) Validate() error {
 	return v.ValidateStruct(o,
 		v.Field(&o.Namespace, v.Required.Error("service.namespace is required")),

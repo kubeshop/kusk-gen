@@ -2,6 +2,7 @@ package linkerd
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -40,6 +41,12 @@ func (g *Generator) Flags() *pflag.FlagSet {
 		"path.base",
 		"/",
 		"a base prefix for Service endpoints",
+	)
+
+	fs.Uint32(
+		"timeouts.request_timeout",
+		0,
+		"total request timeout (seconds)",
 	)
 
 	return fs
@@ -93,7 +100,7 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 				continue
 			}
 
-			routes = append(routes, g.generateRouteSpec(method, path, options))
+			routes = append(routes, generateRouteSpec(method, path, options))
 		}
 	}
 
@@ -114,14 +121,39 @@ func operationDisabled(operation string, options *options.Options) bool {
 	return ok && operationOpts.Disabled
 }
 
-func (g *Generator) generateRouteSpec(method, path string, options *options.Options) *v1alpha2.RouteSpec {
-	path = strings.TrimSuffix(options.Path.Base, "/") + "/" + strings.TrimPrefix(path, "/")
+func generateRouteSpec(method, path string, opts *options.Options) *v1alpha2.RouteSpec {
+	path = strings.TrimSuffix(opts.Path.Base, "/") + "/" + strings.TrimPrefix(path, "/")
 
-	return &v1alpha2.RouteSpec{
+	res := &v1alpha2.RouteSpec{
 		Name: fmt.Sprintf("%s %s", method, path),
 		Condition: &v1alpha2.RequestMatch{
 			PathRegex: profiles.PathToRegex(path),
 			Method:    method,
 		},
 	}
+
+	// global timeouts are defined, use them
+	if !reflect.DeepEqual(options.TimeoutOptions{}, opts.Timeouts) {
+		res.Timeout = formatTimeout(opts.Timeouts.RequestTimeout)
+	}
+
+	// non-zero path-level timeouts are defined, use them
+	if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+		if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) {
+			res.Timeout = formatTimeout(pathSubOpts.Timeouts.RequestTimeout)
+		}
+	}
+
+	// non-zero operation-level timeouts are defined, use them
+	if operationSubOpts, ok := opts.OperationSubOptions[method+path]; ok {
+		if !reflect.DeepEqual(options.TimeoutOptions{}, operationSubOpts.Timeouts) {
+			res.Timeout = formatTimeout(operationSubOpts.Timeouts.RequestTimeout)
+		}
+	}
+
+	return res
+}
+
+func formatTimeout(timeout uint32) string {
+	return fmt.Sprintf("%ds", timeout)
 }
