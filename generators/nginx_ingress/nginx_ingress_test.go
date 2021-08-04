@@ -6,43 +6,33 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk/spec"
 )
 
 type testCase struct {
 	name    string
 	options options.Options
+	spec    string
 	res     string
 }
 
 func TestNGINXIngress(t *testing.T) {
-	var gen Generator
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			r := require.New(t)
-
-			profile, err := gen.Generate(&testCase.options, nil)
-			r.NoError(err)
-			r.Equal(testCase.res, profile)
-		})
-	}
-}
-
-var testCases = []testCase{
-	{
-		name: "root base path and no trim prefix",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+	var testCases = []testCase{
+		{
+			name: "root base path and no trim prefix",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "webapp",
-				Port:      80,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "webapp",
+					Port:      80,
+				},
+				Path: options.PathOptions{
+					Base: "/",
+				},
 			},
-			Path: options.PathOptions{
-				Base: "/",
-			},
-		},
-		res: `apiVersion: networking.k8s.io/v1
+			res: `---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   creationTimestamp: null
@@ -63,21 +53,22 @@ spec:
 status:
   loadBalancer: {}
 `,
-	},
-	{
-		name: "non-root path and no trim prefix",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "webapp",
-				Port:      80,
-			},
-			Path: options.PathOptions{
-				Base: "/somepath",
-			},
 		},
-		res: `apiVersion: networking.k8s.io/v1
+		{
+			name: "non-root path and no trim prefix",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "webapp",
+					Port:      80,
+				},
+				Path: options.PathOptions{
+					Base: "/somepath",
+				},
+			},
+			res: `---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   creationTimestamp: null
@@ -98,22 +89,23 @@ spec:
 status:
   loadBalancer: {}
 `,
-	},
-	{
-		name: "non-root path and trim prefix",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "webapp",
-				Port:      80,
-			},
-			Path: options.PathOptions{
-				Base:       "/somepath",
-				TrimPrefix: "/somepath",
-			},
 		},
-		res: `apiVersion: networking.k8s.io/v1
+		{
+			name: "non-root path and trim prefix",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "webapp",
+					Port:      80,
+				},
+				Path: options.PathOptions{
+					Base:       "/somepath",
+					TrimPrefix: "/somepath",
+				},
+			},
+			res: `---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -136,25 +128,26 @@ spec:
 status:
   loadBalancer: {}
 `,
-	},
-	{
-		name: "non-root path and trim prefix and specified re-write target",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "webapp",
-				Port:      80,
-			},
-			Path: options.PathOptions{
-				Base:       "/somepath",
-				TrimPrefix: "/somepath",
-			},
-			NGINXIngress: options.NGINXIngressOptions{
-				RewriteTarget: "/someotherpath",
-			},
 		},
-		res: `apiVersion: networking.k8s.io/v1
+		{
+			name: "non-root path and trim prefix and specified re-write target",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "webapp",
+					Port:      80,
+				},
+				Path: options.PathOptions{
+					Base:       "/somepath",
+					TrimPrefix: "/somepath",
+				},
+				NGINXIngress: options.NGINXIngressOptions{
+					RewriteTarget: "/someotherpath",
+				},
+			},
+			res: `---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -177,35 +170,36 @@ spec:
 status:
   loadBalancer: {}
 `,
-	},
-	{
-		name: "CORS options set, nil credentials",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+		},
+		{
+			name: "CORS options set, nil credentials",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "webapp",
-				Port:      80,
-			},
-			Path: options.PathOptions{
-				Base:       "/somepath",
-				TrimPrefix: "/somepath",
-			},
-			NGINXIngress: options.NGINXIngressOptions{
-				RewriteTarget: "/someotherpath",
-			},
-			Ingress: options.IngressOptions{
-				CORS: options.CORSOptions{
-					Origins:       []string{"http://foo.example", "http://bar.example"},
-					Methods:       []string{"POST", "GET", "OPTIONS"},
-					Headers:       []string{"Content-Type"},
-					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-					Credentials:   nil,
-					MaxAge:        120,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "webapp",
+					Port:      80,
+				},
+				Path: options.PathOptions{
+					Base:       "/somepath",
+					TrimPrefix: "/somepath",
+				},
+				NGINXIngress: options.NGINXIngressOptions{
+					RewriteTarget: "/someotherpath",
+				},
+				Ingress: options.IngressOptions{
+					CORS: options.CORSOptions{
+						Origins:       []string{"http://foo.example", "http://bar.example"},
+						Methods:       []string{"POST", "GET", "OPTIONS"},
+						Headers:       []string{"Content-Type"},
+						ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+						Credentials:   nil,
+						MaxAge:        120,
+					},
 				},
 			},
-		},
-		res: `apiVersion: networking.k8s.io/v1
+			res: `---
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -234,5 +228,20 @@ spec:
 status:
   loadBalancer: {}
 `,
-	},
+		},
+	}
+
+	var gen Generator
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			r := require.New(t)
+			spec, err := spec.Parse([]byte(testCase.spec))
+			r.NoError(err)
+			profile, err := gen.Generate(&testCase.options, spec)
+			r.NoError(err)
+			r.Equal(testCase.res, profile)
+		})
+	}
 }
+

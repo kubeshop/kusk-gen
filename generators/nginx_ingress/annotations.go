@@ -3,6 +3,7 @@ package nginx_ingress
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -31,7 +32,9 @@ func (g *Generator) generateAnnotations(
 
 	if origins := cors.Origins; len(origins) > 0 {
 		if len(origins) > 1 {
-			log.Printf("[WARN]: Nginx Ingress only supports a single origin. Choosing the first url: %s", origins[0])
+			log.
+				New(os.Stderr, "[WARN]: ", log.LstdFlags).
+				Printf("Nginx Ingress only supports a single origin. Choosing the first url: %s", origins[0])
 		}
 		annotations[corsEnableAnnotationKey] = "true"
 		annotations["nginx.ingress.kubernetes.io/cors-allow-origin"] = origins[0]

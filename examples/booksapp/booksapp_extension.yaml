@@ -1,6 +1,9 @@
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  path:
+    base: /bookstore
+    trim_prefix: /bookstore
   ingress:
     cors:
       origins:
@@ -17,7 +20,7 @@ x-kusk:
         - X-Custom-Header
       max_age: 86400
   service:
-    name: booksapp
+    name: webapp
     namespace: booksapp
     port: 7000
 paths:
@@ -28,6 +31,18 @@ paths:
     post: {}
 
   /books/{id}:
+    x-kusk:
+      cors:
+        methods:
+          - POST
+          - GET
+          - OPTIONS
+        headers:
+          - Content-Type
+        credentials: true
+        expose_headers:
+          - X-Custom-Header
+        max_age: 86400
     get:
       parameters:
         - name: id
