@@ -8,7 +8,6 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/ghodss/yaml"
-	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 	v1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -88,7 +87,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 	pathsGenerated := map[string]struct{}{}
 
 	for path, subOpts := range opts.PathSubOptions {
-		if g.pathCORSOptionsDifferFromGlobal(opts, &subOpts) {
+		if g.shouldSplit(opts, &subOpts) {
 			// Mark the path as having a resource generated for it
 			pathsGenerated[path] = struct{}{}
 
@@ -150,7 +149,7 @@ func buildOutput(ingresses []v1.Ingress) (string, error) {
 		builder.WriteString("---\n") // indicate start of YAML resource
 		b, err := yaml.Marshal(ingress)
 		if err != nil {
-			return "", errors.Wrapf(err, "umable to marshal ingress resource %+v", ingress)
+			return "", fmt.Errorf("unable to marshal ingress resource: %+v: %s", ingress, err.Error())
 		}
 		builder.WriteString(string(b))
 	}
@@ -228,7 +227,7 @@ func (g *Generator) newIngressResource(
 	}
 }
 
-func (g *Generator) pathCORSOptionsDifferFromGlobal(opts *options.Options, subOpts *options.SubOptions) bool {
+func (g *Generator) shouldSplit(opts *options.Options, subOpts *options.SubOptions) bool {
 	return !reflect.DeepEqual(opts.Ingress.CORS, subOpts.CORS)
 }
 

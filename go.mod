@@ -11,7 +11,6 @@ require (
 	github.com/linkerd/linkerd2 v0.5.1-0.20210701172824-d3cc21da777c
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-isatty v0.0.13
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/spf13/cobra v1.2.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.7.0
