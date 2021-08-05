@@ -66,6 +66,18 @@ func (g *Generator) Flags() *pflag.FlagSet {
 		"force Kusk to generate a separate Mapping for each operation",
 	)
 
+	fs.Uint32(
+		"timeouts.request_timeout",
+		0,
+		"total request timeout (seconds)",
+	)
+
+	fs.Uint32(
+		"timeouts.idle_timeout",
+		0,
+		"idle connection timeout (seconds)",
+	)
+
 	return fs
 }
 
@@ -137,6 +149,31 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					op.CORS = g.corsTemplateData(&corsOpts)
 				}
 
+				var timeoutOpts options.TimeoutOptions
+
+				// take global timeout options
+				timeoutOpts = opts.Timeouts
+
+				// if path-level timeout options are different, override with them
+				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+					if !reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
+						timeoutOpts = pathSubOpts.Timeouts
+					}
+				}
+
+				// if operation-level timeout options are different, override them
+				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
+					if !reflect.DeepEqual(timeoutOpts, opSubOpts.Timeouts) {
+						timeoutOpts = opSubOpts.Timeouts
+					}
+				}
+
+				// if final timeout options are not empty, include them
+				if !reflect.DeepEqual(options.TimeoutOptions{}, timeoutOpts) {
+					op.RequestTimeout = timeoutOpts.RequestTimeout * 1000
+					op.IdleTimeout = timeoutOpts.IdleTimeout * 1000
+				}
+
 				mappings = append(mappings, op)
 			}
 		}
@@ -147,6 +184,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			ServiceURL:       serviceURL,
 			BasePath:         opts.Path.Base,
 			TrimPrefix:       opts.Path.TrimPrefix,
+			RequestTimeout:   opts.Timeouts.RequestTimeout * 1000,
+			IdleTimeout:      opts.Timeouts.IdleTimeout * 1000,
 		}
 
 		// if global CORS options are defined, take them
@@ -259,8 +298,15 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 				return true
 			}
 
-			// a path has different from global scope CORS options
-			if !reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+			// a path has non-zero, different from global scope CORS options
+			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
+				!reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+				return true
+			}
+
+			// a path has non-zero, different from global scope timeouts options
+			if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOptions.Timeouts) &&
+				!reflect.DeepEqual(opts.Timeouts, pathSubOptions.Timeouts) {
 				return true
 			}
 		}
@@ -272,8 +318,15 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 					return true
 				}
 
-				// an operation has different from global CORS options
-				if !reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+				// an operation has non-zero, different from global CORS options
+				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
+					!reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+					return true
+				}
+
+				// an operation has non-zero, different from global timeouts options
+				if !reflect.DeepEqual(options.TimeoutOptions{}, opSubOptions.Timeouts) &&
+					!reflect.DeepEqual(opts.Timeouts, opSubOptions.Timeouts) {
 					return true
 				}
 			}

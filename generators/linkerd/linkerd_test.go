@@ -325,4 +325,159 @@ spec:
     name: POST /books/{id}/edit
 `,
 	},
+	{
+		name: "simple routes with global timeout",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
+			Cluster: options.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
+			Timeouts: options.TimeoutOptions{
+				RequestTimeout: 5,
+			},
+		},
+		spec: `openapi: 3.0.1
+paths:
+  /:
+    get: {}
+
+  /authors:
+    post: {}
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: webapp.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /
+    name: GET /
+    timeout: 5s
+  - condition:
+      method: POST
+      pathRegex: /authors
+    name: POST /authors
+    timeout: 5s
+`,
+	},
+	{
+		name: "simple routes with path-level timeout",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
+			Cluster: options.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
+			Timeouts: options.TimeoutOptions{
+				RequestTimeout: 5,
+			},
+			PathSubOptions: map[string]options.SubOptions{
+				"/authors": {
+					Timeouts: options.TimeoutOptions{
+						RequestTimeout: 6,
+					},
+				},
+			},
+		},
+		spec: `openapi: 3.0.1
+x-kusk:
+  timeouts:
+    request_timeout: 5
+paths:
+  /:
+    get: {}
+
+  /authors:
+    x-kusk:
+      timeouts:
+        request_timeout: 6
+    post: {}
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: webapp.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /
+    name: GET /
+    timeout: 5s
+  - condition:
+      method: POST
+      pathRegex: /authors
+    name: POST /authors
+    timeout: 6s
+`,
+	},
+	{
+		name: "simple routes with operation-level timeout",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "webapp",
+			},
+			Cluster: options.ClusterOptions{
+				ClusterDomain: "cluster.local",
+			},
+			Timeouts: options.TimeoutOptions{
+				RequestTimeout: 5,
+			},
+			OperationSubOptions: map[string]options.SubOptions{
+				"POST/authors": {
+					Timeouts: options.TimeoutOptions{
+						RequestTimeout: 6,
+					},
+				},
+			},
+		},
+		spec: `openapi: 3.0.1
+x-kusk:
+  timeouts:
+    request_timeout: 5
+paths:
+  /:
+    get: {}
+
+  /authors:
+    post:
+      x-kusk:
+        timeouts:
+          request_timeout: 6
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: webapp.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /
+    name: GET /
+    timeout: 5s
+  - condition:
+      method: POST
+      pathRegex: /authors
+    name: POST /authors
+    timeout: 6s
+`,
+	},
 }
