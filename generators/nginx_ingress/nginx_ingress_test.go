@@ -254,7 +254,7 @@ status:
 				},
 				PathSubOptions: map[string]options.SubOptions{
 					"/books/{id}": {
-						CORS:     options.CORSOptions{
+						CORS: options.CORSOptions{
 							Methods:       []string{"POST", "GET", "OPTIONS"},
 							Headers:       []string{"Content-Type"},
 							ExposeHeaders: []string{"X-Custom-Header"},
@@ -462,4 +462,3 @@ status:
 		})
 	}
 }
-

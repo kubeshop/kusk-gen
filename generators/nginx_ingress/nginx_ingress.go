@@ -102,7 +102,6 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				CORS: subOpts.CORS,
 			}
 
-
 			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
 			// if path has no parameter, just use path
 			pathField := path
@@ -124,7 +123,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			ingress := g.newIngressResource(
 				name,
 				opts.Namespace,
-				opts.Path.Base + pathField,
+				opts.Path.Base+pathField,
 				pathTypeExact,
 				annotations,
 				&opts.Service,
