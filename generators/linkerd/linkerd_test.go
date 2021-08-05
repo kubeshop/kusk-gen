@@ -391,11 +391,17 @@ spec:
 			},
 		},
 		spec: `openapi: 3.0.1
+x-kusk:
+  timeouts:
+    request_timeout: 5
 paths:
   /:
     get: {}
 
   /authors:
+    x-kusk:
+      timeouts:
+        request_timeout: 6
     post: {}
 `,
 		res: `apiVersion: linkerd.io/v1alpha2
@@ -441,12 +447,18 @@ spec:
 			},
 		},
 		spec: `openapi: 3.0.1
+x-kusk:
+  timeouts:
+    request_timeout: 5
 paths:
   /:
     get: {}
 
   /authors:
-    post: {}
+    post:
+      x-kusk:
+        timeouts:
+          request_timeout: 6
 `,
 		res: `apiVersion: linkerd.io/v1alpha2
 kind: ServiceProfile

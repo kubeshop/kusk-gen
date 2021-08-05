@@ -126,56 +126,52 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 				var corsOpts options.CORSOptions
 
-				{
-					// take global CORS options
-					corsOpts = opts.Ingress.CORS
+				// take global CORS options
+				corsOpts = opts.Ingress.CORS
 
-					// if path-level CORS options are different, override with them
-					if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-						if !reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
-							corsOpts = pathSubOpts.CORS
-						}
+				// if path-level CORS options are different, override with them
+				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+					if !reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
+						corsOpts = pathSubOpts.CORS
 					}
+				}
 
-					// if operation-level CORS options are different, override them
-					if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-						if !reflect.DeepEqual(corsOpts, opSubOpts.CORS) {
-							corsOpts = opSubOpts.CORS
-						}
+				// if operation-level CORS options are different, override them
+				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
+					if !reflect.DeepEqual(corsOpts, opSubOpts.CORS) {
+						corsOpts = opSubOpts.CORS
 					}
+				}
 
-					// if final CORS options are not empty, include them
-					if !reflect.DeepEqual(options.CORSOptions{}, corsOpts) {
-						op.CORSEnabled = true
-						op.CORS = g.corsTemplateData(&corsOpts)
-					}
+				// if final CORS options are not empty, include them
+				if !reflect.DeepEqual(options.CORSOptions{}, corsOpts) {
+					op.CORSEnabled = true
+					op.CORS = g.corsTemplateData(&corsOpts)
 				}
 
 				var timeoutOpts options.TimeoutOptions
 
-				{
-					// take global timeout options
-					timeoutOpts = opts.Timeouts
+				// take global timeout options
+				timeoutOpts = opts.Timeouts
 
-					// if path-level timeout options are different, override with them
-					if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-						if !reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
-							timeoutOpts = pathSubOpts.Timeouts
-						}
+				// if path-level timeout options are different, override with them
+				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+					if !reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
+						timeoutOpts = pathSubOpts.Timeouts
 					}
+				}
 
-					// if operation-level timeout options are different, override them
-					if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-						if !reflect.DeepEqual(timeoutOpts, opSubOpts.Timeouts) {
-							timeoutOpts = opSubOpts.Timeouts
-						}
+				// if operation-level timeout options are different, override them
+				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
+					if !reflect.DeepEqual(timeoutOpts, opSubOpts.Timeouts) {
+						timeoutOpts = opSubOpts.Timeouts
 					}
+				}
 
-					// if final timeout options are not empty, include them
-					if !reflect.DeepEqual(options.TimeoutOptions{}, timeoutOpts) {
-						op.RequestTimeout = timeoutOpts.RequestTimeout * 1000
-						op.IdleTimeout = timeoutOpts.IdleTimeout * 1000
-					}
+				// if final timeout options are not empty, include them
+				if !reflect.DeepEqual(options.TimeoutOptions{}, timeoutOpts) {
+					op.RequestTimeout = timeoutOpts.RequestTimeout * 1000
+					op.IdleTimeout = timeoutOpts.IdleTimeout * 1000
 				}
 
 				mappings = append(mappings, op)
