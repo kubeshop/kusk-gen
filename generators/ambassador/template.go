@@ -67,7 +67,7 @@ spec:
     headers: {{.CORS.Headers}}
     exposed_headers: {{.CORS.ExposedHeaders}}
     credentials: {{.CORS.Credentials}}
-    max_age: {{.CORS.MaxAge}}
+    max_age: "{{.CORS.MaxAge}}"
   {{end}}
 
   {{if .RequestTimeout}}

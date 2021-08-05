@@ -77,6 +77,9 @@ func init() {
 					log.Fatal(err)
 				}
 
+				opts.PathSubOptions = kuskExtensionOpts.PathSubOptions
+				opts.OperationSubOptions = kuskExtensionOpts.OperationSubOptions
+
 				res, err := gen.Generate(opts, apiSpec)
 				if err != nil {
 					log.Fatal(err)

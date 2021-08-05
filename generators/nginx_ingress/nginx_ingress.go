@@ -2,6 +2,8 @@ package nginx_ingress
 
 import (
 	"fmt"
+	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -22,6 +24,9 @@ const (
 var (
 	ingressClassName = "nginx"
 	pathTypePrefix   = v1.PathTypePrefix
+	pathTypeExact    = v1.PathTypeExact
+
+	openApiPathVariableRegex = regexp.MustCompile(`{[A-z]+}`)
 )
 
 func init() {
@@ -72,37 +77,143 @@ func (g *Generator) LongDescription() string {
 	return g.ShortDescription()
 }
 
-func (g *Generator) Generate(options *options.Options, _ *openapi3.T) (string, error) {
-	if err := options.FillDefaultsAndValidate(); err != nil {
-		return "", fmt.Errorf("failed to validate options: %w", err)
+func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, error) {
+	if err := opts.FillDefaultsAndValidate(); err != nil {
+		return "", fmt.Errorf("failed to validate opts: %w", err)
 	}
 
-	ingress := v1.Ingress{
+	ingresses := make([]v1.Ingress, 0)
+
+	pathsGenerated := map[string]struct{}{}
+
+	for path, subOpts := range opts.PathSubOptions {
+		if g.shouldSplit(opts, &subOpts) {
+			// Mark the path as having a resource generated for it
+			pathsGenerated[path] = struct{}{}
+
+			name := ingressResourceNameFromPath(path)
+
+			ingressOpts := options.IngressOptions{
+				Host: opts.Ingress.Host,
+				CORS: subOpts.CORS,
+			}
+
+			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
+			// if path has no parameter, just use path
+			pathField := path
+			annotations := g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &ingressOpts.CORS)
+			if openApiPathVariableRegex.MatchString(path) {
+				pathField = string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
+
+				// get the first capture group of regex. Given a path /books/{id}, will return /books/
+				rewrite := string(openApiPathVariableRegex.ReplaceAllLiteral([]byte(path), []byte("$1")))
+				annotations[rewriteTargetAnnotationKey] = rewrite
+				annotations["nginx.ingress.kubernetes.io/use-regex"] = "true"
+			}
+
+			ingress := g.newIngressResource(
+				name,
+				opts.Namespace,
+				opts.Path.Base + pathField,
+				pathTypeExact,
+				annotations,
+				&opts.Service,
+				&ingressOpts,
+			)
+
+			ingresses = append(ingresses, ingress)
+		}
+	}
+
+	if len(pathsGenerated) == 0 || len(pathsGenerated) < len(spec.Paths) {
+		ingress := g.newIngressResource(
+			fmt.Sprintf("%s-ingress", opts.Service.Name),
+			opts.Namespace,
+			g.generatePath(&opts.Path, &opts.NGINXIngress),
+			pathTypePrefix,
+			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.Ingress.CORS),
+			&opts.Service,
+			&opts.Ingress,
+		)
+		ingresses = append(ingresses, ingress)
+	}
+
+	return buildOutput(ingresses)
+}
+
+// Build suitable output to be piped into kubectl or a file
+func buildOutput(ingresses []v1.Ingress) (string, error) {
+	var builder strings.Builder
+
+	for _, ingress := range ingresses {
+		builder.WriteString("---\n") // indicate start of YAML resource
+		b, err := yaml.Marshal(ingress)
+		if err != nil {
+			return "", fmt.Errorf("unable to marshal ingress resource: %+v: %s", ingress, err.Error())
+		}
+		builder.WriteString(string(b))
+	}
+
+	return builder.String(), nil
+}
+
+// Given a path such as /books/{id} return a suitable ingress resource name
+// in the form books-id or root if the path is simply /
+func ingressResourceNameFromPath(path string) string {
+	if len(path) == 0 || path == "/" {
+		return "root"
+	}
+
+	var b strings.Builder
+	for _, pathItem := range strings.Split(path, "/") {
+		if pathItem == "" {
+			continue
+		}
+
+		// remove openapi path variable curly braces from path item
+		strippedPathItem := strings.ReplaceAll(strings.ReplaceAll(pathItem, "{", ""), "}", "")
+		fmt.Fprintf(&b, "%s-", strippedPathItem)
+	}
+
+	// remove trailing - character
+	return strings.TrimSuffix(b.String(), "-")
+}
+
+func (g *Generator) newIngressResource(
+	name,
+	namespace,
+	path string,
+	pathType v1.PathType,
+	annotations map[string]string,
+	serviceOpts *options.ServiceOptions,
+	ingressOpts *options.IngressOptions,
+) v1.Ingress {
+	return v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: ingressAPIVersion,
 			Kind:       ingressKind,
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        fmt.Sprintf("%s-ingress", options.Service.Name),
-			Namespace:   options.Namespace,
-			Annotations: g.generateAnnotations(options),
+			Name:        name,
+			Namespace:   namespace,
+			Annotations: annotations,
 		},
 		Spec: v1.IngressSpec{
 			IngressClassName: &ingressClassName,
 			Rules: []v1.IngressRule{
 				{
-					Host: options.Ingress.Host,
+					Host: ingressOpts.Host,
 					IngressRuleValue: v1.IngressRuleValue{
 						HTTP: &v1.HTTPIngressRuleValue{
 							Paths: []v1.HTTPIngressPath{
 								{
-									PathType: &pathTypePrefix,
-									Path:     g.generatePath(options),
+									PathType: &pathType,
+									Path:     path,
 									Backend: v1.IngressBackend{
 										Service: &v1.IngressServiceBackend{
-											Name: options.Service.Name,
+											Name: serviceOpts.Name,
 											Port: v1.ServiceBackendPort{
-												Number: options.Service.Port,
+												Number: serviceOpts.Port,
 											},
 										},
 									},
@@ -114,20 +225,20 @@ func (g *Generator) Generate(options *options.Options, _ *openapi3.T) (string, e
 			},
 		},
 	}
-
-	b, err := yaml.Marshal(ingress)
-
-	return string(b), err
 }
 
-func (g *Generator) generatePath(options *options.Options) string {
-	if len(options.Path.TrimPrefix) > 0 &&
-		strings.HasPrefix(options.Path.Base, options.Path.TrimPrefix) &&
-		options.NGINXIngress.RewriteTarget == "" {
+func (g *Generator) shouldSplit(opts *options.Options, subOpts *options.SubOptions) bool {
+	return !reflect.DeepEqual(opts.Ingress.CORS, subOpts.CORS)
+}
+
+func (g *Generator) generatePath(path *options.PathOptions, nginx *options.NGINXIngressOptions) string {
+	if len(path.TrimPrefix) > 0 &&
+		strings.HasPrefix(path.Base, path.TrimPrefix) &&
+		nginx.RewriteTarget == "" {
 		pathSuffixRegex := "(/|$)(.*)"
 
-		return options.Path.Base + pathSuffixRegex
+		return path.Base + pathSuffixRegex
 	}
 
-	return options.Path.Base
+	return path.Base
 }
