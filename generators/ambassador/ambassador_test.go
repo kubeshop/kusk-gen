@@ -992,7 +992,7 @@ spec:
     headers: Content-Type
     exposed_headers: X-Custom-Header,X-Other-Custom-Header
     credentials: false
-    max_age: 120
+    max_age: "120"
 `,
 	},
 	{
@@ -1070,7 +1070,7 @@ spec:
     headers: Content-Type
     exposed_headers: X-Custom-Header,X-Other-Custom-Header
     credentials: false
-    max_age: 240
+    max_age: "240"
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1089,7 +1089,7 @@ spec:
     headers: Content-Type
     exposed_headers: X-Custom-Header,X-Other-Custom-Header
     credentials: false
-    max_age: 120
+    max_age: "120"
 `,
 	},
 }
