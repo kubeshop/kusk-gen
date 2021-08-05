@@ -105,6 +105,10 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			annotations := g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &ingressOpts.CORS)
 			if openApiPathVariableRegex.MatchString(path) {
 				pathField = string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
+
+				// get the first capture group of regex. Given a path /books/{id}, will return /books/
+				rewrite := string(openApiPathVariableRegex.ReplaceAllLiteral([]byte(path), []byte("$1")))
+				annotations[rewriteTargetAnnotationKey] = rewrite
 				annotations["nginx.ingress.kubernetes.io/use-regex"] = "true"
 			}
 
