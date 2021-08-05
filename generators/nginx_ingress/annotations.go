@@ -33,7 +33,7 @@ func (g *Generator) generateAnnotations(
 	if origins := cors.Origins; len(origins) > 0 {
 		if len(origins) > 1 {
 			log.
-				New(os.Stderr, "[WARN]: ", log.LstdFlags).
+				New(os.Stderr, "[WARN]: ", log.Lmsgprefix).
 				Printf("Nginx Ingress only supports a single origin. Choosing the first url: %s", origins[0])
 		}
 		annotations[corsEnableAnnotationKey] = "true"
