@@ -254,7 +254,7 @@ status:
 				},
 				PathSubOptions: map[string]options.SubOptions{
 					"/books/{id}": {
-						CORS:     options.CORSOptions{
+						CORS: options.CORSOptions{
 							Methods:       []string{"POST", "GET", "OPTIONS"},
 							Headers:       []string{"Content-Type"},
 							ExposeHeaders: []string{"X-Custom-Header"},
@@ -376,6 +376,77 @@ status:
   loadBalancer: {}
 `,
 		},
+		{
+			name: "request timeout options",
+			options: options.Options{
+				Namespace: "booksapp",
+				Service: options.ServiceOptions{
+					Namespace: "booksapp",
+					Name:      "webapp",
+					Port:      7000,
+				},
+				Path: options.PathOptions{
+					Base:       "/bookstore",
+					TrimPrefix: "/bookstore",
+				},
+				Timeouts: options.TimeoutOptions{
+					RequestTimeout: 10,
+					IdleTimeout:    0,
+				},
+			},
+			spec: `openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  timeouts:
+    request_timeout: 10
+  path:
+    base: /bookstore
+    trim_prefix: /bookstore
+  service:
+    name: webapp
+    namespace: booksapp
+    port: 7000
+paths:
+  /:
+    get: {}
+
+  /books/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+`,
+			res: `---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "5"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "5"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  creationTimestamp: null
+  name: webapp-ingress
+  namespace: booksapp
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: webapp
+            port:
+              number: 7000
+        path: /bookstore(/|$)(.*)
+        pathType: Prefix
+status:
+  loadBalancer: {}
+`,
+		},
 	}
 
 	var gen Generator
@@ -391,4 +462,3 @@ status:
 		})
 	}
 }
-

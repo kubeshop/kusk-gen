@@ -21,6 +21,7 @@ func (g *Generator) generateAnnotations(
 	path *options.PathOptions,
 	nginx *options.NGINXIngressOptions,
 	cors *options.CORSOptions,
+	timeoutOpts *options.TimeoutOptions,
 ) map[string]string {
 	annotations := map[string]string{}
 
@@ -30,6 +31,7 @@ func (g *Generator) generateAnnotations(
 		annotations[rewriteTargetAnnotationKey] = "/$2"
 	}
 
+	// CORS
 	if origins := cors.Origins; len(origins) > 0 {
 		if len(origins) > 1 {
 			log.
@@ -65,6 +67,18 @@ func (g *Generator) generateAnnotations(
 		annotations[corsEnableAnnotationKey] = "true"
 		annotations["nginx.ingress.kubernetes.io/cors-max-age"] = strconv.Itoa(maxAge)
 	}
+	// End CORS
+
+	// Timeouts
+	if requestTimeout := timeoutOpts.RequestTimeout; requestTimeout > 0 {
+		strTimeout := strconv.Itoa(int(requestTimeout) / 2)
+		if strTimeout == "0" {
+			strTimeout = "1"
+		}
+		annotations["nginx.ingress.kubernetes.io/proxy-send-timeout"] = strTimeout
+		annotations["nginx.ingress.kubernetes.io/proxy-read-timeout"] = strTimeout
+	}
+	// End Timeouts
 
 	return annotations
 }

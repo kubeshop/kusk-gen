@@ -86,10 +86,14 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 	pathsGenerated := map[string]struct{}{}
 
-	for path, subOpts := range opts.PathSubOptions {
-		if g.shouldSplit(opts, &subOpts) {
+	if g.shouldSplit(opts, spec) {
+		for path, subOpts := range opts.PathSubOptions {
 			// Mark the path as having a resource generated for it
 			pathsGenerated[path] = struct{}{}
+
+			if subOpts.Disabled {
+				continue
+			}
 
 			name := ingressResourceNameFromPath(path)
 
@@ -101,7 +105,12 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
 			// if path has no parameter, just use path
 			pathField := path
-			annotations := g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &ingressOpts.CORS)
+			annotations := g.generateAnnotations(
+				&opts.Path,
+				&opts.NGINXIngress,
+				&ingressOpts.CORS,
+				&subOpts.Timeouts,
+			)
 			if openApiPathVariableRegex.MatchString(path) {
 				pathField = string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
 
@@ -114,7 +123,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			ingress := g.newIngressResource(
 				name,
 				opts.Namespace,
-				opts.Path.Base + pathField,
+				opts.Path.Base+pathField,
 				pathTypeExact,
 				annotations,
 				&opts.Service,
@@ -131,7 +140,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			opts.Namespace,
 			g.generatePath(&opts.Path, &opts.NGINXIngress),
 			pathTypePrefix,
-			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.Ingress.CORS),
+			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.Ingress.CORS, &opts.Timeouts),
 			&opts.Service,
 			&opts.Ingress,
 		)
@@ -227,8 +236,54 @@ func (g *Generator) newIngressResource(
 	}
 }
 
-func (g *Generator) shouldSplit(opts *options.Options, subOpts *options.SubOptions) bool {
-	return !reflect.DeepEqual(opts.Ingress.CORS, subOpts.CORS)
+func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
+	if opts.Path.Split {
+		return true
+	}
+
+	for path, pathItem := range spec.Paths {
+		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
+			// a path is disabled
+			if pathSubOptions.Disabled {
+				return true
+			}
+
+			// a path has non-zero, different from global scope CORS options
+			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
+				!reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+				return true
+			}
+
+			// a path has non-zero, different from global scope timeouts options
+			if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOptions.Timeouts) &&
+				!reflect.DeepEqual(opts.Timeouts, pathSubOptions.Timeouts) {
+				return true
+			}
+		}
+
+		for method := range pathItem.Operations() {
+			if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
+				// an operation is disabled
+				if opSubOptions.Disabled {
+					return true
+				}
+
+				// an operation has non-zero, different from global CORS options
+				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
+					!reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+					return true
+				}
+
+				// an operation has non-zero, different from global timeouts options
+				if !reflect.DeepEqual(options.TimeoutOptions{}, opSubOptions.Timeouts) &&
+					!reflect.DeepEqual(opts.Timeouts, opSubOptions.Timeouts) {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
 }
 
 func (g *Generator) generatePath(path *options.PathOptions, nginx *options.NGINXIngressOptions) string {
