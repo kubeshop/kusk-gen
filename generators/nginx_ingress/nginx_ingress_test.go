@@ -377,7 +377,7 @@ status:
 `,
 		},
 		{
-			name: "CORS options set differ at path level",
+			name: "request timeout options",
 			options: options.Options{
 				Namespace: "booksapp",
 				Service: options.ServiceOptions{
