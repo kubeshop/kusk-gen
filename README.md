@@ -1,13 +1,14 @@
 # Kusk
 <!-- Add buttons here -->
 
-Developers running their apps in Kubernetes shouldn't have to worry about messing with resources that do not directly
+Developers deploying their REST APIs in Kubernetes shouldn't have to worry about messing with resources that do not directly
 relate to their applications.
 
-Kusk (_driver in Swedish_) is **THE** tool that treats your openapi or swagger spec as a source of truth to automatically generate
-supplementary resources for your Kubernetes cluster services in regard to mappings, monitors and alerts
+Kusk (_coachman in Swedish_) is **THE** tool that treats your  OpenAPI or Swagger specification as a source of truth to generate
+supplementary Kubernetes resources for your REST APIs in regard to mappings, security, monitoring, etc.
 
-Kusk handles the generation of these resources so developers don't have to.
+Kusk can even inspect what's installed in a cluster for tools it supports generating resources for and 
+automatically generate those resources based off your OpenAPI specification.
 
 # Demo-Preview
 TODO
