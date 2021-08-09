@@ -311,7 +311,7 @@ spec:
 ```
 
 ## Basic Path settings override
-For this example, let's assume that one of the paths in the API specification should send requests to a different service than the rest.
+For this example, let's assume that one of the paths in the API specification should have different CORS headers than the rest.
 
 ### OpenAPI Specification
 ```yaml
@@ -322,13 +322,32 @@ x-kusk:
     name: webapp
     namespace: booksapp
     port: 7000
+  ingress:
+      cors:
+        methods:
+          - POST
+          - GET
+          - OPTIONS
+        headers:
+          - Content-Type
+        credentials: true
+        expose_headers:
+          - X-Custom-Header
+        max_age: 86400
 paths:
   /:
     get: {}
   /books:
     x-kusk:
-      name: books-api
-      port: 7000
+      cors:
+        methods:
+          - POST
+        headers:
+          - Other-Content-Type
+        credentials: true
+        expose_headers:
+          - X-Other-Custom-Header
+        max_age: 120
     post: {}
 ...
 ```
@@ -346,6 +365,13 @@ spec:
   method: GET
   service: webapp.booksapp:7000
   rewrite: ""
+  cors:
+    origins:
+    methods: POST,GET,OPTIONS
+    headers: Content-Type
+    exposed_headers: X-Custom-Header
+    credentials: true
+    max_age: "86400"
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -355,6 +381,13 @@ metadata:
 spec:
   prefix: "/books"
   method: POST
-  service: books-api.booksapp:7000
+  service: webapp.booksapp:7000
   rewrite: ""
+  cors:
+    origins:
+    methods: POST
+    headers: Other-Content-Type
+    exposed_headers: X-Other-Custom-Header
+    credentials: true
+    max_age: "120"
 ```
