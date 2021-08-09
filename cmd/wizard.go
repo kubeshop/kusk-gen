@@ -28,7 +28,7 @@ func init() {
 				log.Fatal(err)
 			}
 
-			wizard.Start(apiSpec)
+			wizard.Start(apiSpecPath, apiSpec)
 		},
 	}
 
