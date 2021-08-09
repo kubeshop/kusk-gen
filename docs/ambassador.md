@@ -39,7 +39,7 @@ To override settings on the path or HTTP method level, you are required to use t
 - [Basic Path settings override](#basic-path-settings-override)
 
 ## Full Options Reference
-|           Name          |                            | OpenAPI Spec x-kusk label |                                                    Descriptions                                                    | Overwritable at path / method  |
+|           Name          |         CLI Option         | OpenAPI Spec x-kusk label |                                                    Descriptions                                                    | Overwritable at path / method  |
 |:-----------------------:|:--------------------------:|:-------------------------:|:------------------------------------------------------------------------------------------------------------------:|:------------------------------:|
 | OpenAPI or Swagger File |            --in            |            N/A            |                                  Location of the OpenAPI or Swagger specification                                  |                ❌               |
 |        Namespace        |         --namespace        |         namespace         |                         the namespace in which to create the generated resources (Required)                        |                ❌               |
