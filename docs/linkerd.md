@@ -1,4 +1,4 @@
-# Ambassador
+# Linkerd
 
 ```shell
 kusk linkerd
