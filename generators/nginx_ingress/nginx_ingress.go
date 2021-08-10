@@ -54,10 +54,22 @@ func (g *Generator) Flags() *pflag.FlagSet {
 		"a prefix to trim from the URL before forwarding to the upstream Service",
 	)
 
+	fs.Bool(
+		"path.split",
+		false,
+		"force Kusk to generate a separate Ingress for each operation",
+	)
+
 	fs.String(
 		"ingress.host",
 		"",
 		"an Ingress Host to listen on",
+	)
+
+	fs.Uint32(
+		"timeouts.request_timeout",
+		0,
+		"total request timeout (seconds)",
 	)
 
 	fs.String(
