@@ -127,7 +127,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				var corsOpts options.CORSOptions
 
 				// take global CORS options
-				corsOpts = opts.Ingress.CORS
+				corsOpts = opts.CORS
 
 				// if path-level CORS options are different, override with them
 				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
@@ -189,9 +189,9 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		}
 
 		// if global CORS options are defined, take them
-		if !reflect.DeepEqual(options.CORSOptions{}, opts.Ingress.CORS) {
+		if !reflect.DeepEqual(options.CORSOptions{}, opts.CORS) {
 			op.CORSEnabled = true
-			op.CORS = g.corsTemplateData(&opts.Ingress.CORS)
+			op.CORS = g.corsTemplateData(&opts.CORS)
 		}
 
 		mappings = append(mappings, op)
@@ -300,7 +300,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 			// a path has non-zero, different from global scope CORS options
 			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
-				!reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+				!reflect.DeepEqual(opts.CORS, pathSubOptions.CORS) {
 				return true
 			}
 
@@ -320,7 +320,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 				// an operation has non-zero, different from global CORS options
 				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
-					!reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+					!reflect.DeepEqual(opts.CORS, opSubOptions.CORS) {
 					return true
 				}
 

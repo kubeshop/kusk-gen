@@ -938,15 +938,13 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Ingress: options.IngressOptions{
-				CORS: options.CORSOptions{
-					Origins:       []string{"http://foo.example", "http://bar.example"},
-					Methods:       []string{"POST", "GET", "OPTIONS"},
-					Headers:       []string{"Content-Type"},
-					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-					Credentials:   nil,
-					MaxAge:        120,
-				},
+			CORS: options.CORSOptions{
+				Origins:       []string{"http://foo.example", "http://bar.example"},
+				Methods:       []string{"POST", "GET", "OPTIONS"},
+				Headers:       []string{"Content-Type"},
+				ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+				Credentials:   nil,
+				MaxAge:        120,
 			},
 		},
 		spec: `
@@ -1003,15 +1001,13 @@ spec:
 				Namespace: "default",
 				Name:      "petstore",
 			},
-			Ingress: options.IngressOptions{
-				CORS: options.CORSOptions{
-					Origins:       []string{"http://foo.example", "http://bar.example"},
-					Methods:       []string{"POST", "GET", "OPTIONS"},
-					Headers:       []string{"Content-Type"},
-					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-					Credentials:   nil,
-					MaxAge:        120,
-				},
+			CORS: options.CORSOptions{
+				Origins:       []string{"http://foo.example", "http://bar.example"},
+				Methods:       []string{"POST", "GET", "OPTIONS"},
+				Headers:       []string{"Content-Type"},
+				ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+				Credentials:   nil,
+				MaxAge:        120,
 			},
 			PathSubOptions: map[string]options.SubOptions{
 				"/pet": {

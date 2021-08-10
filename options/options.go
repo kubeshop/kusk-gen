@@ -26,8 +26,11 @@ type Options struct {
 	// Cluster is a set of cluster-wide options.
 	Cluster ClusterOptions `yaml:"cluster,omitempty" json:"cluster,omitempty"`
 
-	// Ingress is a set of Ingress-related options.
-	Ingress IngressOptions `yaml:"ingress,omitempty" json:"ingress,omitempty"`
+	// Host is an ingress host rule.
+	// See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules for additional documentation.
+	Host string `yaml:"host,omitempty" json:"host,omitempty"`
+
+	CORS CORSOptions `yaml:"cors,omitempty" json:"cors,omitempty"`
 
 	// NGINXIngress is a set of custom nginx-ingress options.
 	NGINXIngress NGINXIngressOptions `yaml:"nginx_ingress,omitempty" json:"nginx_ingress,omitempty"`
@@ -70,10 +73,6 @@ func (o *Options) Validate() error {
 		return err
 	}
 
-	if err := v.Validate(&o.Timeouts); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -85,7 +84,9 @@ func (o *Options) FillDefaultsAndValidate() error {
 		&o.Service,
 		&o.Path,
 		&o.Cluster,
-		&o.Ingress,
+		&o.CORS,
 		&o.NGINXIngress,
+		&o.Timeouts,
 	})
+
 }
