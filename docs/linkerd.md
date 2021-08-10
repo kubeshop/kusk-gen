@@ -200,6 +200,7 @@ spec:
 
 ## Change cluster domain
 Setting the Base path option allows your service to be identified with the base path acting as a prefix.
+Setting the cluster domain option will override the default internal cluster domain of `cluster.local`
 
 ### CLI Flags
 ```shell
