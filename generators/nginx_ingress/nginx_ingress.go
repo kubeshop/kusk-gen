@@ -109,20 +109,16 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			name := ingressResourceNameFromPath(path)
 
-			ingressOpts := options.IngressOptions{
-				Host: opts.Ingress.Host,
-				CORS: subOpts.CORS,
-			}
-
 			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
 			// if path has no parameter, just use path
 			pathField := path
 			annotations := g.generateAnnotations(
 				&opts.Path,
 				&opts.NGINXIngress,
-				&ingressOpts.CORS,
+				&subOpts.CORS,
 				&subOpts.Timeouts,
 			)
+
 			if openApiPathVariableRegex.MatchString(path) {
 				pathField = string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
 
@@ -139,7 +135,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				pathTypeExact,
 				annotations,
 				&opts.Service,
-				&ingressOpts,
+				opts.Host,
 			)
 
 			ingresses = append(ingresses, ingress)
@@ -152,9 +148,9 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			opts.Namespace,
 			g.generatePath(&opts.Path, &opts.NGINXIngress),
 			pathTypePrefix,
-			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.Ingress.CORS, &opts.Timeouts),
+			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.CORS, &opts.Timeouts),
 			&opts.Service,
-			&opts.Ingress,
+			opts.Host,
 		)
 		ingresses = append(ingresses, ingress)
 	}
@@ -207,7 +203,7 @@ func (g *Generator) newIngressResource(
 	pathType v1.PathType,
 	annotations map[string]string,
 	serviceOpts *options.ServiceOptions,
-	ingressOpts *options.IngressOptions,
+	host string,
 ) v1.Ingress {
 	return v1.Ingress{
 		TypeMeta: metav1.TypeMeta{
@@ -223,7 +219,7 @@ func (g *Generator) newIngressResource(
 			IngressClassName: &ingressClassName,
 			Rules: []v1.IngressRule{
 				{
-					Host: ingressOpts.Host,
+					Host: host,
 					IngressRuleValue: v1.IngressRuleValue{
 						HTTP: &v1.HTTPIngressRuleValue{
 							Paths: []v1.HTTPIngressPath{
@@ -262,7 +258,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 			// a path has non-zero, different from global scope CORS options
 			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
-				!reflect.DeepEqual(opts.Ingress.CORS, pathSubOptions.CORS) {
+				!reflect.DeepEqual(opts.CORS, pathSubOptions.CORS) {
 				return true
 			}
 
@@ -282,7 +278,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 				// an operation has non-zero, different from global CORS options
 				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
-					!reflect.DeepEqual(opts.Ingress.CORS, opSubOptions.CORS) {
+					!reflect.DeepEqual(opts.CORS, opSubOptions.CORS) {
 					return true
 				}
 

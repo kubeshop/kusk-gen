@@ -187,15 +187,13 @@ status:
 				NGINXIngress: options.NGINXIngressOptions{
 					RewriteTarget: "/someotherpath",
 				},
-				Ingress: options.IngressOptions{
-					CORS: options.CORSOptions{
-						Origins:       []string{"http://foo.example", "http://bar.example"},
-						Methods:       []string{"POST", "GET", "OPTIONS"},
-						Headers:       []string{"Content-Type"},
-						ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-						Credentials:   nil,
-						MaxAge:        120,
-					},
+				CORS: options.CORSOptions{
+					Origins:       []string{"http://foo.example", "http://bar.example"},
+					Methods:       []string{"POST", "GET", "OPTIONS"},
+					Headers:       []string{"Content-Type"},
+					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+					Credentials:   nil,
+					MaxAge:        120,
 				},
 			},
 			res: `---
@@ -242,15 +240,13 @@ status:
 					Base:       "/bookstore",
 					TrimPrefix: "/bookstore",
 				},
-				Ingress: options.IngressOptions{
-					CORS: options.CORSOptions{
-						Origins:       []string{"http://foo.example", "http://bar.example"},
-						Methods:       []string{"POST", "GET", "OPTIONS"},
-						Headers:       []string{"Content-Type"},
-						ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-						Credentials:   nil,
-						MaxAge:        86400,
-					},
+				CORS: options.CORSOptions{
+					Origins:       []string{"http://foo.example", "http://bar.example"},
+					Methods:       []string{"POST", "GET", "OPTIONS"},
+					Headers:       []string{"Content-Type"},
+					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+					Credentials:   nil,
+					MaxAge:        86400,
 				},
 				PathSubOptions: map[string]options.SubOptions{
 					"/books/{id}": {
@@ -270,22 +266,21 @@ x-kusk:
   path:
     base: /bookstore
     trim_prefix: /bookstore
-  ingress:
-    cors:
-      origins:
-        - http://foo.example
-        - http://bar.example
-      methods:
-        - POST
-        - GET
-        - OPTIONS
-      headers:
-        - Content-Type
-      credentials: true
-      expose_headers:
-        - X-Custom-Header
-        - X-Other-Custom-Header
-      max_age: 86400
+  cors:
+    origins:
+      - http://foo.example
+      - http://bar.example
+    methods:
+      - POST
+      - GET
+      - OPTIONS
+    headers:
+      - Content-Type
+    credentials: true
+    expose_headers:
+      - X-Custom-Header
+      - X-Other-Custom-Header
+    max_age: 86400
   service:
     name: webapp
     namespace: booksapp

@@ -1,18 +1,5 @@
 package options
 
-import (
-	v "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
-)
-
-type IngressOptions struct {
-	// Host is an ingress host rule.
-	// See https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules for additional documentation.
-	Host string `yaml:"host,omitempty" json:"host,omitempty"`
-
-	CORS CORSOptions `yaml:"cors,omitempty" json:"cors,omitempty"`
-}
-
 type CORSOptions struct {
 	Origins       []string `yaml:"origins,omitempty" json:"origins,omitempty"`
 	Methods       []string `yaml:"methods,omitempty" json:"methods,omitempty"`
@@ -26,21 +13,5 @@ type CORSOptions struct {
 }
 
 func (o *CORSOptions) Validate() error {
-	return nil
-}
-
-func (o *IngressOptions) Validate() error {
-	err := v.ValidateStruct(o,
-		v.Field(&o.Host, is.Host),
-	)
-
-	if err != nil {
-		return err
-	}
-
-	if err := v.Validate(&o.CORS); err != nil {
-		return err
-	}
-
 	return nil
 }
