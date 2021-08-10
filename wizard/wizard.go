@@ -18,7 +18,7 @@ import (
 	"github.com/kubeshop/kusk/options"
 )
 
-func Start(apiSpec *openapi3.T) {
+func Start(apiSpecPath string, apiSpec *openapi3.T) {
 	canConnectToCluster := false
 	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
 
@@ -34,9 +34,9 @@ func Start(apiSpec *openapi3.T) {
 	var err error
 
 	if canConnectToCluster {
-		mappings, err = flowWithCluster(apiSpec, kubeConfigPath)
+		mappings, err = flowWithCluster(apiSpecPath, apiSpec, kubeConfigPath)
 	} else {
-		mappings, err = flowWithoutCluster(apiSpec)
+		mappings, err = flowWithoutCluster(apiSpecPath, apiSpec)
 	}
 
 	if err != nil {
@@ -59,7 +59,7 @@ func Start(apiSpec *openapi3.T) {
 	fmt.Println(mappings)
 }
 
-func flowWithCluster(apiSpec *openapi3.T, kubeConfigPath string) (string, error) {
+func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath string) (string, error) {
 	var servicesToSuggest []string
 
 	client, err := cluster.NewClient(kubeConfigPath)
@@ -113,15 +113,15 @@ func flowWithCluster(apiSpec *openapi3.T, kubeConfigPath string) (string, error)
 
 	switch service {
 	case "ambassador":
-		return flowAmbassador(apiSpec, targetServiceNamespace, targetService)
+		return flowAmbassador(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	case "linkerd":
-		return flowLinkerd(apiSpec, targetServiceNamespace, targetService)
+		return flowLinkerd(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	}
 
 	return "", fmt.Errorf("unknown service")
 }
 
-func flowWithoutCluster(apiSpec *openapi3.T) (string, error) {
+func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T) (string, error) {
 	targetServiceNamespace := promptString("Enter namespace with your service", "default")
 	targetService := promptString("Enter your service name", "")
 
@@ -129,15 +129,15 @@ func flowWithoutCluster(apiSpec *openapi3.T) (string, error) {
 
 	switch service {
 	case "ambassador":
-		return flowAmbassador(apiSpec, targetServiceNamespace, targetService)
+		return flowAmbassador(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	case "linkerd":
-		return flowLinkerd(apiSpec, targetServiceNamespace, targetService)
+		return flowLinkerd(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	}
 
 	return "", fmt.Errorf("unknown service")
 }
 
-func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
+func flowAmbassador(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	var basePathSuggestions []string
 	for _, server := range apiSpec.Servers {
 		basePathSuggestions = append(basePathSuggestions, server.URL)
@@ -152,26 +152,37 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 		separateMappings = confirm("Generate mapping for each endpoint separately?")
 	}
 
-	fmt.Fprintln(os.Stderr, "Generating mappings...")
+	opts := &options.Options{
+		Namespace: targetNamespace,
+		Service: options.ServiceOptions{
+			Namespace: targetNamespace,
+			Name:      targetService,
+		},
+		Path: options.PathOptions{
+			Base:       basePath,
+			TrimPrefix: trimPrefix,
+			Split:      separateMappings,
+		},
+	}
+
+	cmd := fmt.Sprintf("kusk ambassador -i %s ", apiSpecPath)
+	cmd = cmd + fmt.Sprintf("--namespace=%s ", targetNamespace)
+	cmd = cmd + fmt.Sprintf("--service.namespace=%s ", targetNamespace)
+	cmd = cmd + fmt.Sprintf("--service.name=%s ", targetService)
+	cmd = cmd + fmt.Sprintf("--path.base=%s ", basePath)
+	if trimPrefix != "" {
+		cmd = cmd + fmt.Sprintf("--path.trim_prefix=%s ", trimPrefix)
+	}
+	if separateMappings {
+		cmd = cmd + fmt.Sprintf("--path.split ")
+	}
+
+	fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
+	fmt.Fprintln(os.Stderr, cmd)
 
 	var ag ambassador.Generator
 
-	mappings, err := ag.Generate(
-		&options.Options{
-			Namespace: targetNamespace,
-			Service: options.ServiceOptions{
-				Namespace: targetNamespace,
-				Name:      targetService,
-			},
-			Path: options.PathOptions{
-				Base:       basePath,
-				TrimPrefix: trimPrefix,
-				Split:      separateMappings,
-			},
-		},
-		apiSpec,
-	)
-
+	mappings, err := ag.Generate(opts, apiSpec)
 	if err != nil {
 		log.Fatalf("Failed to generate mappings: %s\n", err)
 	}
@@ -179,12 +190,10 @@ func flowAmbassador(apiSpec *openapi3.T, targetNamespace, targetService string) 
 	return mappings, nil
 }
 
-func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
+func flowLinkerd(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	clusterDomain := promptString("Cluster domain", "cluster.local")
 
-	var ld linkerd.Generator
-
-	return ld.Generate(&options.Options{
+	opts := &options.Options{
 		Namespace: targetNamespace,
 		Service: options.ServiceOptions{
 			Namespace: targetNamespace,
@@ -193,7 +202,20 @@ func flowLinkerd(apiSpec *openapi3.T, targetNamespace, targetService string) (st
 		Cluster: options.ClusterOptions{
 			ClusterDomain: clusterDomain,
 		},
-	}, apiSpec)
+	}
+
+	cmd := fmt.Sprintf("kusk linkerd -i %s ", apiSpecPath)
+	cmd = cmd + fmt.Sprintf("--namespace=%s ", targetNamespace)
+	cmd = cmd + fmt.Sprintf("--service.namespace=%s ", targetNamespace)
+	cmd = cmd + fmt.Sprintf("--service.name=%s ", targetService)
+	cmd = cmd + fmt.Sprintf("--cluster.cluster_domain=%s ", clusterDomain)
+
+	fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
+	fmt.Fprintln(os.Stderr, cmd)
+
+	var ld linkerd.Generator
+
+	return ld.Generate(opts, apiSpec)
 }
 
 func selectOneOf(label string, variants []string, withAdd bool) string {
