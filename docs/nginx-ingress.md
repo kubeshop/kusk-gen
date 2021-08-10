@@ -12,7 +12,7 @@ Flags:
       --service.name string                   target Service name
       --service.namespace string              namespace containing the target Service (default "default")
       --service.port int32                    target Service port (default 80)
-      --ingress.host string                   an Ingress Host to listen on
+      --host string                           an Ingress Host to listen on
       --nginx_ingress.rewrite_target string   a custom NGINX rewrite target
       --path.base string                      a base path for Service endpoints (default "/")
       --path.trim_prefix string               a prefix to trim from the URL before forwarding to the upstream Service
@@ -51,7 +51,7 @@ To override settings on the path or HTTP method level, you are required to use t
 |           Path Base          |           --path.base          |           path.base          |                                           Prefix for your resource routes                                          |               ❌               |
 |       Path Trim Prefix       |       --path.trim_prefix       |       path.trim_prefix       |                       Trim the specified prefix from URl before passing request onto service                       |               ❌               |
 |          Path split          |          --path.split          |          path.split          |                   Boolean; whether or not to force generator to generate a mapping for each path                   |               ❌               |
-|         Ingress Host         |         --ingress.host         |         ingress.host         |                             The value to set the host field to in the Ingress resource                             |               ❌               |
+|         Ingress Host         |         --host                 |         host                 |                             The value to set the host field to in the Ingress resource                             |               ❌               |
 | Nginx Ingress Rewrite Target | --nginx_ingress.rewrite_target | nginx_ingress.rewrite_target |                        Manually set the rewrite target for where traffic must be redirected                        |               ❌               |
 |        Request Timeout       |   --timeouts.request_timeout   |   timeouts.request_timeout   |                                           Total request timeout (seconds)                                          |               ✅               |
 |         Idle Timeout         |     --timeouts.idle_timeout    |     timeouts.idle_timeout    |                                          Idle connection timeout (seconds)                                         |               ✅               |
@@ -319,7 +319,7 @@ kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
 --service.name webapp \
 --service.port 7000 \
 --service.namespace my-service-namespace \
---ingress.host mycustomhost.com
+--host mycustomhost.com
 ```
 
 ### OpenAPI Specification
@@ -443,21 +443,20 @@ x-kusk:
     name: webapp
     namespace: booksapp
     port: 7000
-  ingress:
-    cors:
-      origins:
-        - http://foo.example
-        - http://bar.example
-      methods:
-        - POST
-        - GET
-        - OPTIONS
-      headers:
-        - Content-Type
-      credentials: true
-      expose_headers:
-        - X-Custom-Header
-      max_age: 86400
+  cors:
+    origins:
+      - http://foo.example
+      - http://bar.example
+    methods:
+      - POST
+      - GET
+      - OPTIONS
+    headers:
+      - Content-Type
+    credentials: true
+    expose_headers:
+      - X-Custom-Header
+    max_age: 86400
 paths:
   /:
     get: {}
@@ -508,18 +507,17 @@ x-kusk:
     name: webapp
     namespace: booksapp
     port: 7000
-  ingress:
-      cors:
-        methods:
-          - POST
-          - GET
-          - OPTIONS
-        headers:
-          - Content-Type
-        credentials: true
-        expose_headers:
-          - X-Custom-Header
-        max_age: 86400
+    cors:
+      methods:
+        - POST
+        - GET
+        - OPTIONS
+      headers:
+        - Content-Type
+      credentials: true
+      expose_headers:
+        - X-Custom-Header
+      max_age: 86400
 paths:
   /:
     get: {}
