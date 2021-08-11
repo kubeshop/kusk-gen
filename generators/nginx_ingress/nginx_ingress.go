@@ -114,7 +114,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			// if path-level CORS options are different, override with them
 			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-				if !reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
+				if !reflect.DeepEqual(options.CORSOptions{}, pathSubOpts.CORS) &&
+					!reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
 					corsOpts = pathSubOpts.CORS
 				}
 			}
@@ -124,9 +125,10 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			// take global Timeout options
 			timeoutOpts = opts.Timeouts
 
-			// if path-level CORS options are different, override with them
+			// if path-level Timeout options are different, override with them
 			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-				if !reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
+				if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) &&
+					!reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
 					timeoutOpts = pathSubOpts.Timeouts
 				}
 			}
@@ -142,7 +144,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
 			// if path has no parameter, just use path
-			pathField := g.generatePath(&opts.Path, &opts.NGINXIngress)
+			var pathField string
 			if openApiPathVariableRegex.MatchString(path) {
 				pathField = opts.Path.Base + string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
 
