@@ -2,6 +2,8 @@ package nginx_ingress
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"reflect"
 	"regexp"
 	"sort"
@@ -312,23 +314,11 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 		}
 
 		for method := range pathItem.Operations() {
-			if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
-				// an operation is disabled
-				if opSubOptions.Disabled {
-					return true
-				}
+			if _, ok := opts.OperationSubOptions[method+path]; ok {
+				log.New(os.Stderr, "WARN", log.Lmsgprefix).
+					Printf("HTTP Method level options detected which nginx-ingress doesn't support. These will be ignored")
 
-				// an operation has non-zero, different from global CORS options
-				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
-					!reflect.DeepEqual(opts.CORS, opSubOptions.CORS) {
-					return true
-				}
-
-				// an operation has non-zero, different from global timeouts options
-				if !reflect.DeepEqual(options.TimeoutOptions{}, opSubOptions.Timeouts) &&
-					!reflect.DeepEqual(opts.Timeouts, opSubOptions.Timeouts) {
-					return true
-				}
+				break // Only need to warn users once
 			}
 		}
 	}
