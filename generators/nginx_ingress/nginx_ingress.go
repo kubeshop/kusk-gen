@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -96,42 +97,75 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 	ingresses := make([]v1.Ingress, 0)
 
-	pathsGenerated := map[string]struct{}{}
-
 	if g.shouldSplit(opts, spec) {
-		for path, subOpts := range opts.PathSubOptions {
-			// Mark the path as having a resource generated for it
-			pathsGenerated[path] = struct{}{}
-
-			if subOpts.Disabled {
-				continue
+		for path := range spec.Paths {
+			if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
+				if pathSubOptions.Disabled {
+					continue
+				}
 			}
 
-			name := ingressResourceNameFromPath(path)
+			name := fmt.Sprintf("%s-%s", opts.Service.Name, ingressResourceNameFromPath(path))
 
-			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
-			// if path has no parameter, just use path
-			pathField := path
+			var corsOpts options.CORSOptions
+
+			// take global CORS options
+			corsOpts = opts.CORS
+
+			// if path-level CORS options are different, override with them
+			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+				if !reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
+					corsOpts = pathSubOpts.CORS
+				}
+			}
+
+			var timeoutOpts options.TimeoutOptions
+
+			// take global Timeout options
+			timeoutOpts = opts.Timeouts
+
+			// if path-level CORS options are different, override with them
+			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+				if !reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
+					timeoutOpts = pathSubOpts.Timeouts
+				}
+			}
+
+			// Get initial set of annotation based on current options
+			// will be modified next based on current path
 			annotations := g.generateAnnotations(
 				&opts.Path,
 				&opts.NGINXIngress,
-				&subOpts.CORS,
-				&subOpts.Timeouts,
+				&corsOpts,
+				&timeoutOpts,
 			)
 
+			// if path has a parameter, replace {param} with ([A-z0-9]+) and set use regex annotation to true
+			// if path has no parameter, just use path
+			pathField := g.generatePath(&opts.Path, &opts.NGINXIngress)
 			if openApiPathVariableRegex.MatchString(path) {
-				pathField = string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
+				pathField = opts.Path.Base + string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
 
 				// get the first capture group of regex. Given a path /books/{id}, will return /books/
 				rewrite := string(openApiPathVariableRegex.ReplaceAllLiteral([]byte(path), []byte("$1")))
 				annotations[rewriteTargetAnnotationKey] = rewrite
-				annotations["nginx.ingress.kubernetes.io/use-regex"] = "true"
+				annotations[useRegexAnnotationKey] = "true"
+			} else if path == "/" {
+				pathField = opts.Path.Base + "$"
+				annotations[rewriteTargetAnnotationKey] = "/"
+				annotations[useRegexAnnotationKey] = "true"
+			} else {
+				pathField = opts.Path.Base + path
+				annotations[rewriteTargetAnnotationKey] = path
 			}
+
+			// Replace // with /
+			pathField = strings.ReplaceAll(pathField, "//", "/")
 
 			ingress := g.newIngressResource(
 				name,
 				opts.Namespace,
-				opts.Path.Base+pathField,
+				pathField,
 				pathTypeExact,
 				annotations,
 				&opts.Service,
@@ -140,9 +174,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			ingresses = append(ingresses, ingress)
 		}
-	}
-
-	if len(pathsGenerated) == 0 || len(pathsGenerated) < len(spec.Paths) {
+	} else {
 		ingress := g.newIngressResource(
 			fmt.Sprintf("%s-ingress", opts.Service.Name),
 			opts.Namespace,
@@ -154,6 +186,14 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		)
 		ingresses = append(ingresses, ingress)
 	}
+
+	// We need to sort the ingresses as in the process of conversion of YAML to JSON
+	// the Go map's access mechanics randomize the order and therefore the output is shuffled.
+	// Not only it makes tests fail, it would also affect people who would use this in order to
+	// generate manifests and use them in GitOps processes
+	sort.Slice(ingresses, func(i, j int) bool {
+		return ingresses[i].Name < ingresses[j].Name
+	})
 
 	return buildOutput(ingresses)
 }
