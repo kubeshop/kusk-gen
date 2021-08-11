@@ -1009,6 +1009,9 @@ spec:
 				Credentials:   nil,
 				MaxAge:        120,
 			},
+			Timeouts: options.TimeoutOptions{
+				RequestTimeout: 5,
+			},
 			PathSubOptions: map[string]options.SubOptions{
 				"/pet": {
 					CORS: options.CORSOptions{
@@ -1067,6 +1070,7 @@ spec:
     exposed_headers: X-Custom-Header,X-Other-Custom-Header
     credentials: false
     max_age: "240"
+  timeout_ms: 5000
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1086,6 +1090,7 @@ spec:
     exposed_headers: X-Custom-Header,X-Other-Custom-Header
     credentials: false
     max_age: "120"
+  timeout_ms: 5000
 `,
 	},
 	{

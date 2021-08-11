@@ -129,16 +129,18 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				// take global CORS options
 				corsOpts = opts.CORS
 
-				// if path-level CORS options are different, override with them
+				// if non-zero path-level CORS options are different, override with them
 				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-					if !reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
+					if !reflect.DeepEqual(options.CORSOptions{}, pathSubOpts.CORS) &&
+						!reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
 						corsOpts = pathSubOpts.CORS
 					}
 				}
 
-				// if operation-level CORS options are different, override them
+				// if non-zero operation-level CORS options are different, override them
 				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-					if !reflect.DeepEqual(corsOpts, opSubOpts.CORS) {
+					if !reflect.DeepEqual(options.CORSOptions{}, opSubOpts.CORS) &&
+						!reflect.DeepEqual(corsOpts, opSubOpts.CORS) {
 						corsOpts = opSubOpts.CORS
 					}
 				}
@@ -154,16 +156,18 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				// take global timeout options
 				timeoutOpts = opts.Timeouts
 
-				// if path-level timeout options are different, override with them
+				// if non-zero path-level timeout options are different, override with them
 				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-					if !reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
+					if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) &&
+						!reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
 						timeoutOpts = pathSubOpts.Timeouts
 					}
 				}
 
-				// if operation-level timeout options are different, override them
+				// if non-zero operation-level timeout options are different, override them
 				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-					if !reflect.DeepEqual(timeoutOpts, opSubOpts.Timeouts) {
+					if !reflect.DeepEqual(options.TimeoutOptions{}, opSubOpts.Timeouts) &&
+						!reflect.DeepEqual(timeoutOpts, opSubOpts.Timeouts) {
 						timeoutOpts = opSubOpts.Timeouts
 					}
 				}
