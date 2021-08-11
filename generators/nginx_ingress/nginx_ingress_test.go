@@ -324,7 +324,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /books/$1
     nginx.ingress.kubernetes.io/use-regex: "true"
   creationTimestamp: null
-  name: books-id
+  name: webapp-books-id
   namespace: booksapp
 spec:
   ingressClassName: nginx
@@ -351,9 +351,10 @@ metadata:
     nginx.ingress.kubernetes.io/cors-expose-headers: X-Custom-Header, X-Other-Custom-Header
     nginx.ingress.kubernetes.io/cors-max-age: "86400"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
   creationTimestamp: null
-  name: webapp-ingress
+  name: webapp-root
   namespace: booksapp
 spec:
   ingressClassName: nginx
@@ -365,8 +366,8 @@ spec:
             name: webapp
             port:
               number: 7000
-        path: /bookstore(/|$)(.*)
-        pathType: Prefix
+        path: /bookstore$
+        pathType: Exact
 status:
   loadBalancer: {}
 `,

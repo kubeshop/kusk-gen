@@ -15,6 +15,8 @@ const (
 
 	// CORS
 	corsEnableAnnotationKey = "nginx.ingress.kubernetes.io/enable-cors"
+
+	useRegexAnnotationKey = "nginx.ingress.kubernetes.io/use-regex"
 )
 
 func (g *Generator) generateAnnotations(
