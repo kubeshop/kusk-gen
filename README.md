@@ -8,26 +8,22 @@ Kusk (_coachman in Swedish_) is **THE** tool that treats your  OpenAPI or Swagge
 supplementary Kubernetes resources for your REST APIs in regard to mappings, security, monitoring, etc.
 
 Kusk can even inspect what's installed in a cluster for tools it supports generating resources for and 
-automatically generate those resources based off your OpenAPI specification.
+automatically generate those resources based off your OpenAPI specification (check [kusk wizard](#wizard) ).
 
-# Demo-Preview
-TODO
-but for now
-
-![Random GIF](https://media.giphy.com/media/ZVik7pBtu9dNS/giphy.gif)
+![kusk-overview](https://user-images.githubusercontent.com/14029650/129193622-b5f06b8d-845d-4b1e-adaf-34dd7b3e0108.png)
 
 
 # Table of contents
-
-- [Kusk](#Kusk)
-- [Demo-Preview](#demo-preview)
-- [Table of contents](#table-of-contents)
 - [Installation](#installation)
 - [Usage](#usage)
   - [Ambassador Mappings](docs/ambassador.md)
   - [Linkerd Service Profiles](docs/linkerd.md)
   - [Nginx-Ingress Ingress Resources](docs/nginx-ingress.md)
+- [OpenAPI extension](#openapi-extension)
+- [Wizard](#wizard)
+- [GitOps](#gitops)
 - [Development](#development)
+  - [Adding a generator](#adding-a-generator)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -76,6 +72,56 @@ Flags:
 
 Use "kusk [command] --help" for more information about a command.
 ```
+
+# OpenAPI extension
+Kusk comes with an [OpenAPI extension](https://swagger.io/specification/#specification-extensions) to accommodate everything within an OpenAPI spec to make that a real source of truth for all objects that can be generated. Every single CLI option can be set within the `x-kusk` extension, i.e. (`x-kusk` is at the spec's root):
+
+```yaml
+x-kusk:
+  cors:
+    origins:
+      - http://foo.example
+    methods:
+      - POST
+      - GET
+      - OPTIONS
+    headers:
+      - Content-Type
+    credentials: true
+    expose_headers:
+      - X-Custom-Header
+    max_age: 86400
+  service:
+    name: petstore
+    port: 80
+  path:
+    base: /petstore/api/v3
+    trim_prefix: /petstore
+```
+And more to that, `x-kusk` extension can also be used to overwrite specific options at the path/operation level, i.e.:
+
+```yaml
+paths:
+  "/pet":
+    put:
+      x-kusk:
+        disabled: true
+      tags:
+        - pet
+      summary: Update an existing pet
+      description: Update an existing pet by Id
+      operationId: updatePet
+```
+Please review the generator's documentation to see what can be overwritten.
+
+# Wizard
+Kusk comes with a `kusk wizard` interactive CLI to help you get started!
+
+TODO asciicinema gif
+
+# GitOps
+Kusk can be integrated within your GitOps environment to make your OpenAPI specification a real source of truth. As of now we support using kusk as  as Please check the [guide](./docs/argocd.md)
+
 # Development
 [(Back to top)](#table-of-contents)
 
@@ -100,6 +146,11 @@ To run the tests:
 ```shell
 go test ./...
 ```
+
+## Adding a generator
+To add a generator one would need to implement [`generators.Interface`](./generators/interface.go) and register it's implementation by adding an element to [`generators.Registry`](./generators/generators.go). The CLI command would be constructed automatically and the parsed OpenAPI spec would be passed into the generator, along with path/method options extracted from `x-kusk` extension. The CLI options provided by the generator _must_ conform to the same naming scheme as JSON/YAML tags on options passed from `x-kusk` extension for automatic merge to work.
+
+Check out [generators](./generators) folder and [Options](./options/options.go) for the examples.
 
 # Contribute
 [(Back to top)](#table-of-contents)
