@@ -331,8 +331,7 @@ x-kusk:
     name: webapp
     namespace:  my-service-namespace
     port: 7000
-  ingress:
-    host: mycustomhost.com
+  host: mycustomhost.com
 paths:
   /:
     get: {}

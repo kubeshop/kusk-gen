@@ -4,21 +4,20 @@ x-kusk:
   path:
     base: /bookstore
     trim_prefix: /bookstore
-  ingress:
-    cors:
-      origins:
-        - http://foo.example
-        - http://bar.example
-      methods:
-        - POST
-        - GET
-        - OPTIONS
-      headers:
-        - Content-Type
-      credentials: true
-      expose_headers:
-        - X-Custom-Header
-      max_age: 86400
+  cors:
+    origins:
+      - http://foo.example
+      - http://bar.example
+    methods:
+      - POST
+      - GET
+      - OPTIONS
+    headers:
+      - Content-Type
+    credentials: true
+    expose_headers:
+      - X-Custom-Header
+    max_age: 86400
   service:
     name: webapp
     namespace: booksapp
