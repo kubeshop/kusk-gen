@@ -253,7 +253,7 @@ spec:
   service: booksapp.my-service-namespace:7000
   rewrite: ""
   timeout_ms: 120000
-  idle_timeout_ms 120000
+  idle_timeout_ms: 120000
 ```
 
 ## CORS
@@ -268,21 +268,20 @@ x-kusk:
     name: webapp
     namespace: booksapp
     port: 7000
-  ingress:
-    cors:
-      origins:
-        - http://foo.example
-        - http://bar.example
-      methods:
-        - POST
-        - GET
-        - OPTIONS
-      headers:
-        - Content-Type
-      credentials: true
-      expose_headers:
-        - X-Custom-Header
-      max_age: 86400
+  cors:
+    origins:
+      - http://foo.example
+      - http://bar.example
+    methods:
+      - POST
+      - GET
+      - OPTIONS
+    headers:
+      - Content-Type
+    credentials: true
+    expose_headers:
+      - X-Custom-Header
+    max_age: 86400
 paths:
   /:
     get: {}
@@ -322,18 +321,17 @@ x-kusk:
     name: webapp
     namespace: booksapp
     port: 7000
-  ingress:
-      cors:
-        methods:
-          - POST
-          - GET
-          - OPTIONS
-        headers:
-          - Content-Type
-        credentials: true
-        expose_headers:
-          - X-Custom-Header
-        max_age: 86400
+  cors:
+    methods:
+      - POST
+      - GET
+      - OPTIONS
+    headers:
+      - Content-Type
+    credentials: true
+    expose_headers:
+      - X-Custom-Header
+    max_age: 86400
 paths:
   /:
     get: {}
