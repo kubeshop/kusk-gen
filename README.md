@@ -7,7 +7,7 @@ relate to their applications.
 Kusk (_coachman in Swedish_) is **THE** tool that treats your  OpenAPI or Swagger specification as a source of truth to generate
 supplementary Kubernetes resources for your REST APIs in regard to mappings, security, monitoring, etc.
 
-Kusk can even inspect what's installed in a cluster for tools it supports generating resources for and 
+Kusk can even inspect what's installed in a cluster for tools it supports generating resources for and
 automatically generate those resources based off your OpenAPI specification (check [kusk wizard](#wizard) ).
 
 ![kusk-overview](https://user-images.githubusercontent.com/14029650/129193622-b5f06b8d-845d-4b1e-adaf-34dd7b3e0108.png)
@@ -46,7 +46,7 @@ go install
 # Usage
 [(Back to top)](#table-of-contents)
 
-For more comprehensive instructions on individual generators, please refer to the dedicated document in the docs folder 
+For more comprehensive instructions on individual generators, please refer to the dedicated document in the docs folder
 for that generator.
 
 For a run-through of what Kusk can do with the tools already installed in your cluster run:
@@ -116,11 +116,10 @@ Please review the generator's documentation to see what can be overwritten.
 
 # Wizard
 Kusk comes with a `kusk wizard` interactive CLI to help you get started!
-
-TODO asciicinema gif
+![wizard-gif](./docs/kusk-wizard.svg)
 
 # GitOps
-Kusk can be integrated within your GitOps environment to make your OpenAPI specification a real source of truth. As of now we support using kusk as  as Please check the [guide](./docs/argocd.md)
+Kusk can be integrated within your GitOps environment to make your OpenAPI specification a real source of truth. As of now we support using kusk as an ArgoCD configuration management plugin. Please check the [guide](./docs/argocd.md)
 
 # Development
 [(Back to top)](#table-of-contents)
