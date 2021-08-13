@@ -1,4 +1,6 @@
 # ArgoCD
+![image](https://user-images.githubusercontent.com/14029650/129344427-1217687a-1d9c-490c-b877-d14d5e2638d9.png)
+
 It is possible to make your OpenAPI schema the real source of truth for your K8s configurations with Kusk - by using it as an ArgoCD's [custom tool](https://argoproj.github.io/argo-cd/operator-manual/custom_tools)!
 
 GitOps approach will allow you to use ArgoCD to automatically generate configurations in a determinative way based off your OpenAPI schema that you can store in Git to easily version, review and rollback your APIs. ArgoCD will take care of automatically syncing your configurations, while Kusk will happily generate it for you every time you make a change.
