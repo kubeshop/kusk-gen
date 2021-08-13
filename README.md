@@ -1,14 +1,18 @@
 # Kusk
 <!-- Add buttons here -->
 
-Developers deploying their REST APIs in Kubernetes shouldn't have to worry about messing with resources that do not directly
-relate to their applications.
+Developers deploying their REST APIs in Kubernetes shouldn't have to worry about managing resources that do not directly
+relate to their applications or services.
 
-Kusk (_coachman in Swedish_) is **THE** tool that treats your  OpenAPI or Swagger specification as a source of truth to generate
-supplementary Kubernetes resources for your REST APIs in regard to mappings, security, monitoring, etc.
+Kusk (_coachman in Swedish_) treats your OpenAPI/Swagger definition as a source of truth for generating 
+supplementary Kubernetes resources for your REST APIs in regard to mappings, security, traffic-control, monitoring, etc.
 
-Kusk can even inspect what's installed in a cluster for tools it supports generating resources for and
-automatically generate those resources based off your OpenAPI specification (check [kusk wizard](#wizard) ).
+- The [Kusk wizard](#wizard) can inspect your cluster for the tools it supports and generate corresponding
+  resources automatically.
+- the [Kusk OpenAPI extension](#openapi-extension) allows you to specify QoS and k8s related metadata which will be used 
+  to configure your cluster accordingly.
+- Kusk plays nicely with both manual and automated/GitOps/CD workflows (see examples below).
+- The underlying architecture makes it straight-forward to [add new generators](#adding-a-custom-generator).
 
 ![kusk-overview](https://user-images.githubusercontent.com/14029650/129193622-b5f06b8d-845d-4b1e-adaf-34dd7b3e0108.png)
 
@@ -23,7 +27,7 @@ automatically generate those resources based off your OpenAPI specification (che
 - [Wizard](#wizard)
 - [GitOps](#gitops)
 - [Development](#development)
-  - [Adding a generator](#adding-a-generator)
+  - [Adding a generator](#adding-a-custom-generator)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -45,9 +49,6 @@ go install
 
 # Usage
 [(Back to top)](#table-of-contents)
-
-For more comprehensive instructions on individual generators, please refer to the dedicated document in the docs folder
-for that generator.
 
 For a run-through of what Kusk can do with the tools already installed in your cluster run:
 `kusk wizard -i my-openapi-spec.yaml`
@@ -72,6 +73,9 @@ Flags:
 
 Use "kusk [command] --help" for more information about a command.
 ```
+
+For more comprehensive instructions on individual generators, please refer to the dedicated document in the docs folder
+for that generator.
 
 # OpenAPI extension
 Kusk comes with an [OpenAPI extension](https://swagger.io/specification/#specification-extensions) to accommodate everything within an OpenAPI spec to make that a real source of truth for all objects that can be generated. Every single CLI option can be set within the `x-kusk` extension, i.e. (`x-kusk` is at the spec's root):
@@ -146,15 +150,26 @@ To run the tests:
 go test ./...
 ```
 
-## Adding a generator
-To add a generator one would need to implement [`generators.Interface`](./generators/interface.go) and register it's implementation by adding an element to [`generators.Registry`](./generators/generators.go). The CLI command would be constructed automatically and the parsed OpenAPI spec would be passed into the generator, along with path/method options extracted from `x-kusk` extension. The CLI options provided by the generator _must_ conform to the same naming scheme as JSON/YAML tags on options passed from `x-kusk` extension for automatic merge to work.
+## Adding a custom generator
+
+To add a generator for a tool not yet supported by Kusk one would need to implement [`generators.Interface`](./generators/interface.go) 
+and register it's implementation by adding an element to [`generators.Registry`](./generators/generators.go). 
+The CLI command would be constructed automatically and the parsed OpenAPI spec would be passed into the generator, 
+along with path/method options extracted from `x-kusk` extension. The CLI options provided by the generator _must_ conform to 
+the same naming scheme as JSON/YAML tags on options passed from `x-kusk` extension for automatic merge to work.
 
 Check out [generators](./generators) folder and [Options](./options/options.go) for the examples.
 
 # Contribute
 [(Back to top)](#table-of-contents)
 
-Please refer to our organisation wide contributing guide for comprehensive instructions [here](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md)
+- Check out our [Contributor Guide](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md) and
+  [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
+- Fork/Clone the repo and make sure you can run it as shown above
+- Check out open [issues](https://github.com/kubeshop/monokle/issues) here on GitHub
+- Get in touch with the team by starting a [discussion](https://github.com/kubeshop/kusk/discussions) on what you want to help with 
+  or open an issue of your own that you would like to contribute to the project.
+- Fly like the wind!
 
 # License
 [(Back to top)](#table-of-contents)
