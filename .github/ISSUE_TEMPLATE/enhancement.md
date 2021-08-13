@@ -1,6 +1,6 @@
 ---
 name: Enhancement
-about: Suggest an enhancement to existing functionality
+about: Suggest an enhancement to existing Kusk functionality
 title: ''
 labels: ''
 assignees: ''
@@ -11,4 +11,4 @@ assignees: ''
 A clear and concise description of what you want to happen, and why.
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Add any other context, CLI input/output, etc. about the enhancement here.
