@@ -10,8 +10,9 @@ supplementary Kubernetes resources for your REST APIs in regard to mappings, sec
 - The [Kusk wizard](#wizard) can inspect your cluster for the tools it supports and generate corresponding
   resources automatically.
 - the [Kusk OpenAPI extension](#openapi-extension) allows you to specify QoS and k8s related metadata which will be used 
-  to configure your cluster accordingly
-- Kusk plays nicely with both manual and automated/GitOps/CD workflows - see examples below!
+  to configure your cluster accordingly.
+- Kusk plays nicely with both manual and automated/GitOps/CD workflows (see examples below).
+- The underlying architecture makes it straight-forward to [add new generators](#adding-a-custom-generator).
 
 ![kusk-overview](https://user-images.githubusercontent.com/14029650/129193622-b5f06b8d-845d-4b1e-adaf-34dd7b3e0108.png)
 
@@ -26,7 +27,7 @@ supplementary Kubernetes resources for your REST APIs in regard to mappings, sec
 - [Wizard](#wizard)
 - [GitOps](#gitops)
 - [Development](#development)
-  - [Adding a generator](#adding-a-generator)
+  - [Adding a generator](#adding-a-custom-generator)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -150,6 +151,7 @@ go test ./...
 ```
 
 ## Adding a custom generator
+
 To add a generator for a tool not yet supported by Kusk one would need to implement [`generators.Interface`](./generators/interface.go) 
 and register it's implementation by adding an element to [`generators.Registry`](./generators/generators.go). 
 The CLI command would be constructed automatically and the parsed OpenAPI spec would be passed into the generator, 
@@ -168,8 +170,6 @@ Check out [generators](./generators) folder and [Options](./options/options.go) 
 - Get in touch with the team by starting a [discussion](https://github.com/kubeshop/kusk/discussions) on what you want to help with 
   or open an issue of your own that you would like to contribute to the project.
 - Fly like the wind!
-
-
 
 # License
 [(Back to top)](#table-of-contents)
