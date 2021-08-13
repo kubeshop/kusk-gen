@@ -1,0 +1,43 @@
+# Installation
+
+#### Homebrew
+TODO
+
+#### Latest release on Github
+`go install github.com/kubeshop/kusk@$VERSION`
+
+#### From source
+```shell
+git clone git@github.com:kubeshop/kusk.git && \
+cd kusk && \
+go install
+```
+
+# Usage
+
+For a run-through of what Kusk can do with the tools already installed in your cluster run:
+`kusk wizard -i my-openapi-spec.yaml`
+
+Or use one of our examples
+`kusk wizard -i examples/booksapp/booksapp.yaml`
+
+```shell
+Usage:
+  kusk [command]
+
+Available Commands:
+  ambassador    Generates Ambassador Mappings for your service
+  completion    generate the autocompletion script for the specified shell
+  help          Help about any command
+  linkerd       Generates Linkerd Service Profiles for your service
+  nginx-ingress Generates nginx-ingress resources
+  wizard        Connects to current Kubernetes cluster and lists available generators
+
+Flags:
+  -h, --help   help for kusk
+
+Use "kusk [command] --help" for more information about a command.
+```
+
+For more comprehensive instructions on individual generators, please refer to the dedicated document in the docs folder
+for that generator.
