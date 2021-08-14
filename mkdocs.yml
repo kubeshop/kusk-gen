@@ -1,0 +1,29 @@
+site_name: Kusk
+site_description: 'Make OpenAPI the source of truth for K8s configuration'
+site_author: 'Kubeshop Kusk Team'
+docs_dir: docs/
+repo_name: 'kubeshop/kusk'
+repo_url: 'https://github.com/kubehsop/kusk'
+
+theme:
+  name: mkdocs
+  locale: en
+  highlightjs: true
+  hljs_languages:
+    - yaml
+
+nav:
+  - User Guide:
+    - Getting Started: getting-started.md
+    - OpenAPI Extension: openapi-extension.md
+    - Using with ArgoCD: argocd.md
+
+  - Generators:
+    - Ambassador: ambassador.md
+    - Linkerd: linkerd.md
+    - Nginx-Ingress: nginx-ingress.md
+
+  - For Developers: development.md
+
+copyright: Copyright &copy; 2021 <a href="https://kubeshop.io">Kubeshop</a>
+
