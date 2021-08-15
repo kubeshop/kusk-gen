@@ -6,17 +6,17 @@ repo_name: 'kubeshop/kusk'
 repo_url: 'https://github.com/kubehsop/kusk'
 
 theme:
-  name: mkdocs
+  name: material
   locale: en
   highlightjs: true
   hljs_languages:
     - yaml
 
 nav:
-  - User Guide:
-    - Getting Started: getting-started.md
-    - OpenAPI Extension: openapi-extension.md
-    - Using with ArgoCD: argocd.md
+  - Welcome: index.md
+  - Getting Started: getting-started.md
+  - OpenAPI Extension: openapi-extension.md
+  - Using with ArgoCD: argocd.md
 
   - Generators:
     - Ambassador: ambassador.md

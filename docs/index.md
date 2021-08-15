@@ -1,4 +1,4 @@
-# Kusk
+# Welcome to Kusk
 <!-- Add buttons here -->
 
 Developers deploying their REST APIs in Kubernetes shouldn't have to worry about managing resources that do not directly
