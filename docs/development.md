@@ -22,7 +22,7 @@ To run the tests:
 go test ./...
 ```
 
-# Adding a custom generator
+## Adding a custom generator
 
 To add a generator for a tool not yet supported by Kusk one would need to implement [`generators.Interface`](https://github.com/kubeshop/kusk/blob/main/generators/interface.go)
 and register it's implementation by adding an element to [`generators.Registry`](https://github.com/kubeshop/kusk/blob/main/generators/generators.go).
@@ -32,7 +32,7 @@ the same naming scheme as JSON/YAML tags on options passed from `x-kusk` extensi
 
 Check out [generators](https://github.com/kubeshop/kusk/blob/main/generators) folder and [Options](https://github.com/kubeshop/kusk/blob/main/options/options.go) for the examples.
 
-# If you want to contribute
+##ß If you want to contribute
 
 - Check out our [Contributor Guide](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md) and
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)

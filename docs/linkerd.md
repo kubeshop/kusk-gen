@@ -26,15 +26,6 @@ CLI flags apply only at the global level i.e. applies to all paths and methods.
 
 To override settings on the path or HTTP method level, you are required to use the x-kusk extension at that path in your API specification.
 
-# Table of contents
-
-- [Full Options Reference](#full-options-reference)
-- [Basic Usage](#basic-usage)
-- [Base Path](#base-path)
-- [Change cluster domain](#change-cluster-domain)
-- [Setting timeouts](#setting-timeouts)
-- [Basic Path settings override](#basic-path-settings-override)
-
 ## Full Options Reference
 |           Name          |         CLI Option         | OpenAPI Spec x-kusk label |                                 Descriptions                                 | Overwritable at path / method  |
 |:-----------------------:|:--------------------------:|:-------------------------:|:----------------------------------------------------------------------------:|:------------------------------:|

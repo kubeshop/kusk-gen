@@ -28,17 +28,8 @@ CLI flags apply only at the global level i.e. applies to all paths and methods.
 
 To override settings on the path or HTTP method level, you are required to use the x-kusk extension at that path in your API specification.
 
-# Table of contents
-
-- [Full Options Reference](#full-options-reference)
-- [Basic Usage](#basic-usage)
-- [Split Path](#split-path)
-- [Base Path and Trim Prefix](#base-path-and-trim-prefix)
-- [Setting timeouts](#setting-timeouts)
-- [CORS](#cors)
-- [Basic Path settings override](#basic-path-settings-override)
-
 ## Full Options Reference
+
 |           Name          |         CLI Option         | OpenAPI Spec x-kusk label |                                                    Descriptions                                                    | Overwritable at path / method  |
 |:-----------------------:|:--------------------------:|:-------------------------:|:------------------------------------------------------------------------------------------------------------------:|:------------------------------:|
 | OpenAPI or Swagger File |            --in            |            N/A            |                                  Location of the OpenAPI or Swagger specification                                  |                ❌               |
@@ -59,7 +50,9 @@ To override settings on the path or HTTP method level, you are required to use t
 |       CORS Max Age      |             N/A            |        cors.max_age       | Integer:how long the response to the preflight request can be cached for without sending another preflight request |                ✅               |
 
 ## Basic Usage
+
 ### CLI Flags
+
 ```shell
 kusk ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
@@ -69,6 +62,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 ```
 
 ### OpenAPI Specification
+
 ```yaml
 openapi: 3.0.1
 x-kusk:
@@ -84,6 +78,7 @@ paths:
 ```
 
 ### Sample Output
+
 ```yaml
 ---
 apiVersion: getambassador.io/v2
@@ -98,10 +93,12 @@ spec:
 ```
 
 ## Split Path
+
 By setting split path to true, kusk will generate a mapping per route specified in the 
 provided OpenAPI specification
 
 ### CLI Flags
+
 ```shell
 kusk ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
@@ -112,6 +109,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 ```
 
 ### OpenAPI Specification
+
 ```yaml
 openapi: 3.0.1
 x-kusk:
@@ -132,6 +130,7 @@ paths:
 ```
 
 ### Sample Output
+
 ```yaml
 ---
 apiVersion: getambassador.io/v2
@@ -158,12 +157,14 @@ spec:
 ```
 
 ## Base Path and Trim Prefix
+
 Setting the Base path option allows your service to be identified with the base path acting as a prefix.
 
 Setting the trim prefix options will instruct ambassador to trim the prefix before sending the 
 request onto the service.
 
 ### CLI Flags
+
 ```shell
 kusk ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
@@ -175,6 +176,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 ```
 
 ### OpenAPI Specification
+
 ```yaml
 openapi: 3.0.1
 x-kusk:
@@ -193,6 +195,7 @@ paths:
 ```
 
 ### Sample Output
+
 ```yaml
 ---
 apiVersion: getambassador.io/v2
@@ -209,9 +212,11 @@ spec:
 ```
 
 ## Setting timeouts
+
 kusk allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
 
 ### CLI Flags
+
 ```shell
 kusk ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
@@ -223,6 +228,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 ```
 
 ### OpenAPI Specification
+
 ```yaml
 openapi: 3.0.1
 x-kusk:
@@ -241,6 +247,7 @@ paths:
 ```
 
 ### Sample Output
+
 ```yaml
 ---
 apiVersion: getambassador.io/v2
@@ -257,9 +264,11 @@ spec:
 ```
 
 ## CORS
+
 Via the x-kusk extension, you can set cors policies on your resources
 
 ### OpenAPI Specification
+
 ```yaml
 openapi: 3.0.1
 x-kusk:
@@ -289,6 +298,7 @@ paths:
 ```
 
 ### Sample Output
+
 ```yaml
 ---
 apiVersion: getambassador.io/v2
@@ -310,9 +320,11 @@ spec:
 ```
 
 ## Basic Path settings override
+
 For this example, let's assume that one of the paths in the API specification should have different CORS headers than the rest.
 
 ### OpenAPI Specification
+
 ```yaml
 openapi: 3.0.1
 x-kusk:
@@ -351,6 +363,7 @@ paths:
 ```
 
 ### Sample Output
+
 ```yaml
 ---
 apiVersion: getambassador.io/v2

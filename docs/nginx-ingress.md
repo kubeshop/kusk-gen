@@ -26,19 +26,7 @@ All options that can be set via flags can also be set using our `x-kusk` OpenAPI
 
 CLI flags apply only at the global level i.e. applies to all paths and methods.
 
-To override settings on the path or HTTP method level, you are required to use the x-kusk extension at that path in your API specification.
-
-# Table of contents
-
-- [Full Options Reference](#full-options-reference)
-- [Basic Usage](#basic-usage)
-- [Split Path](#split-path)
-- [Base Path and Trim Prefix](#base-path-and-trim-prefix)
-- [Setting the rewrite target](#setting-the-rewrite-target)
-- [Setting the Host](#setting-the-host)
-- [Setting timeouts](#setting-timeouts)
-- [CORS](#cors)
-- [Basic Path settings override](#basic-path-settings-override)
+To override settings on the path or HTTP method level, you are required to use the x-kusk extension at that path in your API specification.ß
 
 ## Full Options Reference
 |             Name             |           CLI Option           |   OpenAPI Spec x-kusk label  |                                                    Descriptions                                                    | Overwritable at path / method |
