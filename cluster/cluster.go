@@ -100,3 +100,19 @@ func (c *Client) DetectLinkerd() (bool, error) {
 
 	return true, nil
 }
+
+func (c *Client) DetectNginxIngress() (bool, error) {
+	_, err :=
+		c.cs.AppsV1().
+			Deployments("ingress-nginx").
+			Get(context.Background(), "ingress-nginx-controller", metav1.GetOptions{})
+	if err == nil {
+		return true, nil
+	}
+
+	if !errors.IsNotFound(err) {
+		return false, fmt.Errorf("error fetching nginx-ingress deployments: %w", err)
+	}
+
+	return false, nil
+}
