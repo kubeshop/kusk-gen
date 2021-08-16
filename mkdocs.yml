@@ -4,6 +4,7 @@ site_author: 'Kubeshop Kusk Team'
 docs_dir: docs/
 repo_name: 'kubeshop/kusk'
 repo_url: 'https://github.com/kubeshop/kusk'
+edit_uri: blob/main/docs/
 
 theme:
   name: material
