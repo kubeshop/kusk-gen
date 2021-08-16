@@ -3,6 +3,8 @@ name: Go
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches: [ main ]
 
