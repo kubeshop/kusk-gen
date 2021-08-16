@@ -8,6 +8,8 @@ relate to their applications or services.
 Kusk (_coachman in Swedish_) treats your OpenAPI/Swagger definition as a source of truth for generating 
 supplementary Kubernetes resources for your REST APIs in regard to mappings, security, traffic-control, monitoring, etc.
 
+Read the [Introductory blog-post](https://medium.com/kubeshop-i/hello-kusk-openapi-for-kubernetes-19be94fc1e91) to get an overview.
+
 ![kusk-overview](https://user-images.githubusercontent.com/14029650/129193622-b5f06b8d-845d-4b1e-adaf-34dd7b3e0108.png)
 
 ## Quick Start
