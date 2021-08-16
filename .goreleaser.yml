@@ -31,3 +31,11 @@ release:
   # Tags that have the format v1.0.0-rc1 will mark the release as a pre-release (i.e. not ready for production)
   # Other tags will be marked as ready for production
   prerelease: auto
+brews:
+  -
+    tap:
+      owner: kubeshop
+      name: homebrew-kusk
+    description: Make your OpenAPI definition the source of truth for API resources in cluster
+    homepage: https://kusk.io
+    license: "MIT"
