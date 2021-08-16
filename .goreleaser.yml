@@ -36,7 +36,7 @@ brews:
     tap:
       owner: kubeshop
       name: homebrew-kusk
+      token: "{{ secrets.CI_BOT_TOKEN }}"
     description: Make your OpenAPI definition the source of truth for API resources in cluster
     homepage: https://kusk.io
     license: "MIT"
-    token: "{{ secrets.CI_BOT_TOKEN }}"
