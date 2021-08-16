@@ -15,6 +15,7 @@ import (
 	"github.com/kubeshop/kusk/cluster"
 	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/generators/linkerd"
+	"github.com/kubeshop/kusk/generators/nginx_ingress"
 	"github.com/kubeshop/kusk/options"
 )
 
@@ -79,6 +80,11 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 		return "", fmt.Errorf("failed to check if Linkerd is installed: %w", err)
 	}
 
+	nginxIngressFound, err := client.DetectNginxIngress()
+	if err != nil {
+		return "", fmt.Errorf("failed to check if nginx ingress is installed: %w", err)
+	}
+
 	if ambassadorFound {
 		servicesToSuggest = append(servicesToSuggest, "ambassador")
 		fmt.Fprintln(os.Stderr, "✔ Ambassador installation found")
@@ -87,6 +93,11 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 	if linkerdFound {
 		servicesToSuggest = append(servicesToSuggest, "ambassador")
 		fmt.Fprintln(os.Stderr, "✔ Linkerd installation found")
+	}
+
+	if nginxIngressFound {
+		servicesToSuggest = append(servicesToSuggest, "nginx-ingress")
+		fmt.Fprintln(os.Stderr, "✔ Nginx Ingress installation found")
 	}
 
 	var targetServiceNamespaceSuggestions []string
@@ -116,22 +127,35 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 		return flowAmbassador(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	case "linkerd":
 		return flowLinkerd(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
+	case "nginx-ingress":
+		return flowNginxIngress(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	}
 
 	return "", fmt.Errorf("unknown service")
 }
 
 func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T) (string, error) {
-	targetServiceNamespace := promptString("Enter namespace with your service", "default")
-	targetService := promptString("Enter your service name", "")
+	targetServiceNamespace := promptStringNonEmpty("Enter namespace with your service", "default")
+	targetService := promptStringNonEmpty("Enter your service name", "")
 
-	service := selectOneOf("Choose a service you want Kusk generate manifests for", []string{"ambassador", "linkerd"}, false)
+	service := selectOneOf(
+		"Choose a service you want Kusk generate manifests for",
+		[]string{
+			"ambassador",
+			"linkerd",
+			"nginx-ingress",
+		},
+		false,
+	)
 
 	switch service {
 	case "ambassador":
 		return flowAmbassador(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
 	case "linkerd":
 		return flowLinkerd(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
+	case "nginx-ingress":
+		return flowNginxIngress(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
+
 	}
 
 	return "", fmt.Errorf("unknown service")
@@ -144,7 +168,7 @@ func flowAmbassador(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, ta
 	}
 
 	basePath := selectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := promptString("Prefix to trim from the URL (rewrite)", basePath)
+	trimPrefix := promptStringNonEmpty("Prefix to trim from the URL (rewrite)", basePath)
 
 	separateMappings := false
 
@@ -191,7 +215,7 @@ func flowAmbassador(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, ta
 }
 
 func flowLinkerd(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
-	clusterDomain := promptString("Cluster domain", "cluster.local")
+	clusterDomain := promptStringNonEmpty("Cluster domain", "cluster.local")
 
 	opts := &options.Options{
 		Namespace: targetNamespace,
@@ -218,10 +242,64 @@ func flowLinkerd(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targe
 	return ld.Generate(opts, apiSpec)
 }
 
+func flowNginxIngress(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error){
+	var basePathSuggestions []string
+	for _, server := range apiSpec.Servers {
+		basePathSuggestions = append(basePathSuggestions, server.URL)
+	}
+
+	basePath := selectOneOf("Base path prefix", basePathSuggestions, true)
+	trimPrefix := promptString("Prefix to trim from the URL (rewrite)", "")
+
+	separateMappings := false
+	if basePath != "" {
+		separateMappings = confirm("Generate ingress resource for each endpoint separately?")
+	}
+
+	opts := &options.Options{
+		Namespace: targetNamespace,
+		Service: options.ServiceOptions{
+			Namespace: targetNamespace,
+			Name:      targetService,
+		},
+		Path: options.PathOptions{
+			Base:       basePath,
+			TrimPrefix: trimPrefix,
+			Split:      separateMappings,
+		},
+	}
+
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("kusk ambassador -i %s ", apiSpecPath))
+	sb.WriteString(fmt.Sprintf("--namespace=%s ", targetNamespace))
+	sb.WriteString(fmt.Sprintf("--service.namespace=%s ", targetNamespace))
+	sb.WriteString(fmt.Sprintf("--service.name=%s ", targetService))
+	sb.WriteString(fmt.Sprintf("--path.base=%s ", basePath))
+
+	if trimPrefix != "" {
+		sb.WriteString(fmt.Sprintf("--path.trim_prefix=%s ", trimPrefix))
+	}
+
+	if separateMappings {
+		sb.WriteString("--path.split ")
+	}
+
+	fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
+	fmt.Fprintln(os.Stderr, sb.String())
+
+	var ingressGenerator nginx_ingress.Generator
+	ingresses, err := ingressGenerator.Generate(opts, apiSpec)
+	if err != nil {
+		log.Fatalf("Failed to generate ingresses: %s\n", err)
+	}
+
+	return ingresses, nil
+}
+
 func selectOneOf(label string, variants []string, withAdd bool) string {
 	if len(variants) == 0 {
 		// it's better to show a prompt
-		return promptString(label, "")
+		return promptStringNonEmpty(label, "")
 	}
 
 	if withAdd {
@@ -246,6 +324,21 @@ func selectOneOf(label string, variants []string, withAdd bool) string {
 }
 
 func promptString(label, defaultString string) string {
+	p := promptui.Prompt{
+		Label:  label,
+		Stdout: os.Stderr,
+		Validate: func(s string) error {
+			return nil
+		},
+		Default: defaultString,
+	}
+
+	res, _ := p.Run()
+
+	return res
+}
+
+func promptStringNonEmpty(label, defaultString string) string {
 	p := promptui.Prompt{
 		Label:  label,
 		Stdout: os.Stderr,
