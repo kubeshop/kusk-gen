@@ -37,7 +37,7 @@ Check out [generators](https://github.com/kubeshop/kusk/blob/main/generators) fo
 - Check out our [Contributor Guide](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md) and
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
 - Fork/Clone the repo and make sure you can run it as shown above
-- Check out open [issues](https://github.com/kubeshop/monokle/issues) here on GitHub
+- Check out open [issues](https://github.com/kubeshop/kusk/issues) here on GitHub
 - Get in touch with the team by starting a [discussion](https://github.com/kubeshop/kusk/discussions) on what you want to help with
   or open an issue of your own that you would like to contribute to the project.
 - Fly like the wind!

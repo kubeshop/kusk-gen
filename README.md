@@ -22,6 +22,8 @@ cd kusk && \
 go install
 ```
 
+Read more at [Getting Started](https://kubeshop.github.io/kusk/getting-started/)
+
 ## Why Kusk?
 
 Using OpenAPI as the source-for-truth for client, servers, testing, documentation, etc. is a common approach when 
@@ -34,9 +36,9 @@ allowing you to
 ## Features
 
 - Kusk can inspect your cluster for the tools it supports and generate corresponding resources automatically.
-- the Kusk OpenAPI allows you to specify extended QoS and k8s related metadata which will be used
+- the Kusk [OpenAPI Extension](https://kubeshop.github.io/kusk/openapi-extension/) allows you to specify extended QoS and k8s related metadata which will be used
   to configure your cluster accordingly.
-- Kusk plays nicely with both manual and automated/GitOps/CD workflows (see examples below).
+- Kusk plays nicely with both manual and automated/GitOps/CD workflows.
 - The underlying architecture makes it straight-forward to extend Kusk with new generators
 
 Kusk currently supports
@@ -56,7 +58,7 @@ To learn more about Kusk check out the [complete documentation](https://kubeshop
 - Check out our [Contributor Guide](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md) and
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
 - Fork/Clone the repo and make sure you can run it as shown above
-- Check out open [issues](https://github.com/kubeshop/monokle/issues) here on GitHub
+- Check out open [issues](https://github.com/kubeshop/kusk/issues) here on GitHub
 - Get in touch with the team by starting a [discussion](https://github.com/kubeshop/kusk/discussions) on what you want to help with 
   or open an issue of your own that you would like to contribute to the project.
 - Fly like the wind!
