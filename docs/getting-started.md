@@ -1,7 +1,7 @@
 # Installation
 
 #### Homebrew
-TODO
+`brew install kubeshop/kusk/kusk`
 
 #### Latest release on Github
 `go install github.com/kubeshop/kusk@$VERSION`
