@@ -12,6 +12,9 @@ supplementary Kubernetes resources for your REST APIs in regard to mappings, sec
 
 ## Quick Start
 
+### Homebrew
+`brew install kubeshop/kusk/kusk`
+
 ### Latest release on Github
 `go install github.com/kubeshop/kusk@$VERSION`
 
