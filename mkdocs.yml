@@ -9,6 +9,8 @@ edit_uri: blob/main/docs/
 theme:
   name: material
   locale: en
+  analytics:
+    gtag: G-GJSMW2FLG0
   highlightjs: true
   hljs_languages:
     - yaml
