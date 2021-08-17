@@ -140,7 +140,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					Method:           method,
 					Path:             mappingPath,
 					Regex:            regex,
-					Host:             opts.Host,
+					Host:             host,
 				}
 
 				var corsOpts options.CORSOptions
