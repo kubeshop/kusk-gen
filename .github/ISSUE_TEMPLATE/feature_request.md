@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea or new feature for Kusk
 title: ''
-labels: ''
+labels: kind/feature
 assignees: ''
 
 ---
