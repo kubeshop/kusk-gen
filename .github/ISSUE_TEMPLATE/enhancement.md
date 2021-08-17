@@ -2,7 +2,7 @@
 name: Enhancement
 about: Suggest an enhancement to existing Kusk functionality
 title: ''
-labels: ''
+labels: kind/enhancement
 assignees: ''
 
 ---
