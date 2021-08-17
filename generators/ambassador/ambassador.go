@@ -78,6 +78,12 @@ func (g *Generator) Flags() *pflag.FlagSet {
 		"idle connection timeout (seconds)",
 	)
 
+	fs.String(
+		"host",
+		"",
+		"the Host header value to listen on",
+	)
+
 	return fs
 }
 
@@ -97,18 +103,30 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			basePath = ""
 		}
 
+		host := opts.Host
+
 		for path, pathItem := range spec.Paths {
-			if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
+			pathSubOptions, ok := opts.PathSubOptions[path]
+			if ok {
 				if pathSubOptions.Disabled {
 					continue
 				}
 			}
 
+			if pathSubOptions.Host != "" && pathSubOptions.Host != host {
+				host = pathSubOptions.Host
+			}
+
 			for method, operation := range pathItem.Operations() {
-				if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
+				opSubOptions, ok := opts.OperationSubOptions[method+path]
+				if ok {
 					if opSubOptions.Disabled {
 						continue
 					}
+				}
+
+				if opSubOptions.Host != "" && opSubOptions.Host != host {
+					host = opSubOptions.Host
 				}
 
 				mappingPath, regex := g.generateMappingPath(path, operation)
@@ -122,6 +140,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					Method:           method,
 					Path:             mappingPath,
 					Regex:            regex,
+					Host:             opts.Host,
 				}
 
 				var corsOpts options.CORSOptions
@@ -190,6 +209,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			TrimPrefix:       opts.Path.TrimPrefix,
 			RequestTimeout:   opts.Timeouts.RequestTimeout * 1000,
 			IdleTimeout:      opts.Timeouts.IdleTimeout * 1000,
+			Host: opts.Host,
+
 		}
 
 		// if global CORS options are defined, take them

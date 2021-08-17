@@ -9,6 +9,7 @@ import (
 type SubOptions struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
+	Host string `yaml:"host,omitempty" json:"host,omitempty"`
 	CORS     CORSOptions    `yaml:"cors,omitempty" json:"cors,omitempty"`
 	Timeouts TimeoutOptions `yaml:"timeouts,omitempty" json:"timeouts,omitempty"`
 }

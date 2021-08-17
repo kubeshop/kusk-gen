@@ -1224,4 +1224,46 @@ spec:
   idle_timeout_ms 43000
 `,
 	},
+	{
+		name: "host path set",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			Host: "somehost.io",
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  namespace: notdefault
+  service:
+    name: petstore
+  host: somehost.io
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore
+  namespace: default
+spec:
+  prefix: "/"
+  host: somehost.io
+  service: petstore.default:80
+  rewrite: ""
+`,
+	},
 }
