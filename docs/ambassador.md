@@ -30,24 +30,25 @@ To override settings on the path or HTTP method level, you are required to use t
 
 ## Full Options Reference
 
-|           Name          |         CLI Option         | OpenAPI Spec x-kusk label |                                                    Descriptions                                                    | Overwritable at path / method  |
-|:-----------------------:|:--------------------------:|:-------------------------:|:------------------------------------------------------------------------------------------------------------------:|:------------------------------:|
-| OpenAPI or Swagger File |            --in            |            N/A            |                                  Location of the OpenAPI or Swagger specification                                  |                ❌               |
-|        Namespace        |         --namespace        |         namespace         |                         the namespace in which to create the generated resources (Required)                        |                ❌               |
-|       Service Name      |       --service.name       |        service.name       |                              the name of the service running in Kubernetes (Required)                              |                ❌               |
-|    Service Namespace    |     --service.namespace    |     service.namespace     |                    The namespace where the service named above resides (default value: default)                    |                ❌               |
-|       Service Port      |       --service.port       |        service.port       |                                Port the service is listening on (default value: 80)                                |                ❌               |
-|        Path Base        |         --path.base        |         path.base         |                                           Prefix for your resource routes                                          |                ❌               |
-|     Path Trim Prefix    |     --path.trim_prefix     |      path.trim_prefix     |                       Trim the specified prefix from URl before passing request onto service                       |                ❌               |
-|        Path split       |        --path.split        |         path.split        |                   Boolean; whether or not to force generator to generate a mapping for each path                   |                ❌               |
-|     Request Timeout     | --timeouts.request_timeout |  timeouts.request_timeout |                                           Total request timeout (seconds)                                          |                ✅               |
-|       Idle Timeout      |   --timeouts.idle_timeout  |   timeouts.idle_timeout   |                                          Idle connection timeout (seconds)                                         |                ✅               |
-|       CORS Origins      |             N/A            |        cors.origins       |                                                  Array of origins                                                  |                ✅               |
-|       CORS Methods      |             N/A            |        cors.methods       |                                                  Array of methods                                                  |                ✅               |
-|       CORS Headers      |             N/A            |        cors.headers       |                                                  Array of headers                                                  |                ✅               |
-|    CORS ExposeHeaders   |             N/A            |    cors.expose_headers    |                                             Array of headers to expose                                             |                ✅               |
-|     CORS Credentials    |             N/A            |      cors.credentials     |                                 Boolean: enable credentials (default value: false)                                 |                ✅               |
-|       CORS Max Age      |             N/A            |        cors.max_age       | Integer:how long the response to the preflight request can be cached for without sending another preflight request |                ✅               |
+| Name                    | CLI Option                 | OpenAPI Spec x-kusk label | Descriptions                                                                                                       | Overwritable at path / method |
+|-------------------------|----------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------|-------------------------------|
+| OpenAPI or Swagger File | --in                       | N/A                       | Location of the OpenAPI or Swagger specification                                                                   | ❌                             |
+| Namespace               | --namespace                | namespace                 | the namespace in which to create the generated resources (Required)                                                | ❌                             |
+| Service Name            | --service.name             | service.name              | the name of the service running in Kubernetes (Required)                                                           | ❌                             |
+| Service Namespace       | --service.namespace        | service.namespace         | The namespace where the service named above resides (default value: default)                                       | ❌                             |
+| Service Port            | --service.port             | service.port              | Port the service is listening on (default value: 80)                                                               | ❌                             |
+| Path Base               | --path.base                | path.base                 | Prefix for your resource routes                                                                                    | ❌                             |
+| Path Trim Prefix        | --path.trim_prefix         | path.trim_prefix          | Trim the specified prefix from URl before passing request onto service                                             | ❌                             |
+| Path split              | --path.split               | path.split                | Boolean; whether or not to force generator to generate a mapping for each path                                     | ❌                             |
+| Host                    | --host                     | host                      | The value to set the host field to in the Mapping resource                                                         | ✅                             |
+| Request Timeout         | --timeouts.request_timeout | timeouts.request_timeout  | Total request timeout (seconds)                                                                                    | ✅                             |
+| Idle Timeout            | --timeouts.idle_timeout    | timeouts.idle_timeout     | Idle connection timeout (seconds)                                                                                  | ✅                             |
+| CORS Origins            | N/A                        | cors.origins              | Array of origins                                                                                                   | ✅                             |
+| CORS Methods            | N/A                        | cors.methods              | Array of methods                                                                                                   | ✅                             |
+| CORS Headers            | N/A                        | cors.headers              | Array of headers                                                                                                   | ✅                             |
+| CORS ExposeHeaders      | N/A                        | cors.expose_headers       | Array of headers to expose                                                                                         | ✅                             |
+| CORS Credentials        | N/A                        | cors.credentials          | Boolean: enable credentials (default value: false)                                                                 | ✅                             |
+| CORS Max Age            | N/A                        | cors.max_age              | Integer:how long the response to the preflight request can be cached for without sending another preflight request | ✅                             |
 
 ## Basic Usage
 
@@ -257,6 +258,56 @@ metadata:
   namespace: my-namespace
 spec:
   prefix: "/"
+  service: booksapp.my-service-namespace:7000
+  rewrite: ""
+  timeout_ms: 120000
+  idle_timeout_ms: 120000
+```
+
+## Setting the Host header
+
+kusk allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
+
+### CLI Flags
+
+```shell
+kusk ambassador -i examples/booksapp/booksapp.yaml \
+--namespace my-namespace \
+--service.name booksapp \
+--service.port 7000 \
+--service.namespace my-service-namespace \
+--host "somehost.io"
+```
+
+### OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  service:
+    name: webapp
+    namespace: booksapp
+    port: 7000
+  host: somehost.io
+paths:
+  /:
+    get: {}
+...
+```
+
+### Sample Output
+
+```yaml
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: booksapp
+  namespace: my-namespace
+spec:
+  prefix: "/"
+  host: somehost.io
   service: booksapp.my-service-namespace:7000
   rewrite: ""
   timeout_ms: 120000

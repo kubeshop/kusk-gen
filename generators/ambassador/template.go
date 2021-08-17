@@ -24,6 +24,9 @@ type mappingTemplateData struct {
 	Regex   bool
 	Rewrite bool
 
+	Host string
+	HostRegex bool
+
 	CORSEnabled bool
 
 	CORS corsTemplateData
@@ -44,6 +47,10 @@ spec:
 
   {{if .Regex}}
   prefix_regex: true
+  {{end}}
+
+  {{ if .Host}}
+  host: {{.Host}}
   {{end}}
 
   {{if .Method}}
