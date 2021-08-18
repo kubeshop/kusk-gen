@@ -298,9 +298,5 @@ func flowNginxIngress(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, 
 func fileExists(path string) bool {
 	// check if file exists
 	f, err := os.Stat(path)
-	if err == nil && !f.IsDir() {
-		return true
-	}
-
-	return false
+	return err == nil && !f.IsDir()
 }
