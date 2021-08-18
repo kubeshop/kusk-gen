@@ -5,16 +5,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"k8s.io/client-go/util/homedir"
 
 	"github.com/kubeshop/kusk/cluster"
-	"github.com/kubeshop/kusk/generators/ambassador"
-	"github.com/kubeshop/kusk/generators/linkerd"
-	"github.com/kubeshop/kusk/generators/nginx_ingress"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk/wizard/flow"
 	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
@@ -109,35 +105,32 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 
 	targetServiceNamespace = prompt.SelectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
 
-	var targetServiceSuggestions []string
-	var targetService string
-
-	targetServiceSuggestions, err = client.ListServices(targetServiceNamespace)
+	targetServiceSuggestions, err := client.ListServices(targetServiceNamespace)
 	if err != nil {
 		return "", fmt.Errorf("failed to list namespaces: %w", err)
 	}
 
-	targetService = prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
-
-	service := prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
-
-	switch service {
-	case "ambassador":
-		return flowAmbassador(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
-	case "linkerd":
-		return flowLinkerd(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
-	case "nginx-ingress":
-		return flowNginxIngress(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
+	args := &flow.Args{
+		ApiSpecPath:     apiSpecPath,
+		ApiSpec:         apiSpec,
 	}
 
-	return "", fmt.Errorf("unknown service")
+	args.TargetService = prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
+
+	args.Service = prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
+
+	return executeFlow(args)
 }
 
 func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T) (string, error) {
-	targetServiceNamespace := prompt.InputNonEmpty("Enter namespace with your service", "default")
-	targetService := prompt.InputNonEmpty("Enter your service name", "")
+	args := &flow.Args{
+		ApiSpecPath:     apiSpecPath,
+		ApiSpec:         apiSpec,
+	}
+	args.TargetNamespace = prompt.InputNonEmpty("Enter namespace with your service", "default")
+	args.TargetService = prompt.InputNonEmpty("Enter your service name", "")
 
-	service := prompt.SelectOneOf(
+	args.Service = prompt.SelectOneOf(
 		"Choose a service you want Kusk generate manifests for",
 		[]string{
 			"ambassador",
@@ -147,152 +140,27 @@ func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T) (string, error)
 		false,
 	)
 
-	switch service {
-	case "ambassador":
-		return flowAmbassador(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
-	case "linkerd":
-		return flowLinkerd(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
-	case "nginx-ingress":
-		return flowNginxIngress(apiSpecPath, apiSpec, targetServiceNamespace, targetService)
-
-	}
-
-	return "", fmt.Errorf("unknown service")
+	return executeFlow(args)
 }
 
-func flowAmbassador(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
-	var basePathSuggestions []string
-	for _, server := range apiSpec.Servers {
-		basePathSuggestions = append(basePathSuggestions, server.URL)
-	}
-
-	basePath := prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := prompt.InputNonEmpty("Prefix to trim from the URL (rewrite)", basePath)
-
-	separateMappings := false
-
-	if basePath != "" {
-		separateMappings = prompt.Confirm("Generate mapping for each endpoint separately?")
-	}
-
-	opts := &options.Options{
-		Namespace: targetNamespace,
-		Service: options.ServiceOptions{
-			Namespace: targetNamespace,
-			Name:      targetService,
-		},
-		Path: options.PathOptions{
-			Base:       basePath,
-			TrimPrefix: trimPrefix,
-			Split:      separateMappings,
-		},
-	}
-
-	cmd := fmt.Sprintf("kusk ambassador -i %s ", apiSpecPath)
-	cmd = cmd + fmt.Sprintf("--namespace=%s ", targetNamespace)
-	cmd = cmd + fmt.Sprintf("--service.namespace=%s ", targetNamespace)
-	cmd = cmd + fmt.Sprintf("--service.name=%s ", targetService)
-	cmd = cmd + fmt.Sprintf("--path.base=%s ", basePath)
-	if trimPrefix != "" {
-		cmd = cmd + fmt.Sprintf("--path.trim_prefix=%s ", trimPrefix)
-	}
-	if separateMappings {
-		cmd = cmd + fmt.Sprintf("--path.split ")
-	}
-
-	fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
-	fmt.Fprintln(os.Stderr, cmd)
-
-	var ag ambassador.Generator
-
-	mappings, err := ag.Generate(opts, apiSpec)
+func executeFlow(args *flow.Args) (string, error) {
+	f, err := flow.New(args)
 	if err != nil {
-		log.Fatalf("Failed to generate mappings: %s\n", err)
+		return "", fmt.Errorf("failed to create new flow: %s\n", err)
 	}
 
-	return mappings, nil
-}
-
-func flowLinkerd(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
-	clusterDomain := prompt.InputNonEmpty("Cluster domain", "cluster.local")
-
-	opts := &options.Options{
-		Namespace: targetNamespace,
-		Service: options.ServiceOptions{
-			Namespace: targetNamespace,
-			Name:      targetService,
-		},
-		Cluster: options.ClusterOptions{
-			ClusterDomain: clusterDomain,
-		},
-	}
-
-	cmd := fmt.Sprintf("kusk linkerd -i %s ", apiSpecPath)
-	cmd = cmd + fmt.Sprintf("--namespace=%s ", targetNamespace)
-	cmd = cmd + fmt.Sprintf("--service.namespace=%s ", targetNamespace)
-	cmd = cmd + fmt.Sprintf("--service.name=%s ", targetService)
-	cmd = cmd + fmt.Sprintf("--cluster.cluster_domain=%s ", clusterDomain)
-
-	fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
-	fmt.Fprintln(os.Stderr, cmd)
-
-	var ld linkerd.Generator
-
-	return ld.Generate(opts, apiSpec)
-}
-
-func flowNginxIngress(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
-	var basePathSuggestions []string
-	for _, server := range apiSpec.Servers {
-		basePathSuggestions = append(basePathSuggestions, server.URL)
-	}
-
-	basePath := prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := prompt.Input("Prefix to trim from the URL (rewrite)", "")
-
-	separateMappings := false
-	if basePath != "" {
-		separateMappings = prompt.Confirm("Generate ingress resource for each endpoint separately?")
-	}
-
-	opts := &options.Options{
-		Namespace: targetNamespace,
-		Service: options.ServiceOptions{
-			Namespace: targetNamespace,
-			Name:      targetService,
-		},
-		Path: options.PathOptions{
-			Base:       basePath,
-			TrimPrefix: trimPrefix,
-			Split:      separateMappings,
-		},
-	}
-
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("kusk ambassador -i %s ", apiSpecPath))
-	sb.WriteString(fmt.Sprintf("--namespace=%s ", targetNamespace))
-	sb.WriteString(fmt.Sprintf("--service.namespace=%s ", targetNamespace))
-	sb.WriteString(fmt.Sprintf("--service.name=%s ", targetService))
-	sb.WriteString(fmt.Sprintf("--path.base=%s ", basePath))
-
-	if trimPrefix != "" {
-		sb.WriteString(fmt.Sprintf("--path.trim_prefix=%s ", trimPrefix))
-	}
-
-	if separateMappings {
-		sb.WriteString("--path.split ")
-	}
-
-	fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
-	fmt.Fprintln(os.Stderr, sb.String())
-
-	var ingressGenerator nginx_ingress.Generator
-	ingresses, err := ingressGenerator.Generate(opts, apiSpec)
+	response, err := f.Start()
 	if err != nil {
-		log.Fatalf("Failed to generate ingresses: %s\n", err)
+		return "", fmt.Errorf("failed to execute flow: %s\n", err)
 	}
 
-	return ingresses, nil
+
+	if response.EquivalentCmd != "" {
+		fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")
+		fmt.Fprintln(os.Stderr, response.EquivalentCmd)
+	}
+
+	return response.Manifests, nil
 }
 
 func fileExists(path string) bool {
