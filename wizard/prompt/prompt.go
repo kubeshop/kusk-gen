@@ -8,10 +8,24 @@ import (
 	"github.com/manifoldco/promptui"
 )
 
-func SelectOneOf(label string, variants []string, withAdd bool) string {
+type Prompter interface {
+	SelectOneOf(label string, variants []string, withAdd bool) string
+	Input(label, defaultString string) string
+	InputNonEmpty(label, defaultString string) string
+	FilePath(label, defaultPath string, shouldExist bool) string
+	Confirm(question string) bool
+}
+
+type prompter struct{}
+
+func New() Prompter {
+	return prompter{}
+}
+
+func (pr prompter) SelectOneOf(label string, variants []string, withAdd bool) string {
 	if len(variants) == 0 {
 		// it's better to show a prompt
-		return InputNonEmpty(label, "")
+		return pr.InputNonEmpty(label, "")
 	}
 
 	if withAdd {
@@ -35,7 +49,7 @@ func SelectOneOf(label string, variants []string, withAdd bool) string {
 	return res
 }
 
-func Input(label, defaultString string) string {
+func (_ prompter) Input(label, defaultString string) string {
 	p := promptui.Prompt{
 		Label:  label,
 		Stdout: os.Stderr,
@@ -50,7 +64,7 @@ func Input(label, defaultString string) string {
 	return res
 }
 
-func InputNonEmpty(label, defaultString string) string {
+func (_ prompter) InputNonEmpty(label, defaultString string) string {
 	p := promptui.Prompt{
 		Label:  label,
 		Stdout: os.Stderr,
@@ -69,7 +83,7 @@ func InputNonEmpty(label, defaultString string) string {
 	return res
 }
 
-func FilePath(label, defaultPath string, shouldExist bool) string {
+func (_ prompter) FilePath(label, defaultPath string, shouldExist bool) string {
 	p := promptui.Prompt{
 		Label:   label,
 		Stdout:  os.Stderr,
@@ -96,7 +110,7 @@ func FilePath(label, defaultPath string, shouldExist bool) string {
 	return res
 }
 
-func Confirm(question string) bool {
+func (_ prompter) Confirm(question string) bool {
 	p := promptui.Prompt{
 		Label:     question,
 		Stdout:    os.Stderr,

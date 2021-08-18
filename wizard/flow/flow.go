@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/getkin/kin-openapi/openapi3"
+
+	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
 type Interface interface {
@@ -12,24 +14,28 @@ type Interface interface {
 
 type Response struct {
 	EquivalentCmd string
-	Manifests string
+	Manifests     string
 }
 
 // Flows "inherit" from this
 type baseFlow struct {
-	apiSpecPath string
-	apiSpec *openapi3.T
+	apiSpecPath     string
+	apiSpec         *openapi3.T
 	targetNamespace string
-	targetService string
+	targetService   string
+
+	prompt prompt.Prompter
 }
 
 type Args struct {
 	Service string
 
-	ApiSpecPath string
-	ApiSpec *openapi3.T
+	ApiSpecPath     string
+	ApiSpec         *openapi3.T
 	TargetNamespace string
-	TargetService string
+	TargetService   string
+
+	Prompt prompt.Prompter
 }
 
 // New returns a new flow based on the args.Service
@@ -40,6 +46,7 @@ func New(args *Args) (Interface, error) {
 		apiSpec:         args.ApiSpec,
 		targetNamespace: args.TargetNamespace,
 		targetService:   args.TargetService,
+		prompt:          args.Prompt,
 	}
 
 	switch args.Service {

@@ -14,7 +14,7 @@ import (
 	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
-func Start(apiSpecPath string, apiSpec *openapi3.T) {
+func Start(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) {
 	canConnectToCluster := false
 	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
 
@@ -30,9 +30,9 @@ func Start(apiSpecPath string, apiSpec *openapi3.T) {
 	var err error
 
 	if canConnectToCluster {
-		mappings, err = flowWithCluster(apiSpecPath, apiSpec, kubeConfigPath)
+		mappings, err = flowWithCluster(apiSpecPath, apiSpec, kubeConfigPath, prompt)
 	} else {
-		mappings, err = flowWithoutCluster(apiSpecPath, apiSpec)
+		mappings, err = flowWithoutCluster(apiSpecPath, apiSpec, prompt)
 	}
 
 	if err != nil {
@@ -55,7 +55,7 @@ func Start(apiSpecPath string, apiSpec *openapi3.T) {
 	fmt.Println(mappings)
 }
 
-func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath string) (string, error) {
+func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath string, prompt prompt.Prompter) (string, error) {
 	var servicesToSuggest []string
 
 	client, err := cluster.NewClient(kubeConfigPath)
@@ -111,8 +111,9 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 	}
 
 	args := &flow.Args{
-		ApiSpecPath:     apiSpecPath,
-		ApiSpec:         apiSpec,
+		ApiSpecPath: apiSpecPath,
+		ApiSpec:     apiSpec,
+		Prompt:      prompt,
 	}
 
 	args.TargetService = prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
@@ -122,10 +123,11 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 	return executeFlow(args)
 }
 
-func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T) (string, error) {
+func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) (string, error) {
 	args := &flow.Args{
-		ApiSpecPath:     apiSpecPath,
-		ApiSpec:         apiSpec,
+		ApiSpecPath: apiSpecPath,
+		ApiSpec:     apiSpec,
+		Prompt:      prompt,
 	}
 	args.TargetNamespace = prompt.InputNonEmpty("Enter namespace with your service", "default")
 	args.TargetService = prompt.InputNonEmpty("Enter your service name", "")
@@ -153,7 +155,6 @@ func executeFlow(args *flow.Args) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to execute flow: %s\n", err)
 	}
-
 
 	if response.EquivalentCmd != "" {
 		fmt.Fprintln(os.Stderr, "Here is a CLI command you could use in your scripts (you can pipe it to kubectl):")

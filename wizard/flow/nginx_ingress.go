@@ -6,7 +6,6 @@ import (
 
 	"github.com/kubeshop/kusk/generators/nginx_ingress"
 	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
 type nginxIngressFlow struct {
@@ -19,12 +18,12 @@ func (n nginxIngressFlow) Start() (Response, error) {
 		basePathSuggestions = append(basePathSuggestions, server.URL)
 	}
 
-	basePath := prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := prompt.Input("Prefix to trim from the URL (rewrite)", "")
+	basePath := n.prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
+	trimPrefix := n.prompt.Input("Prefix to trim from the URL (rewrite)", "")
 
 	separateMappings := false
 	if basePath != "" {
-		separateMappings = prompt.Confirm("Generate ingress resource for each endpoint separately?")
+		separateMappings = n.prompt.Confirm("Generate ingress resource for each endpoint separately?")
 	}
 
 	opts := &options.Options{

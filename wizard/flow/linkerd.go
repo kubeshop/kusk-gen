@@ -5,7 +5,6 @@ import (
 
 	"github.com/kubeshop/kusk/generators/linkerd"
 	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
 type linkerdFlow struct {
@@ -13,7 +12,7 @@ type linkerdFlow struct {
 }
 
 func (l linkerdFlow) Start() (Response, error) {
-	clusterDomain := prompt.InputNonEmpty("Cluster domain", "cluster.local")
+	clusterDomain := l.prompt.InputNonEmpty("Cluster domain", "cluster.local")
 
 	opts := &options.Options{
 		Namespace: l.targetNamespace,

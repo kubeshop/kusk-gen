@@ -5,7 +5,6 @@ import (
 
 	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
 type ambassadorFlow struct {
@@ -18,13 +17,13 @@ func (a ambassadorFlow) Start() (Response, error) {
 		basePathSuggestions = append(basePathSuggestions, server.URL)
 	}
 
-	basePath := prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := prompt.InputNonEmpty("Prefix to trim from the URL (rewrite)", basePath)
+	basePath := a.prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
+	trimPrefix := a.prompt.InputNonEmpty("Prefix to trim from the URL (rewrite)", basePath)
 
 	separateMappings := false
 
 	if basePath != "" {
-		separateMappings = prompt.Confirm("Generate mapping for each endpoint separately?")
+		separateMappings = a.prompt.Confirm("Generate mapping for each endpoint separately?")
 	}
 
 	opts := &options.Options{
@@ -61,6 +60,6 @@ func (a ambassadorFlow) Start() (Response, error) {
 
 	return Response{
 		EquivalentCmd: cmd,
-		Manifests: mappings,
+		Manifests:     mappings,
 	}, nil
 }
