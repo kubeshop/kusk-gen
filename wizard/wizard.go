@@ -1,7 +1,6 @@
 package wizard
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -9,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/manifoldco/promptui"
 	"k8s.io/client-go/util/homedir"
 
 	"github.com/kubeshop/kusk/cluster"
@@ -17,6 +15,7 @@ import (
 	"github.com/kubeshop/kusk/generators/linkerd"
 	"github.com/kubeshop/kusk/generators/nginx_ingress"
 	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
 func Start(apiSpecPath string, apiSpec *openapi3.T) {
@@ -26,7 +25,7 @@ func Start(apiSpecPath string, apiSpec *openapi3.T) {
 	if fileExists(kubeConfigPath) {
 		fmt.Printf("⎈ kubeconfig detected in %s\n", kubeConfigPath)
 
-		canConnectToCluster = confirm(
+		canConnectToCluster = prompt.Confirm(
 			"Can Kusk connect to your current cluster to check for supported services and provide suggestions?",
 		)
 	}
@@ -46,8 +45,8 @@ func Start(apiSpecPath string, apiSpec *openapi3.T) {
 
 	fmt.Fprintln(os.Stderr, "✔ Done!")
 
-	if confirm("Do you want to save mappings to a file (otherwise output to stdout)") {
-		saveToPath := promptFilePath("Save to", "generated.yaml", false)
+	if prompt.Confirm("Do you want to save mappings to a file (otherwise output to stdout)") {
+		saveToPath := prompt.FilePath("Save to", "generated.yaml", false)
 		err := os.WriteFile(saveToPath, []byte(mappings), 0666)
 
 		if err != nil {
@@ -108,7 +107,7 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 		return "", fmt.Errorf("failed to list namespaces: %w", err)
 	}
 
-	targetServiceNamespace = selectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
+	targetServiceNamespace = prompt.SelectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
 
 	var targetServiceSuggestions []string
 	var targetService string
@@ -118,9 +117,9 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 		return "", fmt.Errorf("failed to list namespaces: %w", err)
 	}
 
-	targetService = selectOneOf("Choose your service", targetServiceSuggestions, true)
+	targetService = prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
 
-	service := selectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
+	service := prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
 
 	switch service {
 	case "ambassador":
@@ -135,10 +134,10 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 }
 
 func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T) (string, error) {
-	targetServiceNamespace := promptStringNonEmpty("Enter namespace with your service", "default")
-	targetService := promptStringNonEmpty("Enter your service name", "")
+	targetServiceNamespace := prompt.InputNonEmpty("Enter namespace with your service", "default")
+	targetService := prompt.InputNonEmpty("Enter your service name", "")
 
-	service := selectOneOf(
+	service := prompt.SelectOneOf(
 		"Choose a service you want Kusk generate manifests for",
 		[]string{
 			"ambassador",
@@ -167,13 +166,13 @@ func flowAmbassador(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, ta
 		basePathSuggestions = append(basePathSuggestions, server.URL)
 	}
 
-	basePath := selectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := promptStringNonEmpty("Prefix to trim from the URL (rewrite)", basePath)
+	basePath := prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
+	trimPrefix := prompt.InputNonEmpty("Prefix to trim from the URL (rewrite)", basePath)
 
 	separateMappings := false
 
 	if basePath != "" {
-		separateMappings = confirm("Generate mapping for each endpoint separately?")
+		separateMappings = prompt.Confirm("Generate mapping for each endpoint separately?")
 	}
 
 	opts := &options.Options{
@@ -215,7 +214,7 @@ func flowAmbassador(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, ta
 }
 
 func flowLinkerd(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
-	clusterDomain := promptStringNonEmpty("Cluster domain", "cluster.local")
+	clusterDomain := prompt.InputNonEmpty("Cluster domain", "cluster.local")
 
 	opts := &options.Options{
 		Namespace: targetNamespace,
@@ -242,18 +241,18 @@ func flowLinkerd(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targe
 	return ld.Generate(opts, apiSpec)
 }
 
-func flowNginxIngress(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error){
+func flowNginxIngress(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, targetService string) (string, error) {
 	var basePathSuggestions []string
 	for _, server := range apiSpec.Servers {
 		basePathSuggestions = append(basePathSuggestions, server.URL)
 	}
 
-	basePath := selectOneOf("Base path prefix", basePathSuggestions, true)
-	trimPrefix := promptString("Prefix to trim from the URL (rewrite)", "")
+	basePath := prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
+	trimPrefix := prompt.Input("Prefix to trim from the URL (rewrite)", "")
 
 	separateMappings := false
 	if basePath != "" {
-		separateMappings = confirm("Generate ingress resource for each endpoint separately?")
+		separateMappings = prompt.Confirm("Generate ingress resource for each endpoint separately?")
 	}
 
 	opts := &options.Options{
@@ -296,67 +295,6 @@ func flowNginxIngress(apiSpecPath string, apiSpec *openapi3.T, targetNamespace, 
 	return ingresses, nil
 }
 
-func selectOneOf(label string, variants []string, withAdd bool) string {
-	if len(variants) == 0 {
-		// it's better to show a prompt
-		return promptStringNonEmpty(label, "")
-	}
-
-	if withAdd {
-		p := promptui.SelectWithAdd{
-			Label:  label,
-			Stdout: os.Stderr,
-			Items:  variants,
-		}
-
-		_, res, _ := p.Run()
-		return res
-	}
-
-	p := promptui.Select{
-		Label:  label,
-		Stdout: os.Stderr,
-		Items:  variants,
-	}
-
-	_, res, _ := p.Run()
-	return res
-}
-
-func promptString(label, defaultString string) string {
-	p := promptui.Prompt{
-		Label:  label,
-		Stdout: os.Stderr,
-		Validate: func(s string) error {
-			return nil
-		},
-		Default: defaultString,
-	}
-
-	res, _ := p.Run()
-
-	return res
-}
-
-func promptStringNonEmpty(label, defaultString string) string {
-	p := promptui.Prompt{
-		Label:  label,
-		Stdout: os.Stderr,
-		Validate: func(s string) error {
-			if strings.TrimSpace(s) == "" {
-				return errors.New("should not be empty")
-			}
-
-			return nil
-		},
-		Default: defaultString,
-	}
-
-	res, _ := p.Run()
-
-	return res
-}
-
 func fileExists(path string) bool {
 	// check if file exists
 	f, err := os.Stat(path)
@@ -365,48 +303,4 @@ func fileExists(path string) bool {
 	}
 
 	return false
-}
-
-func promptFilePath(label, defaultPath string, shouldExist bool) string {
-	p := promptui.Prompt{
-		Label:   label,
-		Stdout:  os.Stderr,
-		Default: defaultPath,
-		Validate: func(fp string) error {
-			if strings.TrimSpace(fp) == "" {
-				return errors.New("should not be empty")
-			}
-
-			if !shouldExist {
-				return nil
-			}
-
-			if fileExists(fp) {
-				return nil
-			}
-
-			return errors.New("should be an existing file")
-		},
-	}
-
-	res, _ := p.Run()
-
-	return res
-}
-
-func confirm(question string) bool {
-	p := promptui.Prompt{
-		Label:     question,
-		Stdout:    os.Stderr,
-		IsConfirm: true,
-	}
-
-	_, err := p.Run()
-	if err != nil {
-		if errors.Is(err, promptui.ErrAbort) {
-			return false
-		}
-	}
-
-	return true
 }
