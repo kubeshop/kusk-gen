@@ -9,6 +9,7 @@ import (
 
 	"github.com/kubeshop/kusk/spec"
 	"github.com/kubeshop/kusk/wizard"
+	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
 func init() {
@@ -28,7 +29,7 @@ func init() {
 				log.Fatal(err)
 			}
 
-			wizard.Start(apiSpecPath, apiSpec)
+			wizard.Start(apiSpecPath, apiSpec, prompt.New())
 		},
 	}
 
