@@ -32,7 +32,7 @@ the same naming scheme as JSON/YAML tags on options passed from `x-kusk` extensi
 
 Check out [generators](https://github.com/kubeshop/kusk/blob/main/generators) folder and [Options](https://github.com/kubeshop/kusk/blob/main/options/options.go) for the examples.
 
-##ß If you want to contribute
+## If you want to contribute
 
 - Check out our [Contributor Guide](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md) and
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
