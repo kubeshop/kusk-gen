@@ -209,8 +209,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			TrimPrefix:       opts.Path.TrimPrefix,
 			RequestTimeout:   opts.Timeouts.RequestTimeout * 1000,
 			IdleTimeout:      opts.Timeouts.IdleTimeout * 1000,
-			Host: opts.Host,
-
+			Host:             opts.Host,
 		}
 
 		// if global CORS options are defined, take them

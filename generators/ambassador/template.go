@@ -24,7 +24,7 @@ type mappingTemplateData struct {
 	Regex   bool
 	Rewrite bool
 
-	Host string
+	Host      string
 	HostRegex bool
 
 	CORSEnabled bool
