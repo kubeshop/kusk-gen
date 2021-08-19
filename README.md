@@ -1,4 +1,6 @@
-# Kusk - use OpenAPI to configure Kubernetes 
+# Kusk - use OpenAPI to configure Kubernetes
+
+![Known Vulnerabilities](https://snyk.io/test/github/kubeshop/kusk/badge.svg)
 
 ## What is Kusk?
 
