@@ -14,7 +14,12 @@ type linkerdFlow struct {
 func (l linkerdFlow) Start() (Response, error) {
 	clusterDomain := l.prompt.InputNonEmpty("Cluster domain", "cluster.local")
 
-	basePath := l.prompt.InputNonEmpty("Base Path", "/")
+	var basePathSuggestions []string
+	for _, server := range l.apiSpec.Servers {
+		basePathSuggestions = append(basePathSuggestions, server.URL)
+	}
+
+	basePath := l.prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
 
 	opts := &options.Options{
 		Namespace: l.targetNamespace,
