@@ -2,6 +2,8 @@ package flow
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 	"strings"
 
 	"github.com/kubeshop/kusk/generators/nginx_ingress"
@@ -26,6 +28,17 @@ func (n nginxIngressFlow) Start() (Response, error) {
 		separateMappings = n.prompt.Confirm("Generate ingress resource for each endpoint separately?")
 	}
 
+	var timeoutOptions options.TimeoutOptions
+
+	// Support only request timeout as nginx-ingress generator doesn't support idle timeout
+	if requestTimeout := n.prompt.Input("Request timeout, leave empty to skip", ""); requestTimeout != "" {
+		if rTimeout, err := strconv.Atoi(requestTimeout); err != nil {
+			log.Printf("WARN: %s is not a valid request timeout value. Skipping\n", requestTimeout)
+		} else {
+			timeoutOptions.RequestTimeout = uint32(rTimeout)
+		}
+	}
+
 	opts := &options.Options{
 		Namespace: n.targetNamespace,
 		Service: options.ServiceOptions{
@@ -37,6 +50,7 @@ func (n nginxIngressFlow) Start() (Response, error) {
 			TrimPrefix: trimPrefix,
 			Split:      separateMappings,
 		},
+		Timeouts: timeoutOptions,
 	}
 
 	var sb strings.Builder

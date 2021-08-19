@@ -2,6 +2,8 @@ package flow
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 
 	"github.com/kubeshop/kusk/generators/linkerd"
 	"github.com/kubeshop/kusk/options"
@@ -21,6 +23,17 @@ func (l linkerdFlow) Start() (Response, error) {
 
 	basePath := l.prompt.SelectOneOf("Base path prefix", basePathSuggestions, true)
 
+	var timeoutOptions options.TimeoutOptions
+
+	// Support only request timeout as linkerd generator doesn't support idle timeout
+	if requestTimeout := l.prompt.Input("Request timeout, leave empty to skip", ""); requestTimeout != "" {
+		if rTimeout, err := strconv.Atoi(requestTimeout); err != nil {
+			log.Printf("WARN: %s is not a valid request timeout value. Skipping\n", requestTimeout)
+		} else {
+			timeoutOptions.RequestTimeout = uint32(rTimeout)
+		}
+	}
+
 	opts := &options.Options{
 		Namespace: l.targetNamespace,
 		Path: options.PathOptions{
@@ -33,6 +46,7 @@ func (l linkerdFlow) Start() (Response, error) {
 		Cluster: options.ClusterOptions{
 			ClusterDomain: clusterDomain,
 		},
+		Timeouts: timeoutOptions,
 	}
 
 	cmd := fmt.Sprintf("kusk linkerd -i %s ", l.apiSpecPath)
@@ -41,6 +55,10 @@ func (l linkerdFlow) Start() (Response, error) {
 	cmd = cmd + fmt.Sprintf("--service.name=%s ", l.targetService)
 	cmd = cmd + fmt.Sprintf("--path.base=%s ", basePath)
 	cmd = cmd + fmt.Sprintf("--cluster.cluster_domain=%s ", clusterDomain)
+
+	if timeoutOptions.RequestTimeout > 0 {
+		cmd = cmd + fmt.Sprintf("--timeouts.request_timeout=%d", timeoutOptions.RequestTimeout)
+	}
 
 	var ld linkerd.Generator
 
