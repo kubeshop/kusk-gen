@@ -14,8 +14,13 @@ type linkerdFlow struct {
 func (l linkerdFlow) Start() (Response, error) {
 	clusterDomain := l.prompt.InputNonEmpty("Cluster domain", "cluster.local")
 
+	basePath := l.prompt.InputNonEmpty("Base Path", "/")
+
 	opts := &options.Options{
 		Namespace: l.targetNamespace,
+		Path: options.PathOptions{
+			Base: basePath,
+		},
 		Service: options.ServiceOptions{
 			Namespace: l.targetNamespace,
 			Name:      l.targetService,
@@ -29,6 +34,7 @@ func (l linkerdFlow) Start() (Response, error) {
 	cmd = cmd + fmt.Sprintf("--namespace=%s ", l.targetNamespace)
 	cmd = cmd + fmt.Sprintf("--service.namespace=%s ", l.targetNamespace)
 	cmd = cmd + fmt.Sprintf("--service.name=%s ", l.targetService)
+	cmd = cmd + fmt.Sprintf("--path.base=%s ", basePath)
 	cmd = cmd + fmt.Sprintf("--cluster.cluster_domain=%s ", clusterDomain)
 
 	var ld linkerd.Generator
