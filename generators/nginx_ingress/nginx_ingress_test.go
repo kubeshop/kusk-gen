@@ -443,6 +443,78 @@ status:
   loadBalancer: {}
 `,
 		},
+		{
+			name: "rate limit options",
+			options: options.Options{
+				Namespace: "booksapp",
+				Service: options.ServiceOptions{
+					Namespace: "booksapp",
+					Name:      "webapp",
+					Port:      7000,
+				},
+				Path: options.PathOptions{
+					Base:       "/bookstore",
+					TrimPrefix: "/bookstore",
+				},
+				RateLimits: options.RateLimitOptions{
+					RPS:   100,
+					Burst: 400,
+				},
+			},
+			spec: `openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  rate_limits:
+    rps: 100
+    burst: 400
+  path:
+    base: /bookstore
+    trim_prefix: /bookstore
+  service:
+    name: webapp
+    namespace: booksapp
+    port: 7000
+paths:
+  /:
+    get: {}
+
+  /books/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+`,
+			res: `---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "4"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  creationTimestamp: null
+  name: webapp-ingress
+  namespace: booksapp
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: webapp
+            port:
+              number: 7000
+        path: /bookstore(/|$)(.*)
+        pathType: Prefix
+status:
+  loadBalancer: {}
+`,
+		},
 	}
 
 	var gen Generator

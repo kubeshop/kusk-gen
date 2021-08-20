@@ -23,6 +23,7 @@ func (g *Generator) generateAnnotations(
 	path *options.PathOptions,
 	nginx *options.NGINXIngressOptions,
 	cors *options.CORSOptions,
+	rateLimits *options.RateLimitOptions,
 	timeoutOpts *options.TimeoutOptions,
 ) map[string]string {
 	annotations := map[string]string{}
@@ -70,6 +71,24 @@ func (g *Generator) generateAnnotations(
 		annotations["nginx.ingress.kubernetes.io/cors-max-age"] = strconv.Itoa(maxAge)
 	}
 	// End CORS
+
+	// Rate limits
+	if rps := rateLimits.RPS; rps != 0 {
+		annotations["nginx.ingress.kubernetes.io/limit-rps"] = fmt.Sprint(rps)
+
+		if burst := rateLimits.Burst; burst != 0 {
+			// https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting
+			// nginx-ingress uses a burst multiplier to configure burst for a rate limited path,
+			// i.e. burst = rps * burstMultiplier
+			var burstMultiplier = burst / rps
+			if burstMultiplier < 1 {
+				burstMultiplier = 1
+			}
+
+			annotations["nginx.ingress.kubernetes.io/limit-burst-multiplier"] = fmt.Sprint(burstMultiplier)
+		}
+	}
+	// End rate limits
 
 	// Timeouts
 	if requestTimeout := timeoutOpts.RequestTimeout; requestTimeout > 0 {

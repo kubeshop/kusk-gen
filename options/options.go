@@ -9,9 +9,10 @@ import (
 type SubOptions struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
-	Host     string         `yaml:"host,omitempty" json:"host,omitempty"`
-	CORS     CORSOptions    `yaml:"cors,omitempty" json:"cors,omitempty"`
-	Timeouts TimeoutOptions `yaml:"timeouts,omitempty" json:"timeouts,omitempty"`
+	Host       string           `yaml:"host,omitempty" json:"host,omitempty"`
+	CORS       CORSOptions      `yaml:"cors,omitempty" json:"cors,omitempty"`
+	RateLimits RateLimitOptions `yaml:"rate_limits,omitempty" json:"rate_limits,omitempty"`
+	Timeouts   TimeoutOptions   `yaml:"timeouts,omitempty" json:"timeouts,omitempty"`
 }
 
 type Options struct {
@@ -43,6 +44,8 @@ type Options struct {
 	// OperationSubOptions allow to overwrite specific subset of Options for a given operation.
 	// They are filled during extension parsing, the map key is method+path.
 	OperationSubOptions map[string]SubOptions `yaml:"-" json:"-"`
+
+	RateLimits RateLimitOptions `yaml:"rate_limits,omitempty" json:"rate_limits,omitempty"`
 
 	Timeouts TimeoutOptions `yaml:"timeouts,omitempty" json:"timeouts,omitempty"`
 }
@@ -87,6 +90,7 @@ func (o *Options) FillDefaultsAndValidate() error {
 		&o.Cluster,
 		&o.CORS,
 		&o.NGINXIngress,
+		&o.RateLimits,
 		&o.Timeouts,
 	})
 

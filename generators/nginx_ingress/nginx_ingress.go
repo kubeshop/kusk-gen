@@ -70,6 +70,18 @@ func (g *Generator) Flags() *pflag.FlagSet {
 	)
 
 	fs.Uint32(
+		"rate_limits.rps",
+		0,
+		"request per second rate limit",
+	)
+
+	fs.Uint32(
+		"rate_limits.burst",
+		0,
+		"request per second burst",
+	)
+
+	fs.Uint32(
 		"timeouts.request_timeout",
 		0,
 		"total request timeout (seconds)",
@@ -109,10 +121,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			name := fmt.Sprintf("%s-%s", opts.Service.Name, ingressResourceNameFromPath(path))
 
-			var corsOpts options.CORSOptions
-
 			// take global CORS options
-			corsOpts = opts.CORS
+			corsOpts := opts.CORS
 
 			// if path-level CORS options are different, override with them
 			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
@@ -122,10 +132,19 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				}
 			}
 
-			var timeoutOpts options.TimeoutOptions
+			// take global rate limit options
+			rateLimitOpts := opts.RateLimits
+
+			// if path-level rate limit options are different, override with them
+			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+				if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOpts.RateLimits) &&
+					!reflect.DeepEqual(rateLimitOpts, pathSubOpts.RateLimits) {
+					rateLimitOpts = pathSubOpts.RateLimits
+				}
+			}
 
 			// take global Timeout options
-			timeoutOpts = opts.Timeouts
+			timeoutOpts := opts.Timeouts
 
 			// if path-level Timeout options are different, override with them
 			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
@@ -141,6 +160,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				&opts.Path,
 				&opts.NGINXIngress,
 				&corsOpts,
+				&rateLimitOpts,
 				&timeoutOpts,
 			)
 
@@ -184,7 +204,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			opts.Namespace,
 			g.generatePath(&opts.Path, &opts.NGINXIngress),
 			pathTypePrefix,
-			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.CORS, &opts.Timeouts),
+			g.generateAnnotations(&opts.Path, &opts.NGINXIngress, &opts.CORS, &opts.RateLimits, &opts.Timeouts),
 			&opts.Service,
 			opts.Host,
 		)
@@ -303,6 +323,12 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 			// a path has non-zero, different from global scope CORS options
 			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
 				!reflect.DeepEqual(opts.CORS, pathSubOptions.CORS) {
+				return true
+			}
+
+			// a path has non-zero, different from global scope rate limits options
+			if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOptions.RateLimits) &&
+				!reflect.DeepEqual(opts.RateLimits, pathSubOptions.RateLimits) {
 				return true
 			}
 
