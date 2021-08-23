@@ -64,7 +64,7 @@ func (g *Generator) Flags() *pflag.FlagSet {
 	)
 
 	fs.String(
-		"ingress.host",
+		"host",
 		"",
 		"an Ingress Host to listen on",
 	)
