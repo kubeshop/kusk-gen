@@ -39,6 +39,34 @@ func (n nginxIngressFlow) Start() (Response, error) {
 		}
 	}
 
+	var corsOpts options.CORSOptions
+	if setCORS := n.prompt.Confirm("Set CORS options?"); setCORS {
+		// Origins
+		corsOpts.Origins = []string{n.prompt.Input("add CORS origin", "")}
+
+		// Methods
+		corsOpts.Methods = n.prompt.InputMany("add CORS method")
+
+		// Headers
+		corsOpts.Headers = n.prompt.InputMany("add CORS header")
+
+		// ExposeHeaders
+		corsOpts.ExposeHeaders = n.prompt.InputMany("add CORS headers you want to expose")
+
+		// Credentials
+		credentials := n.prompt.Confirm("enable CORS credentials")
+		corsOpts.Credentials = &credentials
+
+		// Max age
+		maxAgeStr := n.prompt.Input("set CORS max age", "0")
+		maxAge, err := strconv.Atoi(maxAgeStr)
+		if err != nil {
+			log.Printf("WARN: %s is not a valid max age value. Skipping\n", maxAgeStr)
+			maxAge = 0
+		}
+		corsOpts.MaxAge = maxAge
+	}
+
 	opts := &options.Options{
 		Namespace: n.targetNamespace,
 		Service: options.ServiceOptions{
@@ -51,6 +79,7 @@ func (n nginxIngressFlow) Start() (Response, error) {
 			Split:      separateMappings,
 		},
 		Timeouts: timeoutOptions,
+		CORS:     corsOpts,
 	}
 
 	var sb strings.Builder

@@ -46,6 +46,34 @@ func (a ambassadorFlow) Start() (Response, error) {
 		}
 	}
 
+	var corsOpts options.CORSOptions
+	if setCORS := a.prompt.Confirm("Set CORS options?"); setCORS {
+		// Origins
+		corsOpts.Origins = a.prompt.InputMany("add CORS origin")
+
+		// Methods
+		corsOpts.Methods = a.prompt.InputMany("add CORS method")
+
+		// Headers
+		corsOpts.Headers = a.prompt.InputMany("add CORS header")
+
+		// ExposeHeaders
+		corsOpts.ExposeHeaders = a.prompt.InputMany("add CORS headers you want to expose")
+
+		// Credentials
+		credentials := a.prompt.Confirm("enable CORS credentials")
+		corsOpts.Credentials = &credentials
+
+		// Max age
+		maxAgeStr := a.prompt.Input("set CORS max age", "0")
+		maxAge, err := strconv.Atoi(maxAgeStr)
+		if err != nil {
+			log.Printf("WARN: %s is not a valid max age value. Skipping\n", maxAgeStr)
+			maxAge = 0
+		}
+		corsOpts.MaxAge = maxAge
+	}
+
 	opts := &options.Options{
 		Namespace: a.targetNamespace,
 		Service: options.ServiceOptions{
@@ -58,6 +86,7 @@ func (a ambassadorFlow) Start() (Response, error) {
 			TrimPrefix: trimPrefix,
 			Split:      separateMappings,
 		},
+		CORS: corsOpts,
 	}
 
 	cmd := fmt.Sprintf("kusk ambassador -i %s ", a.apiSpecPath)

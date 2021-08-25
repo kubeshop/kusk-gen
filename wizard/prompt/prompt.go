@@ -2,6 +2,7 @@ package prompt
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -12,6 +13,7 @@ type Prompter interface {
 	SelectOneOf(label string, variants []string, withAdd bool) string
 	Input(label, defaultString string) string
 	InputNonEmpty(label, defaultString string) string
+	InputMany(label string) []string
 	FilePath(label, defaultPath string, shouldExist bool) string
 	Confirm(question string) bool
 }
@@ -81,6 +83,22 @@ func (_ prompter) InputNonEmpty(label, defaultString string) string {
 	res, _ := p.Run()
 
 	return res
+}
+
+func (pr prompter) InputMany(label string) []string {
+	endPromptInstruction := "(press return without entering anything to finish input)"
+	completeInputLabel := fmt.Sprintf("%s %s", label, endPromptInstruction)
+
+	var collection []string
+	for {
+		if in := pr.Input(completeInputLabel, ""); len(in) > 0 {
+			collection = append(collection, in)
+		} else {
+			break
+		}
+	}
+
+	return collection
 }
 
 func (_ prompter) FilePath(label, defaultPath string, shouldExist bool) string {
