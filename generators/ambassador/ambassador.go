@@ -211,7 +211,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 					var burstFactor uint32
 
-					if burst := rateLimitOpts.Burst; burst != 0 {
+					if burst := rateLimitOpts.Burst; burst != 0 && rps != 0 {
 						// https://www.getambassador.io/docs/edge-stack/1.13/topics/using/rate-limits/rate-limits/
 						// ambassador uses a burst multiplier to configure burst for a rate limited path,
 						// i.e. burst = rps * burstMultiplier
@@ -285,7 +285,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			var burstFactor uint32
 
-			if burst := opts.RateLimits.Burst; burst != 0 {
+			if burst := opts.RateLimits.Burst; burst != 0 && rps != 0 {
 				// https://www.getambassador.io/docs/edge-stack/1.13/topics/using/rate-limits/rate-limits/
 				// ambassador uses a burst multiplier to configure burst for a rate limited path,
 				// i.e. burst = rps * burstMultiplier
