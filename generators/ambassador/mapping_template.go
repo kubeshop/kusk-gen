@@ -31,6 +31,8 @@ type mappingTemplateData struct {
 
 	CORS corsTemplateData
 
+	LabelsEnabled bool
+
 	RequestTimeout uint32
 	IdleTimeout    uint32
 }
@@ -77,12 +79,21 @@ spec:
     max_age: "{{.CORS.MaxAge}}"
   {{end}}
 
+  {{if .LabelsEnabled}}
+  labels:
+    ambassador:
+      - operation:
+          - kusk-operation-{{.MappingName}}
+      - request:
+          - remote-address
+  {{end}}
+
   {{if .RequestTimeout}}
   timeout_ms: {{.RequestTimeout}}
   {{end}}
 
   {{if .IdleTimeout}}
-  idle_timeout_ms {{.IdleTimeout}}
+  idle_timeout_ms: {{.IdleTimeout}}
   {{end}}
 
 {{end}}
