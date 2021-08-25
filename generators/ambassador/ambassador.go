@@ -147,9 +147,10 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				}
 
 				mappingPath, regex := g.generateMappingPath(path, operation)
+				mappingName := g.generateMappingName(opts.Service.Name, method, path, operation)
 
 				op := mappingTemplateData{
-					MappingName:      g.generateMappingName(opts.Service.Name, method, path, operation),
+					MappingName:      mappingName,
 					MappingNamespace: opts.Namespace,
 					ServiceURL:       serviceURL,
 					BasePath:         basePath,
@@ -160,10 +161,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					Host:             host,
 				}
 
-				var corsOpts options.CORSOptions
-
 				// take global CORS options
-				corsOpts = opts.CORS
+				corsOpts := opts.CORS
 
 				// if non-zero path-level CORS options are different, override with them
 				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
@@ -187,10 +186,37 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					op.CORS = g.corsTemplateData(&corsOpts)
 				}
 
-				var timeoutOpts options.TimeoutOptions
+				// take global rate limit options
+				rateLimitOpts := opts.RateLimits
+
+				// if non-zero path-level rate limit options are different, override with them
+				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
+					if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOpts.RateLimits) &&
+						!reflect.DeepEqual(rateLimitOpts, pathSubOpts.RateLimits) {
+						rateLimitOpts = pathSubOpts.RateLimits
+					}
+				}
+
+				// if non-zero operation-level rate limit options are different, override them
+				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
+					if !reflect.DeepEqual(options.RateLimitOptions{}, opSubOpts.RateLimits) &&
+						!reflect.DeepEqual(rateLimitOpts, opSubOpts.RateLimits) {
+						rateLimitOpts = opSubOpts.RateLimits
+					}
+				}
+
+				// if final rate limit options are not empty, include them
+				if !reflect.DeepEqual(options.RateLimitOptions{}, rateLimitOpts) {
+					rateLimits = append(rateLimits, rateLimitTemplateData{
+						Operation: mappingName,
+						Rate:      rateLimitOpts.RPS,
+					})
+
+					op.LabelsEnabled = true
+				}
 
 				// take global timeout options
-				timeoutOpts = opts.Timeouts
+				timeoutOpts := opts.Timeouts
 
 				// if non-zero path-level timeout options are different, override with them
 				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
