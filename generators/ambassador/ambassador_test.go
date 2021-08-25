@@ -1144,7 +1144,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
   timeout_ms: 42000
-  idle_timeout_ms 43000
+  idle_timeout_ms: 43000
 `,
 	},
 	{
@@ -1207,7 +1207,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
   timeout_ms: 35000
-  idle_timeout_ms 36000
+  idle_timeout_ms: 36000
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1221,7 +1221,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
   timeout_ms: 42000
-  idle_timeout_ms 43000
+  idle_timeout_ms: 43000
 `,
 	},
 	{

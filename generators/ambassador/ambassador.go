@@ -18,6 +18,7 @@ import (
 
 var (
 	mappingTemplate     *template.Template
+	rateLimitTemplate   *template.Template
 	reDuplicateNewlines = regexp.MustCompile(`\s*\n+`)
 	rePathSymbols       = regexp.MustCompile(`[/{}]`)
 )
@@ -25,6 +26,9 @@ var (
 func init() {
 	mappingTemplate = template.New("mapping")
 	mappingTemplate = template.Must(mappingTemplate.Parse(mappingTemplateRaw))
+
+	rateLimitTemplate = template.New("rateLimit")
+	rateLimitTemplate = template.Must(rateLimitTemplate.Parse(rateLimitTemplateRaw))
 }
 
 func init() {
@@ -67,6 +71,18 @@ func (g *Generator) Flags() *pflag.FlagSet {
 	)
 
 	fs.Uint32(
+		"rate_limits.rps",
+		0,
+		"request per second rate limit",
+	)
+
+	fs.Uint32(
+		"rate_limits.burst",
+		0,
+		"request per second burst",
+	)
+
+	fs.Uint32(
 		"timeouts.request_timeout",
 		0,
 		"total request timeout (seconds)",
@@ -93,6 +109,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 	}
 
 	var mappings []mappingTemplateData
+	var rateLimits []rateLimitTemplateData
 
 	serviceURL := g.getServiceURL(opts)
 
@@ -218,6 +235,16 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			op.CORS = g.corsTemplateData(&opts.CORS)
 		}
 
+		// if global rate limit options are defined, take them
+		if !reflect.DeepEqual(options.RateLimitOptions{}, opts.RateLimits) {
+			op.LabelsEnabled = true
+
+			rateLimits = append(rateLimits, rateLimitTemplateData{
+				Operation: opts.Service.Name,
+				Rate:      opts.RateLimits.RPS,
+			})
+		}
+
 		mappings = append(mappings, op)
 	}
 
@@ -229,11 +256,20 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		return mappings[i].MappingName < mappings[j].MappingName
 	})
 
+	sort.Slice(rateLimits, func(i, j int) bool {
+		return rateLimits[i].Operation < rateLimits[j].Operation
+	})
+
 	var buf bytes.Buffer
 
 	err := mappingTemplate.Execute(&buf, mappings)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to execute mapping template: %w", err)
+	}
+
+	err = rateLimitTemplate.Execute(&buf, rateLimits)
+	if err != nil {
+		return "", fmt.Errorf("failed to execute rate limit template: %w", err)
 	}
 
 	res := buf.String()
@@ -328,6 +364,12 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 				return true
 			}
 
+			// a path has non-zero, different from global scope rate limits options
+			if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOptions.RateLimits) &&
+				!reflect.DeepEqual(opts.RateLimits, pathSubOptions.RateLimits) {
+				return true
+			}
+
 			// a path has non-zero, different from global scope timeouts options
 			if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOptions.Timeouts) &&
 				!reflect.DeepEqual(opts.Timeouts, pathSubOptions.Timeouts) {
@@ -345,6 +387,12 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 				// an operation has non-zero, different from global CORS options
 				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
 					!reflect.DeepEqual(opts.CORS, opSubOptions.CORS) {
+					return true
+				}
+
+				// an operation has non-zero, different from global scope rate limits options
+				if !reflect.DeepEqual(options.RateLimitOptions{}, opSubOptions.RateLimits) &&
+					!reflect.DeepEqual(opts.RateLimits, opSubOptions.RateLimits) {
 					return true
 				}
 
