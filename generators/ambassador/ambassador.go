@@ -207,9 +207,25 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 				// if final rate limit options are not empty, include them
 				if !reflect.DeepEqual(options.RateLimitOptions{}, rateLimitOpts) {
+					rps := rateLimitOpts.RPS
+
+					var burstFactor uint32
+
+					if burst := rateLimitOpts.Burst; burst != 0 {
+						// https://www.getambassador.io/docs/edge-stack/1.13/topics/using/rate-limits/rate-limits/
+						// ambassador uses a burst multiplier to configure burst for a rate limited path,
+						// i.e. burst = rps * burstMultiplier
+
+						burstFactor = burst / rps
+						if burstFactor < 1 {
+							burstFactor = 1
+						}
+					}
+
 					rateLimits = append(rateLimits, rateLimitTemplateData{
-						Operation: mappingName,
-						Rate:      rateLimitOpts.RPS,
+						Operation:   mappingName,
+						Rate:        rps,
+						BurstFactor: burstFactor,
 					})
 
 					op.LabelsEnabled = true
@@ -265,9 +281,25 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		if !reflect.DeepEqual(options.RateLimitOptions{}, opts.RateLimits) {
 			op.LabelsEnabled = true
 
+			rps := opts.RateLimits.RPS
+
+			var burstFactor uint32
+
+			if burst := opts.RateLimits.Burst; burst != 0 {
+				// https://www.getambassador.io/docs/edge-stack/1.13/topics/using/rate-limits/rate-limits/
+				// ambassador uses a burst multiplier to configure burst for a rate limited path,
+				// i.e. burst = rps * burstMultiplier
+
+				burstFactor = burst / rps
+				if burstFactor < 1 {
+					burstFactor = 1
+				}
+			}
+
 			rateLimits = append(rateLimits, rateLimitTemplateData{
-				Operation: opts.Service.Name,
-				Rate:      opts.RateLimits.RPS,
+				Operation:   opts.Service.Name,
+				Rate:        rps,
+				BurstFactor: burstFactor,
 			})
 		}
 

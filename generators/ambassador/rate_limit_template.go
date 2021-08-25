@@ -1,8 +1,9 @@
 package ambassador
 
 type rateLimitTemplateData struct {
-	Operation string
-	Rate      uint32
+	Operation   string
+	Rate        uint32
+	BurstFactor uint32
 }
 
 var rateLimitTemplateRaw = `{{range .}}
@@ -18,6 +19,9 @@ spec:
       - "generic_key": "kusk-operation-{{.Operation}}"
         "remote-address": "*"
       rate: {{.Rate}}
+      {{if .BurstFactor}}
+      burstFactor: {{.BurstFactor}}
+      {{end}}
       unit: second
 
 {{end}}

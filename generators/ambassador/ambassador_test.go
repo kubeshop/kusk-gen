@@ -1266,4 +1266,189 @@ spec:
   rewrite: ""
 `,
 	},
+	{
+		name: "rate-limit-global",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			RateLimits: options.RateLimitOptions{
+				RPS:   100,
+				Burst: 200,
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+  "/pet/{petId}/uploadImage":
+    post:
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore
+  namespace: default
+spec:
+  prefix: "/"
+  service: petstore.default:80
+  rewrite: ""
+  labels:
+    ambassador:
+      - operation:
+          - kusk-operation-petstore
+      - request:
+          - remote-address
+---
+apiVersion: getambassador.io/v2
+kind: RateLimit
+metadata:
+  name: petstore
+spec:
+  domain: ambassador
+  limits:
+    - pattern:
+      - "generic_key": "kusk-operation-petstore"
+        "remote-address": "*"
+      rate: 100
+      burstFactor: 2
+      unit: second
+`,
+	},
+	{
+		name: "rate-limit-path-override",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			RateLimits: options.RateLimitOptions{
+				RPS:   40,
+				Burst: 80,
+			},
+			PathSubOptions: map[string]options.SubOptions{
+				"/pet": {
+					RateLimits: options.RateLimitOptions{
+						RPS:   20,
+						Burst: 40,
+					},
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  "/pet":
+    put:
+      operationId: updatePet
+      responses:
+        '200':
+          description: Successful operation
+  "/pet/{petId}/uploadImage":
+    post:
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation`,
+		res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-updatepet
+  namespace: default
+spec:
+  prefix: "/pet"
+  method: PUT
+  service: petstore.default:80
+  rewrite: ""
+  labels:
+    ambassador:
+      - operation:
+          - kusk-operation-petstore-updatepet
+      - request:
+          - remote-address
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-uploadfile
+  namespace: default
+spec:
+  prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
+  prefix_regex: true
+  method: POST
+  service: petstore.default:80
+  rewrite: ""
+  labels:
+    ambassador:
+      - operation:
+          - kusk-operation-petstore-uploadfile
+      - request:
+          - remote-address
+---
+apiVersion: getambassador.io/v2
+kind: RateLimit
+metadata:
+  name: petstore-updatepet
+spec:
+  domain: ambassador
+  limits:
+    - pattern:
+      - "generic_key": "kusk-operation-petstore-updatepet"
+        "remote-address": "*"
+      rate: 20
+      burstFactor: 2
+      unit: second
+---
+apiVersion: getambassador.io/v2
+kind: RateLimit
+metadata:
+  name: petstore-uploadfile
+spec:
+  domain: ambassador
+  limits:
+    - pattern:
+      - "generic_key": "kusk-operation-petstore-uploadfile"
+        "remote-address": "*"
+      rate: 40
+      burstFactor: 2
+      unit: second
+`,
+	},
 }
