@@ -10,6 +10,7 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	"github.com/kubeshop/kusk/cluster"
+	"github.com/kubeshop/kusk/spec"
 	"github.com/kubeshop/kusk/wizard/flow"
 	"github.com/kubeshop/kusk/wizard/prompt"
 )
@@ -26,13 +27,24 @@ func Start(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) {
 		)
 	}
 
+	opts, err := spec.GetOptions(apiSpec)
+	if err != nil {
+		log.Fatal(fmt.Errorf("failed to read options from apispec: %w", err))
+	}
+
+	args := &flow.Args{
+		ApiSpecPath: apiSpecPath,
+		ApiSpec:     apiSpec,
+		Prompt:      prompt,
+		Opts:        opts,
+	}
+
 	var mappings string
-	var err error
 
 	if canConnectToCluster {
-		mappings, err = flowWithCluster(apiSpecPath, apiSpec, kubeConfigPath, prompt)
+		mappings, err = flowWithCluster(args, kubeConfigPath)
 	} else {
-		mappings, err = flowWithoutCluster(apiSpecPath, apiSpec, prompt)
+		mappings, err = flowWithoutCluster(args)
 	}
 
 	if err != nil {
@@ -55,7 +67,7 @@ func Start(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) {
 	fmt.Println(mappings)
 }
 
-func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath string, prompt prompt.Prompter) (string, error) {
+func flowWithCluster(args *flow.Args, kubeConfigPath string) (string, error) {
 	var servicesToSuggest []string
 
 	client, err := cluster.NewClient(kubeConfigPath)
@@ -103,36 +115,29 @@ func flowWithCluster(apiSpecPath string, apiSpec *openapi3.T, kubeConfigPath str
 		return "", fmt.Errorf("failed to list namespaces: %w", err)
 	}
 
-	targetServiceNamespace = prompt.SelectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
+	targetServiceNamespace = args.Prompt.SelectOneOf("Choose namespace with your service", targetServiceNamespaceSuggestions, true)
 
 	targetServiceSuggestions, err := client.ListServices(targetServiceNamespace)
 	if err != nil {
 		return "", fmt.Errorf("failed to list namespaces: %w", err)
 	}
 
-	args := &flow.Args{
-		ApiSpecPath: apiSpecPath,
-		ApiSpec:     apiSpec,
-		Prompt:      prompt,
-	}
+	args.TargetService = args.Prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
 
-	args.TargetService = prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
-
-	args.Service = prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
+	args.Service = args.Prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
 
 	return executeFlow(args)
 }
 
-func flowWithoutCluster(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) (string, error) {
-	args := &flow.Args{
-		ApiSpecPath: apiSpecPath,
-		ApiSpec:     apiSpec,
-		Prompt:      prompt,
+func flowWithoutCluster(args *flow.Args) (string, error) {
+	defaultNamespace := "default"
+	if args.Opts.Service.Namespace != "" {
+		defaultNamespace = args.Opts.Service.Namespace
 	}
-	args.TargetNamespace = prompt.InputNonEmpty("Enter namespace with your service", "default")
-	args.TargetService = prompt.InputNonEmpty("Enter your service name", "")
+	args.TargetNamespace = args.Prompt.InputNonEmpty("Enter namespace with your service", defaultNamespace)
+	args.TargetService = args.Prompt.InputNonEmpty("Enter your service name", args.Opts.Service.Name)
 
-	args.Service = prompt.SelectOneOf(
+	args.Service = args.Prompt.SelectOneOf(
 		"Choose a service you want Kusk generate manifests for",
 		[]string{
 			"ambassador",
