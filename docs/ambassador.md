@@ -29,7 +29,6 @@ CLI flags apply only at the global level i.e. applies to all paths and methods.
 To override settings on the path or HTTP method level, you are required to use the x-kusk extension at that path in your API specification.
 
 ## Full Options Reference
-
 | Name                    | CLI Option                 | OpenAPI Spec x-kusk label | Descriptions                                                                                                       | Overwritable at path / method |
 |-------------------------|----------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------------|-------------------------------|
 | OpenAPI or Swagger File | --in                       | N/A                       | Location of the OpenAPI or Swagger specification                                                                   | ❌                             |
@@ -41,6 +40,8 @@ To override settings on the path or HTTP method level, you are required to use t
 | Path Trim Prefix        | --path.trim_prefix         | path.trim_prefix          | Trim the specified prefix from URl before passing request onto service                                             | ❌                             |
 | Path split              | --path.split               | path.split                | Boolean; whether or not to force generator to generate a mapping for each path                                     | ❌                             |
 | Host                    | --host                     | host                      | The value to set the host field to in the Mapping resource                                                         | ✅                             |
+| Rate limit (RPS)        | --rate_limits.rps          | rate_limits.rps           | Request per second rate limit                                                                                      | ✅                             |
+| Rate limit (burst)      | --rate_limits.burst        | rate_limits.burst         | Rate limit burst                                                                                                   | ✅                             |
 | Request Timeout         | --timeouts.request_timeout | timeouts.request_timeout  | Total request timeout (seconds)                                                                                    | ✅                             |
 | Idle Timeout            | --timeouts.idle_timeout    | timeouts.idle_timeout     | Idle connection timeout (seconds)                                                                                  | ✅                             |
 | CORS Origins            | N/A                        | cors.origins              | Array of origins                                                                                                   | ✅                             |
@@ -49,7 +50,6 @@ To override settings on the path or HTTP method level, you are required to use t
 | CORS ExposeHeaders      | N/A                        | cors.expose_headers       | Array of headers to expose                                                                                         | ✅                             |
 | CORS Credentials        | N/A                        | cors.credentials          | Boolean: enable credentials (default value: false)                                                                 | ✅                             |
 | CORS Max Age            | N/A                        | cors.max_age              | Integer:how long the response to the preflight request can be cached for without sending another preflight request | ✅                             |
-
 ## Basic Usage
 
 ### CLI Flags
