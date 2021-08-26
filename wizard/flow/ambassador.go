@@ -119,7 +119,7 @@ func (a ambassadorFlow) getCORSOpts() options.CORSOptions {
 	return corsOpts
 }
 
-func (a ambassadorFlow) getCmdFromOpts(opts *options.Options, separateMappings bool) string {
+func (a ambassadorFlow) getCmdFromOpts(opts *options.Options) string {
 	cmd := fmt.Sprintf("kusk ambassador -i %s ", a.apiSpecPath)
 	cmd = cmd + fmt.Sprintf("--namespace=%s ", a.targetNamespace)
 	cmd = cmd + fmt.Sprintf("--service.namespace=%s ", a.targetNamespace)
@@ -129,7 +129,7 @@ func (a ambassadorFlow) getCmdFromOpts(opts *options.Options, separateMappings b
 	if opts.Path.TrimPrefix != "" {
 		cmd = cmd + fmt.Sprintf("--path.trim_prefix=%s ", opts.Path.TrimPrefix)
 	}
-	if separateMappings {
+	if opts.Path.Split {
 		cmd = cmd + fmt.Sprintf("--path.split ")
 	}
 
@@ -166,7 +166,7 @@ func (a ambassadorFlow) Start() (Response, error) {
 		CORS: corsOpts,
 	}
 
-	cmd := a.getCmdFromOpts(opts, separateMappings)
+	cmd := a.getCmdFromOpts(opts)
 
 	var ag ambassador.Generator
 
