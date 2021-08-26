@@ -5,6 +5,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 
+	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/wizard/prompt"
 )
 
@@ -24,6 +25,8 @@ type baseFlow struct {
 	targetNamespace string
 	targetService   string
 
+	opts *options.Options
+
 	prompt prompt.Prompter
 }
 
@@ -34,6 +37,8 @@ type Args struct {
 	ApiSpec         *openapi3.T
 	TargetNamespace string
 	TargetService   string
+
+	Opts *options.Options
 
 	Prompt prompt.Prompter
 }
@@ -46,6 +51,7 @@ func New(args *Args) (Interface, error) {
 		apiSpec:         args.ApiSpec,
 		targetNamespace: args.TargetNamespace,
 		targetService:   args.TargetService,
+		opts:            args.Opts,
 		prompt:          args.Prompt,
 	}
 
