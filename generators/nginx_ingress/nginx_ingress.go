@@ -334,7 +334,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 				if !rateLimitWarned {
 					log.New(os.Stderr, "WARN", log.Lmsgprefix).
-						Printf("Setting a rate limit option on path level would cause a separate rate limit applied for each path")
+						Printf("Setting a rate limit option on the path level would cause a separate rate limit applied for each path")
 
 					rateLimitWarned = true
 				}
