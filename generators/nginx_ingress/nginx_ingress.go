@@ -313,6 +313,8 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 		return true
 	}
 
+	rateLimitWarned := false
+
 	for path, pathItem := range spec.Paths {
 		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
 			// a path is disabled
@@ -329,6 +331,14 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 			// a path has non-zero, different from global scope rate limits options
 			if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOptions.RateLimits) &&
 				!reflect.DeepEqual(opts.RateLimits, pathSubOptions.RateLimits) {
+
+				if !rateLimitWarned {
+					log.New(os.Stderr, "WARN", log.Lmsgprefix).
+						Printf("Setting a rate limit option on the path level would cause a separate rate limit applied for each path")
+
+					rateLimitWarned = true
+				}
+
 				return true
 			}
 
