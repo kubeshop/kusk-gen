@@ -2,6 +2,10 @@ package spec
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/getkin/kin-openapi/openapi2"
@@ -24,16 +28,52 @@ func isSwagger(spec []byte) bool {
 	return header.Swagger != ""
 }
 
-func ParseFromFile(path string) (*openapi3.T, error) {
-	contents, err := os.ReadFile(path)
+// Parse is the entrypoint for the spec package
+// Accepts a path that should be parseable into a resource locater
+// i.e. a URL or relative file path
+func Parse(path string) (*openapi3.T, error) {
+	u, err := url.Parse(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read spec file: %w", err)
+		return nil, fmt.Errorf("could not parse resource path: %w", err)
 	}
 
-	return Parse(contents)
+	if isURLRelative := u.Host == ""; isURLRelative {
+		return parseFromFile(path)
+	}
+
+	return parseFromURL(u)
 }
 
-func Parse(spec []byte) (*openapi3.T, error) {
+func parseFromURL(u *url.URL) (*openapi3.T, error) {
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to read spec from url %s: %w", u.String(), err)
+	}
+
+	defer resp.Body.Close()
+
+	return ParseFromReader(resp.Body)
+}
+
+func parseFromFile(path string) (*openapi3.T, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("could not open api spec file: %w", err)
+	}
+
+	defer f.Close()
+
+	return ParseFromReader(f)
+}
+
+// ParseFromReader allows for providing your own Reader implementation
+// to parse the API spec from
+func ParseFromReader(contents io.Reader) (*openapi3.T, error) {
+	spec, err := ioutil.ReadAll(contents)
+	if err != nil {
+		return nil, fmt.Errorf("could not read contents of api spec: %w", err)
+	}
+
 	if isSwagger(spec) {
 		return parseSwagger(spec)
 	}
