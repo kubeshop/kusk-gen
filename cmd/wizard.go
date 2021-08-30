@@ -24,7 +24,7 @@ func init() {
 			}
 
 			// parse OpenAPI spec
-			apiSpec, err := spec.ParseFromFile(apiSpecPath)
+			apiSpec, err := spec.Parse(apiSpecPath)
 			if err != nil {
 				log.Fatal(err)
 			}
