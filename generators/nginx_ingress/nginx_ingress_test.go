@@ -1,6 +1,7 @@
 package nginx_ingress
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -522,7 +523,8 @@ status:
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
-			spec, err := spec.Parse([]byte(testCase.spec))
+
+			spec, err := spec.ParseFromReader(strings.NewReader(testCase.spec))
 			r.NoError(err)
 			profile, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)

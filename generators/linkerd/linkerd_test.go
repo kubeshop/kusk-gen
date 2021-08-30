@@ -1,6 +1,7 @@
 package linkerd
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,7 +24,7 @@ func TestLinkerd(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
 
-			spec, err := spec.Parse([]byte(testCase.spec))
+			spec, err := spec.ParseFromReader(strings.NewReader(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
 			profile, err := gen.Generate(&testCase.options, spec)
