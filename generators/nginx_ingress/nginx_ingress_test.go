@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 
 	"github.com/kubeshop/kusk/options"
@@ -524,7 +525,7 @@ status:
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
 
-			spec, err := spec.ParseFromReader(strings.NewReader(testCase.spec))
+			spec, err := spec.NewParser(openapi3.NewLoader()).ParseFromReader(strings.NewReader(testCase.spec))
 			r.NoError(err)
 			profile, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/posflag"
 	"github.com/knadh/koanf/providers/structs"
@@ -48,7 +49,7 @@ func init() {
 				}
 
 				// parse OpenAPI spec
-				apiSpec, err := spec.Parse(apiSpecPath)
+				apiSpec, err := spec.NewParser(openapi3.NewLoader()).Parse(apiSpecPath)
 				if err != nil {
 					log.Fatal(err)
 				}
