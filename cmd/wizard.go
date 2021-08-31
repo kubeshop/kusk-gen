@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
@@ -24,7 +25,7 @@ func init() {
 			}
 
 			// parse OpenAPI spec
-			apiSpec, err := spec.ParseFromFile(apiSpecPath)
+			apiSpec, err := spec.NewParser(openapi3.NewLoader()).Parse(apiSpecPath)
 			if err != nil {
 				log.Fatal(err)
 			}

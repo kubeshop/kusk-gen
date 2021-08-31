@@ -1,8 +1,10 @@
 package ambassador
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 
 	"github.com/kubeshop/kusk/options"
@@ -23,7 +25,7 @@ func TestAmbassador(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			r := require.New(t)
 
-			spec, err := spec.Parse([]byte(testCase.spec))
+			spec, err := spec.NewParser(openapi3.NewLoader()).ParseFromReader(strings.NewReader(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
 			mappings, err := gen.Generate(&testCase.options, spec)
