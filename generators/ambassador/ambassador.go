@@ -222,13 +222,19 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 						}
 					}
 
+					if rateLimitOpts.Group == "" {
+						rateLimitOpts.Group = "default"
+					}
+
 					rateLimits = append(rateLimits, rateLimitTemplateData{
 						Operation:   mappingName,
 						Rate:        rps,
 						BurstFactor: burstFactor,
+						Group:       rateLimitOpts.Group,
 					})
 
 					op.LabelsEnabled = true
+					op.RateLimitGroup = rateLimitOpts.Group
 				}
 
 				// take global timeout options
@@ -281,6 +287,12 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		if !reflect.DeepEqual(options.RateLimitOptions{}, opts.RateLimits) {
 			op.LabelsEnabled = true
 
+			if opts.RateLimits.Group == "" {
+				opts.RateLimits.Group = "default"
+			}
+
+			op.RateLimitGroup = opts.RateLimits.Group
+
 			rps := opts.RateLimits.RPS
 
 			var burstFactor uint32
@@ -300,6 +312,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				Operation:   opts.Service.Name,
 				Rate:        rps,
 				BurstFactor: burstFactor,
+				Group:       opts.RateLimits.Group,
 			})
 		}
 

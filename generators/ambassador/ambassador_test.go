@@ -1320,6 +1320,8 @@ spec:
   rewrite: ""
   labels:
     ambassador:
+	  - group:
+		  - kusk-group-default
       - operation:
           - kusk-operation-petstore
       - request:
@@ -1333,7 +1335,8 @@ spec:
   domain: ambassador
   limits:
     - pattern:
-      - "generic_key": "kusk-operation-petstore"
+      - "generic_key": "kusk-group-default"
+        "generic_key": "kusk-operation-petstore"
         "remote-address": "*"
       rate: 100
       burstFactor: 2
@@ -1401,6 +1404,8 @@ spec:
   rewrite: ""
   labels:
     ambassador:
+	  - group:
+		  - kusk-group-default
       - operation:
           - kusk-operation-petstore-updatepet
       - request:
@@ -1419,6 +1424,8 @@ spec:
   rewrite: ""
   labels:
     ambassador:
+	  - group:
+		  - kusk-group-default
       - operation:
           - kusk-operation-petstore-uploadfile
       - request:
@@ -1432,7 +1439,8 @@ spec:
   domain: ambassador
   limits:
     - pattern:
-      - "generic_key": "kusk-operation-petstore-updatepet"
+      - "generic_key": "kusk-group-default"
+        "generic_key": "kusk-operation-petstore-updatepet"
         "remote-address": "*"
       rate: 20
       burstFactor: 2
@@ -1446,7 +1454,8 @@ spec:
   domain: ambassador
   limits:
     - pattern:
-      - "generic_key": "kusk-operation-petstore-uploadfile"
+      - "generic_key": "kusk-group-default"
+        "generic_key": "kusk-operation-petstore-uploadfile"
         "remote-address": "*"
       rate: 40
       burstFactor: 2

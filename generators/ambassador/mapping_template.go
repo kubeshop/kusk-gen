@@ -35,6 +35,8 @@ type mappingTemplateData struct {
 
 	RequestTimeout uint32
 	IdleTimeout    uint32
+
+	RateLimitGroup string
 }
 
 var mappingTemplateRaw = `{{range .}}
@@ -82,6 +84,8 @@ spec:
   {{if .LabelsEnabled}}
   labels:
     ambassador:
+	  - group:
+		  - kusk-group-{{.RateLimitGroup}}
       - operation:
           - kusk-operation-{{.MappingName}}
       - request:
