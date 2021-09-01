@@ -314,6 +314,22 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	}
 
 	rateLimitWarned := false
+	groupUnsupportedWarned := false
+
+	warnGroupUnsupported := func(ro options.RateLimitOptions) {
+		if groupUnsupportedWarned {
+			return
+		}
+
+		if ro.Group != "" {
+			log.New(os.Stderr, "WARN", log.Lmsgprefix).
+				Printf("nginx-ingress does not support rate limit groups. These will be ignored")
+
+			groupUnsupportedWarned = true
+		}
+	}
+
+	warnGroupUnsupported(opts.RateLimits)
 
 	for path, pathItem := range spec.Paths {
 		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
@@ -331,6 +347,8 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 			// a path has non-zero, different from global scope rate limits options
 			if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOptions.RateLimits) &&
 				!reflect.DeepEqual(opts.RateLimits, pathSubOptions.RateLimits) {
+
+				warnGroupUnsupported(pathSubOptions.RateLimits)
 
 				if !rateLimitWarned {
 					log.New(os.Stderr, "WARN", log.Lmsgprefix).
