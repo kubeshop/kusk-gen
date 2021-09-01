@@ -18,7 +18,6 @@ archives:
 checksum:
   name_template: 'checksums.txt'
 changelog:
-  skip: true # remove this before second release
   sort: asc
   filters:
     exclude:
