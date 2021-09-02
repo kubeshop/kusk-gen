@@ -1,6 +1,7 @@
 package ambassador
 
 type rateLimitTemplateData struct {
+	Group       string
 	Operation   string
 	Rate        uint32
 	BurstFactor uint32
@@ -16,7 +17,8 @@ spec:
   domain: ambassador
   limits:
     - pattern:
-      - "generic_key": "kusk-operation-{{.Operation}}"
+      - "generic_key": "kusk-group-{{.Group}}"
+        "generic_key": "kusk-operation-{{.Operation}}"
         "remote-address": "*"
       rate: {{.Rate}}
       {{if .BurstFactor}}
