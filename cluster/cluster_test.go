@@ -242,3 +242,52 @@ func TestClient_DetectLinkerd(t *testing.T) {
 		})
 	}
 }
+
+func TestClient_DetectTraefik(t *testing.T) {
+	data := []struct {
+		name           string
+		clientset      kubernetes.Interface
+		expectedResult bool
+	}{
+		{
+			name:           "No Traefik",
+			clientset:      fake.NewSimpleClientset(),
+			expectedResult: false,
+		},
+		{
+			name: "Traefik installed in traefik v2 namespace",
+			clientset: fake.NewSimpleClientset(
+				&v1.Namespace{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: "v1",
+						Kind:       "Namespace",
+					},
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "traefik-v2",
+					},
+				},
+				&apps_v1.Deployment{
+					TypeMeta: metav1.TypeMeta{
+						Kind:       "Deployment",
+						APIVersion: "apps/v1",
+					},
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "traefik",
+						Namespace: "traefik-v2",
+					},
+				},
+			),
+			expectedResult: true,
+		},
+	}
+
+	for _, test := range data {
+		t.Run(test.name, func(t *testing.T) {
+			r := require.New(t)
+			client := Client{cs: test.clientset}
+			linkerdDetected, err := client.DetectTraefikV2()
+			r.NoError(err)
+			r.Equal(test.expectedResult, linkerdDetected)
+		})
+	}
+}

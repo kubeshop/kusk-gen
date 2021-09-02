@@ -116,3 +116,19 @@ func (c *Client) DetectNginxIngress() (bool, error) {
 
 	return false, nil
 }
+
+func (c *Client) DetectTraefikV2() (bool, error) {
+	_, err :=
+		c.cs.AppsV1().
+			Deployments("traefik-v2").
+			Get(context.Background(), "traefik", metav1.GetOptions{})
+	if err == nil {
+		return true, nil
+	}
+
+	if !errors.IsNotFound(err) {
+		return false, fmt.Errorf("error fetching nginx-ingress deployments: %w", err)
+	}
+
+	return false, nil
+}
