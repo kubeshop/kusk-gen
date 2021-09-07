@@ -7,12 +7,11 @@ import (
 	"path/filepath"
 
 	"github.com/getkin/kin-openapi/openapi3"
-	"k8s.io/client-go/util/homedir"
-
 	"github.com/kubeshop/kusk/cluster"
 	"github.com/kubeshop/kusk/spec"
 	"github.com/kubeshop/kusk/wizard/flow"
 	"github.com/kubeshop/kusk/wizard/prompt"
+	"k8s.io/client-go/util/homedir"
 )
 
 func Start(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) {
@@ -92,6 +91,11 @@ func flowWithCluster(args *flow.Args, kubeConfigPath string) (string, error) {
 		return "", fmt.Errorf("failed to check if nginx ingress is installed: %w", err)
 	}
 
+	traefikFound, err := client.DetectTraefikV2()
+	if err != nil {
+		return "", fmt.Errorf("failed to check if traefik is installed: %w", err)
+	}
+
 	if ambassadorFound {
 		servicesToSuggest = append(servicesToSuggest, "ambassador")
 		fmt.Fprintln(os.Stderr, "✔ Ambassador installation found")
@@ -105,6 +109,11 @@ func flowWithCluster(args *flow.Args, kubeConfigPath string) (string, error) {
 	if nginxIngressFound {
 		servicesToSuggest = append(servicesToSuggest, "nginx-ingress")
 		fmt.Fprintln(os.Stderr, "✔ Nginx Ingress installation found")
+	}
+
+	if traefikFound {
+		servicesToSuggest = append(servicesToSuggest, "traefik")
+		fmt.Fprintln(os.Stderr, "✔ Traefik installation found")
 	}
 
 	var targetServiceNamespaceSuggestions []string
