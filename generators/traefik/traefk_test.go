@@ -53,18 +53,19 @@ paths:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
+  creationTimestamp: null
   name: petstore
   namespace: default
 spec:
   entryPoints:
-    - web
+  - web
   routes:
-    - match: "PathPrefix(\"/\")"
-      kind: Rule
-      services:
-        - name: petstore
-          namespace: default
-          port: 7000
+  - kind: Rule
+    match: PathPrefix("/")
+    services:
+    - name: petstore
+      namespace: default
+      port: 7000
 `,
 		},
 		{
@@ -85,18 +86,19 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
+  creationTimestamp: null
   name: webapp
   namespace: default
 spec:
   entryPoints:
-    - web
+  - web
   routes:
-    - match: "PathPrefix(\"/somepath\")"
-      kind: Rule
-      services:
-        - name: webapp
-          namespace: default
-          port: 7000
+  - kind: Rule
+    match: PathPrefix("/somepath")
+    services:
+    - name: webapp
+      namespace: default
+      port: 7000
 `,
 		},
 		{
@@ -119,32 +121,67 @@ spec:
 apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
+  creationTimestamp: null
   name: webapp-strip-prefixes
   namespace: default
 spec:
   stripPrefix:
     prefixes:
-      - "/somepath"
-    forceSlash: false
+    - /somepath
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
+  creationTimestamp: null
   name: webapp
   namespace: default
 spec:
   entryPoints:
-    - web
+  - web
   routes:
-    - match: "PathPrefix(\"/somepath\")"
-      kind: Rule
-      middlewares:
-        - name: webapp-strip-prefixes
-          namespace: default
-      services:
-        - name: webapp
-          namespace: default
-          port: 7000
+  - kind: Rule
+    match: PathPrefix("/somepath")
+    middlewares:
+    - name: webapp-strip-prefixes
+      namespace: default
+    services:
+    - name: webapp
+      namespace: default
+      port: 7000
+`,
+		},
+		{
+			name: "non-root path and host match",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "webapp",
+					Port:      7000,
+				},
+				Path: options.PathOptions{
+					Base: "/somepath",
+				},
+				Host: "example.com",
+			},
+			res: `
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  creationTimestamp: null
+  name: webapp
+  namespace: default
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: Host("example.com") && PathPrefix("/somepath")
+    services:
+    - name: webapp
+      namespace: default
+      port: 7000
 `,
 		},
 	}

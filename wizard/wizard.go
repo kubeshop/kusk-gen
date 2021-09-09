@@ -152,6 +152,7 @@ func flowWithoutCluster(args *flow.Args) (string, error) {
 			"ambassador",
 			"linkerd",
 			"nginx-ingress",
+			"traefik",
 		},
 		false,
 	)

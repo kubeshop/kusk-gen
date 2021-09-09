@@ -62,6 +62,8 @@ func New(args *Args) (Interface, error) {
 		return linkerdFlow{baseFlow}, nil
 	case "nginx-ingress":
 		return nginxIngressFlow{baseFlow}, nil
+	case "traefik":
+		return traefikFlow{baseFlow}, nil
 	default:
 		return nil, fmt.Errorf("unsupported service: %s\n", args.Service)
 	}

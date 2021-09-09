@@ -118,16 +118,13 @@ func (c *Client) DetectNginxIngress() (bool, error) {
 }
 
 func (c *Client) DetectTraefikV2() (bool, error) {
-	_, err :=
-		c.cs.AppsV1().
-			Deployments("traefik-v2").
-			Get(context.Background(), "traefik", metav1.GetOptions{})
+	// We query for resources to check if available API group traefik.containo.us/v1alpha1 is installed
+	_, err := c.cs.Discovery().ServerResourcesForGroupVersion("traefik.containo.us/v1alpha1")
 	if err == nil {
 		return true, nil
 	}
-
 	if !errors.IsNotFound(err) {
-		return false, fmt.Errorf("error fetching nginx-ingress deployments: %w", err)
+		return false, fmt.Errorf("error querying cluster for installed Traefik CRD API Resources: %w", err)
 	}
 
 	return false, nil

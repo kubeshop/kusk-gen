@@ -255,7 +255,7 @@ func TestClient_DetectTraefik(t *testing.T) {
 			expectedResult: false,
 		},
 		{
-			name: "Traefik installed in traefik v2 namespace",
+			name: "Traefik CRD API is installed",
 			clientset: fake.NewSimpleClientset(
 				&v1.Namespace{
 					TypeMeta: metav1.TypeMeta{
@@ -285,9 +285,9 @@ func TestClient_DetectTraefik(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			r := require.New(t)
 			client := Client{cs: test.clientset}
-			linkerdDetected, err := client.DetectTraefikV2()
+			traefikDetected, err := client.DetectTraefikV2()
 			r.NoError(err)
-			r.Equal(test.expectedResult, linkerdDetected)
+			r.Equal(test.expectedResult, traefikDetected)
 		})
 	}
 }
