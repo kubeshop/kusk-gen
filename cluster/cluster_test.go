@@ -244,50 +244,46 @@ func TestClient_DetectLinkerd(t *testing.T) {
 }
 
 func TestClient_DetectTraefik(t *testing.T) {
-	data := []struct {
-		name           string
-		clientset      kubernetes.Interface
-		expectedResult bool
-	}{
-		{
-			name:           "No Traefik",
-			clientset:      fake.NewSimpleClientset(),
-			expectedResult: false,
-		},
-		{
-			name: "Traefik CRD API is installed",
-			clientset: fake.NewSimpleClientset(
-				&v1.Namespace{
-					TypeMeta: metav1.TypeMeta{
-						APIVersion: "v1",
-						Kind:       "Namespace",
-					},
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "traefik-v2",
+	// Test calling API for Traefik CRD
+	t.Run("Traefik CRD API is installed", func(t *testing.T) {
+		r := require.New(t)
+		traefikClusterDiscovery := fake.NewSimpleClientset()
+		traefikClusterDiscovery.Fake.Resources = []*metav1.APIResourceList{
+			{
+				TypeMeta: metav1.TypeMeta{
+					Kind:       "APIResourceList",
+					APIVersion: "v1",
+				},
+				GroupVersion: "traefik.containo.us/v1alpha1",
+				APIResources: []metav1.APIResource{
+					{
+						Name:               "tlsoptions",
+						Namespaced:         true,
+						Kind:               "TLSOption",
+						Verbs:              metav1.Verbs{"delete", "deletecollection", "get", "list", "patch", "create", "update", "watch"},
+						ShortNames:         []string{},
+						SingularName:       "tlsoption",
+						Categories:         []string{},
+						Group:              "",
+						Version:            "",
+						StorageVersionHash: "",
 					},
 				},
-				&apps_v1.Deployment{
-					TypeMeta: metav1.TypeMeta{
-						Kind:       "Deployment",
-						APIVersion: "apps/v1",
-					},
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "traefik",
-						Namespace: "traefik-v2",
-					},
-				},
-			),
-			expectedResult: true,
-		},
-	}
-
-	for _, test := range data {
-		t.Run(test.name, func(t *testing.T) {
-			r := require.New(t)
-			client := Client{cs: test.clientset}
-			traefikDetected, err := client.DetectTraefikV2()
-			r.NoError(err)
-			r.Equal(test.expectedResult, traefikDetected)
-		})
-	}
+			},
+		}
+		client := Client{cs: traefikClusterDiscovery}
+		traefikDetected, err := client.DetectTraefikV2()
+		r.NoError(err)
+		r.Equal(true, traefikDetected)
+	})
+	// Test calling API when there is no installed CRD.
+	t.Run("No Traefik", func(t *testing.T) {
+		r := require.New(t)
+		client := Client{cs: fake.NewSimpleClientset()}
+		traefikDetected, err := client.DetectTraefikV2()
+		// Unfortunately fake discovery function doesn't return errors.IsNotFound as real client,
+		// so we have to ignore all errors here.
+		r.Error(err)
+		r.Equal(false, traefikDetected)
+	})
 }

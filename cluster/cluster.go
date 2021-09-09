@@ -124,7 +124,7 @@ func (c *Client) DetectTraefikV2() (bool, error) {
 		return true, nil
 	}
 	if !errors.IsNotFound(err) {
-		return false, fmt.Errorf("error querying cluster for installed Traefik CRD API Resources: %w", err)
+		return false, fmt.Errorf("error querying cluster for installed CRD API Resources: %w", err)
 	}
 
 	return false, nil
