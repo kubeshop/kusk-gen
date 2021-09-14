@@ -131,9 +131,12 @@ func flowWithCluster(args *flow.Args, kubeConfigPath string) (string, error) {
 		return "", fmt.Errorf("failed to list namespaces: %w", err)
 	}
 
+	args.TargetNamespace = targetServiceNamespace
+
 	args.TargetService = args.Prompt.SelectOneOf("Choose your service", targetServiceSuggestions, true)
 
 	args.Service = args.Prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
+
 
 	return executeFlow(args)
 }

@@ -31,6 +31,7 @@ Available Commands:
   help          Help about any command
   linkerd       Generates Linkerd Service Profiles for your service
   nginx-ingress Generates nginx-ingress resources
+  traefik       Generates Traefik resources
   wizard        Connects to current Kubernetes cluster and lists available generators
 
 Flags:

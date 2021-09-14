@@ -39,12 +39,18 @@ func (t traefikFlow) getTrimPrefix(basePath string) string {
 func (t traefikFlow) getTimeoutOpts() options.TimeoutOptions {
 	var timeoutOptions options.TimeoutOptions
 
-	// Support only request timeout as nginx-ingress generator doesn't support idle timeout
 	if requestTimeout := t.prompt.Input("Request timeout, leave empty to skip", strconv.Itoa(int(t.opts.Timeouts.RequestTimeout))); requestTimeout != "" {
 		if rTimeout, err := strconv.Atoi(requestTimeout); err != nil {
 			log.Printf("WARN: %s is not a valid request timeout value. Skipping\n", requestTimeout)
 		} else {
 			timeoutOptions.RequestTimeout = uint32(rTimeout)
+		}
+	}
+	if idleTimeout := t.prompt.Input("Idle timeout, leave empty to skip", strconv.Itoa(int(t.opts.Timeouts.IdleTimeout))); idleTimeout != "" {
+		if iTimeout, err := strconv.Atoi(idleTimeout); err != nil {
+			log.Printf("WARN: %s is not a valid idle timeout value. Skipping\n", idleTimeout)
+		} else {
+			timeoutOptions.RequestTimeout = uint32(iTimeout)
 		}
 	}
 
@@ -125,6 +131,12 @@ func (t traefikFlow) getCmdFromOpts(opts *options.Options) string {
 		sb.WriteString(fmt.Sprintf("--host=%s ", opts.Host))
 	}
 
+	if opts.Timeouts.RequestTimeout > 0 {
+		sb.WriteString(fmt.Sprintf("--timeouts.request_timeout=%d", opts.Timeouts.RequestTimeout))
+	}
+	if opts.Timeouts.IdleTimeout > 0 {
+		sb.WriteString(fmt.Sprintf("--timeouts.idle_timeout=%d", opts.Timeouts.IdleTimeout))
+	}
 	return sb.String()
 }
 
@@ -150,15 +162,14 @@ func (t traefikFlow) Start() (Response, error) {
 	}
 
 	cmd := t.getCmdFromOpts(opts)
-
 	var ingressGenerator traefik.Generator
-	ingresses, err := ingressGenerator.Generate(opts, t.apiSpec)
+	ingress, err := ingressGenerator.Generate(opts, t.apiSpec)
 	if err != nil {
-		return Response{}, fmt.Errorf("Failed to generate ingresses: %s\n", err)
+		return Response{}, fmt.Errorf("Failed to generate Ingress: %s\n", err)
 	}
 
 	return Response{
 		EquivalentCmd: cmd,
-		Manifests:     ingresses,
+		Manifests:     ingress,
 	}, nil
 }
