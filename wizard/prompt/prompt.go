@@ -37,7 +37,10 @@ func (pr prompter) SelectOneOf(label string, variants []string, withAdd bool) st
 			Items:  variants,
 		}
 
-		_, res, _ := p.Run()
+		_, res, err := p.Run()
+		if errors.Is(err, promptui.ErrInterrupt) {
+			exit()
+		}
 		return res
 	}
 
@@ -47,7 +50,10 @@ func (pr prompter) SelectOneOf(label string, variants []string, withAdd bool) st
 		Items:  variants,
 	}
 
-	_, res, _ := p.Run()
+	_, res, err := p.Run()
+	if errors.Is(err, promptui.ErrInterrupt) {
+		exit()
+	}
 	return res
 }
 
@@ -61,7 +67,10 @@ func (_ prompter) Input(label, defaultString string) string {
 		Default: defaultString,
 	}
 
-	res, _ := p.Run()
+	res, err := p.Run()
+	if errors.Is(err, promptui.ErrInterrupt) {
+		exit()
+	}
 
 	return res
 }
@@ -80,7 +89,10 @@ func (_ prompter) InputNonEmpty(label, defaultString string) string {
 		Default: defaultString,
 	}
 
-	res, _ := p.Run()
+	res, err := p.Run()
+	if errors.Is(err, promptui.ErrInterrupt) {
+		exit()
+	}
 
 	return res
 }
@@ -123,7 +135,10 @@ func (_ prompter) FilePath(label, defaultPath string, shouldExist bool) string {
 		},
 	}
 
-	res, _ := p.Run()
+	res, err := p.Run()
+	if errors.Is(err, promptui.ErrInterrupt) {
+		exit()
+	}
 
 	return res
 }
@@ -137,12 +152,20 @@ func (_ prompter) Confirm(question string) bool {
 
 	_, err := p.Run()
 	if err != nil {
-		if errors.Is(err, promptui.ErrAbort) {
+		switch err {
+		case promptui.ErrAbort:
 			return false
+		case promptui.ErrInterrupt:
+			exit()
 		}
 	}
 
 	return true
+}
+
+func exit() {
+	fmt.Println("Exiting.")
+	os.Exit(1)
 }
 
 func fileExists(path string) bool {
