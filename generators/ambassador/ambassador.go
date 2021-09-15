@@ -416,13 +416,12 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	}
 
 	for path, pathItem := range spec.Paths {
+		// a path is disabled
+		if opts.IsPathDisabled(path) {
+			return true
+		}
 
 		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
-			// a path is disabled
-			if opts.IsPathDisabled(path) {
-				return true
-			}
-
 			// a path has non-zero, different from global scope CORS options
 			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
 				!reflect.DeepEqual(opts.CORS, pathSubOptions.CORS) {
