@@ -113,10 +113,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 	if g.shouldSplit(opts, spec) {
 		for path := range spec.Paths {
-			if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
-				if pathSubOptions.Disabled {
-					continue
-				}
+			if opts.IsPathDisabled(path) {
+				continue
 			}
 
 			name := fmt.Sprintf("%s-%s", opts.Service.Name, ingressResourceNameFromPath(path))
@@ -334,7 +332,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	for path, pathItem := range spec.Paths {
 		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
 			// a path is disabled
-			if pathSubOptions.Disabled {
+			if opts.IsPathDisabled(path) {
 				return true
 			}
 

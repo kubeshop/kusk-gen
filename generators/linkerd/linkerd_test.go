@@ -35,6 +35,8 @@ func TestLinkerd(t *testing.T) {
 	}
 }
 
+var trueValue = true
+
 var testCases = []testCase{
 	{
 		name: "simple routes",
@@ -197,7 +199,7 @@ spec:
 			},
 			PathSubOptions: map[string]options.SubOptions{
 				"/books": {
-					Disabled: true,
+					Disabled: &trueValue,
 				},
 			},
 		},
@@ -266,7 +268,7 @@ spec:
 			},
 			OperationSubOptions: map[string]options.SubOptions{
 				"GET/books": {
-					Disabled: true,
+					Disabled: &trueValue,
 				},
 			},
 		},
