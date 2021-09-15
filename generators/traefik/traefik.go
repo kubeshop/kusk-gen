@@ -10,13 +10,14 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/pflag"
 
-	yaml "github.com/ghodss/yaml"
-	"github.com/kubeshop/kusk/generators"
-	"github.com/kubeshop/kusk/options"
+	"github.com/ghodss/yaml"
 	traefikDynamicConfig "github.com/traefik/traefik/v2/pkg/config/dynamic"
 	traefikCRD "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
+	"github.com/kubeshop/kusk/generators"
+	"github.com/kubeshop/kusk/options"
 )
 
 const (
@@ -150,7 +151,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		// x-kusk options per path
 		pathSubOpts, ok := opts.PathSubOptions[path]
 		if ok {
-			if pathSubOpts.Disabled {
+			if opts.IsPathDisabled(path) {
 				continue
 			}
 
@@ -186,7 +187,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 			opSubOpts, ok := opts.OperationSubOptions[method+path]
 			opServiceServersTransport := pathServiceServersTransport
 			if ok {
-				if opSubOpts.Disabled {
+				if opts.IsOperationDisabled(path, method) {
 					continue
 				}
 				if opSubOpts.Host != "" && opSubOpts.Host != host {
