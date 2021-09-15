@@ -23,6 +23,7 @@ nav:
     - Ambassador: ambassador.md
     - Linkerd: linkerd.md
     - Nginx-Ingress: nginx-ingress.md
+    - Traefik: traefik.md
 
   - For Developers: development.md
 

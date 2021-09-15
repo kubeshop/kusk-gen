@@ -14,6 +14,7 @@ import (
 	_ "github.com/kubeshop/kusk/generators/ambassador"
 	_ "github.com/kubeshop/kusk/generators/linkerd"
 	_ "github.com/kubeshop/kusk/generators/nginx_ingress"
+	_ "github.com/kubeshop/kusk/generators/traefik"
 	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )

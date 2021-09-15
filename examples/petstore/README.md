@@ -4,11 +4,14 @@ Sample petstore application from Swagger.
 
 ## Create cluster
 ```shell
-k3d cluster create -p "8080:80@loadbalancer" -p "8443:443@loadbalancer" --k3s-server-arg '--disable=traefik' cl1
+k3d cluster create -p "8080:80@loadbalancer" -p "8443:443@loadbalancer" cl1
 ```
 
 Apply Petstore manifest
-`kubectl apply -f examples/petstore/manifest.yaml`
+
+```shell
+kubectl apply -f examples/petstore/manifest.yaml
+```
 
 ## Ambassador Mappings
 ### Setup
@@ -80,7 +83,25 @@ curl -kLi 'http://localhost:8080/api/v3/pet/findByStatus?status=available'
 rm ingress.yaml
 ```
 
+## Traefik V2
+
+Traefik is installed into K3s cluster by default, no need to setup anything.
+
+### Generate the ingress resource from the specification
+
+```shell
+go run main.go traefik -i examples/petstore/petstore.yaml --path.base="/api/v3" --service.name "petstore" | kubectl apply -f -
+```
+
+### cURL an api endpoint
+
+```shell
+curl -kLi 'http://localhost:8080/api/v3/pet/findByStatus?status=available'
+```
+
+
 ## Cleanup
+
 ```shell
 k3d cluster delete cl1
 ```

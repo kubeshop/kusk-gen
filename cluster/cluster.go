@@ -116,3 +116,16 @@ func (c *Client) DetectNginxIngress() (bool, error) {
 
 	return false, nil
 }
+
+func (c *Client) DetectTraefikV2() (bool, error) {
+	// We query for resources to check if available API group traefik.containo.us/v1alpha1 is installed
+	_, err := c.cs.Discovery().ServerResourcesForGroupVersion("traefik.containo.us/v1alpha1")
+	if err == nil {
+		return true, nil
+	}
+	if !errors.IsNotFound(err) {
+		return false, fmt.Errorf("error querying cluster for installed CRD API Resources: %w", err)
+	}
+
+	return false, nil
+}

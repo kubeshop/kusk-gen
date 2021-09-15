@@ -52,8 +52,9 @@ Kusk currently supports
 - Ambassador 1.x
 - Linkerd
 - Nginx-Ingress
+- Traefik V2 (v2.x)
 
-Some of the upcoming tools we'd like to support are Traefik, Kong, Ambassador 2.x, etc. Please don't hesitate to 
+Some of the upcoming tools we'd like to support are Kong, Ambassador 2.x, etc. Please don't hesitate to 
 suggest others or contribute your own generator!
 
 ## Documentation

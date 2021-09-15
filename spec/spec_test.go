@@ -40,19 +40,19 @@ func (m mockLoader) LoadFromFile(_ string) (*openapi3.T, error) {
 
 func TestParse(t *testing.T) {
 	testCases := []struct {
-		name     string
-		url      string
-		result   string
+		name   string
+		url    string
+		result string
 	}{
 		{
-			name:     "load spec from url",
-			url:      "https://someurl.io/swagger.yaml",
-			result:   loadedFromURI,
+			name:   "load spec from url",
+			url:    "https://someurl.io/swagger.yaml",
+			result: loadedFromURI,
 		},
 		{
-			name:     "load spec from local file",
-			url:      "some-folder/swagger.yaml",
-			result:   loadedFromFile,
+			name:   "load spec from local file",
+			url:    "some-folder/swagger.yaml",
+			result: loadedFromFile,
 		},
 	}
 
