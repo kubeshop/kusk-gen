@@ -123,25 +123,18 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		host := opts.Host
 
 		for path, pathItem := range spec.Paths {
-			pathSubOptions, ok := opts.PathSubOptions[path]
-			if ok {
-				if pathSubOptions.Disabled {
-					continue
-				}
-			}
+			pathSubOptions, _ := opts.PathSubOptions[path]
 
 			if pathSubOptions.Host != "" && pathSubOptions.Host != host {
 				host = pathSubOptions.Host
 			}
 
 			for method, operation := range pathItem.Operations() {
-				opSubOptions, ok := opts.OperationSubOptions[method+path]
-				if ok {
-					if opSubOptions.Disabled {
-						continue
-					}
+				if opts.IsOperationDisabled(path, method) {
+					continue
 				}
 
+				opSubOptions := opts.OperationSubOptions[method+path]
 				if opSubOptions.Host != "" && opSubOptions.Host != host {
 					host = opSubOptions.Host
 				}
@@ -265,7 +258,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				mappings = append(mappings, op)
 			}
 		}
-	} else {
+	} else if !opts.Disabled {
 		op := mappingTemplateData{
 			MappingName:      opts.Service.Name,
 			MappingNamespace: opts.Namespace,
@@ -423,9 +416,10 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	}
 
 	for path, pathItem := range spec.Paths {
+
 		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
 			// a path is disabled
-			if pathSubOptions.Disabled {
+			if opts.IsPathDisabled(path) {
 				return true
 			}
 
@@ -451,7 +445,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 		for method := range pathItem.Operations() {
 			if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
 				// an operation is disabled
-				if opSubOptions.Disabled {
+				if opts.IsOperationDisabled(path, method) {
 					return true
 				}
 

@@ -11,6 +11,8 @@ import (
 )
 
 func TestGetOptions(t *testing.T) {
+	trueValue := true
+
 	var testCases = []struct {
 		name string
 		spec *openapi3.T
@@ -37,7 +39,7 @@ func TestGetOptions(t *testing.T) {
 			res: options.Options{
 				PathSubOptions: map[string]options.SubOptions{
 					"/pet": {
-						Disabled: true,
+						Disabled: &trueValue,
 					},
 				},
 			},
@@ -60,7 +62,7 @@ func TestGetOptions(t *testing.T) {
 			res: options.Options{
 				OperationSubOptions: map[string]options.SubOptions{
 					"PUT/pet": {
-						Disabled: true,
+						Disabled: &trueValue,
 					},
 				},
 			},

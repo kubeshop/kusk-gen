@@ -91,12 +91,12 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 	routes := make([]*v1alpha2.RouteSpec, 0)
 
 	for path, pathItem := range spec.Paths {
-		if pathDisabled(path, options) {
+		if options.IsPathDisabled(path) {
 			continue
 		}
 
 		for method, _ := range pathItem.Operations() {
-			if operationDisabled(method+path, options) {
+			if options.IsOperationDisabled(path, method) {
 				continue
 			}
 
@@ -109,16 +109,6 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 	})
 
 	return v1alpha2.ServiceProfileSpec{Routes: routes}
-}
-
-func pathDisabled(path string, options *options.Options) bool {
-	pathOpts, ok := options.PathSubOptions[path]
-	return ok && pathOpts.Disabled
-}
-
-func operationDisabled(operation string, options *options.Options) bool {
-	operationOpts, ok := options.OperationSubOptions[operation]
-	return ok && operationOpts.Disabled
 }
 
 func generateRouteSpec(method, path string, opts *options.Options) *v1alpha2.RouteSpec {

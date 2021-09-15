@@ -7,7 +7,7 @@ import (
 // SubOptions allow user to overwrite certain options at path/operation level
 // using x-kusk extension
 type SubOptions struct {
-	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+	Disabled *bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 
 	Host       string           `yaml:"host,omitempty" json:"host,omitempty"`
 	CORS       CORSOptions      `yaml:"cors,omitempty" json:"cors,omitempty"`
@@ -16,6 +16,7 @@ type SubOptions struct {
 }
 
 type Options struct {
+	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string `yaml:"namespace,omitempty" json:"namespace,omitempty"`
 
@@ -94,4 +95,27 @@ func (o *Options) FillDefaultsAndValidate() error {
 		&o.Timeouts,
 	})
 
+}
+
+func (o *Options) IsOperationDisabled(path, method string) bool {
+	opSubOptions, ok := o.OperationSubOptions[method+path]
+
+	// If the operation has an explicit value set, return that (takes precedence over the path level setting)
+	if ok && opSubOptions.Disabled != nil {
+		return *opSubOptions.Disabled
+	}
+
+	// No explicit value set for `Disabled` at the operation level, check the path level
+	return o.IsPathDisabled(path)
+}
+
+func (o *Options) IsPathDisabled(path string) bool {
+	pathSubOptions, ok := o.PathSubOptions[path]
+
+	// If the path has an explicit value set, return that (takes precedence over the global level setting)
+	if ok && pathSubOptions.Disabled != nil {
+		return *pathSubOptions.Disabled
+	}
+
+	return o.Disabled
 }
