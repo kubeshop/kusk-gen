@@ -19,38 +19,25 @@ type testCase struct {
 }
 
 func TestAmbassador(t *testing.T) {
-	var gen Generator
+	trueValue := true
+	falseValue := false
 
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			r := require.New(t)
-
-			spec, err := spec.NewParser(openapi3.NewLoader()).ParseFromReader(strings.NewReader(testCase.spec))
-			r.NoError(err, "failed to parse spec")
-
-			mappings, err := gen.Generate(&testCase.options, spec)
-			r.NoError(err)
-			r.Equal(testCase.res, mappings)
-		})
-	}
-}
-
-var testCases = []testCase{
-	{
-		name: "basic",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+	var testCases = []testCase{
+		{
+			name: "basic",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "petstore",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
 			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
-		},
-		spec: `
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -67,7 +54,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -80,22 +67,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "basic-json",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "basic-json",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 {
   "openapi": "3.0.2",
   "info": {
@@ -116,7 +103,7 @@ spec:
   }
 }
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -129,22 +116,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "basic-namespace",
-		options: options.Options{
-			Namespace: "amb",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "basic-namespace",
+			options: options.Options{
+				Namespace: "amb",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -157,7 +144,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -170,22 +157,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "parameter",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "parameter",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -206,7 +193,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -220,22 +207,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "empty-operationId",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "empty-operationId",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -255,7 +242,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -269,22 +256,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "basepath",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "/api/v3",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "basepath",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "/api/v3",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -304,7 +291,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -318,22 +305,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "basepath-rootonly",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "/api/v3",
-				TrimPrefix: "",
-				Split:      false,
-			},
 		},
-		spec: `
+		{
+			name: "basepath-rootonly",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "/api/v3",
+					TrimPrefix: "",
+					Split:      false,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -359,7 +346,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -371,22 +358,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "basepath-trimprefix",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "/petstore/api/v3",
-				TrimPrefix: "/petstore",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "basepath-trimprefix",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "/petstore/api/v3",
+					TrimPrefix: "/petstore",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -406,7 +393,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -422,22 +409,22 @@ spec:
     pattern: '/petstore(.*)'
     substitution: '\1'
 `,
-	},
-	{
-		name: "swagger-yaml",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "swagger-yaml",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 swagger: "2.0"
 info:
   version: 1.0.0
@@ -520,7 +507,7 @@ definitions:
       message:
         type: string
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -556,22 +543,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "swagger-json",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "swagger-json",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 {
   "swagger": "2.0",
   "info": {
@@ -697,7 +684,7 @@ spec:
   }
 }
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -733,23 +720,23 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "port specified",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-				Port:      443,
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "port specified",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+					Port:      443,
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -762,7 +749,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -775,23 +762,23 @@ spec:
   service: petstore.default:443
   rewrite: ""
 `,
-	},
-	{
-		name: "port 0 specified",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-				Port:      0,
-			},
-			Path: options.PathOptions{
-				Base:       "",
-				TrimPrefix: "",
-				Split:      true,
-			},
 		},
-		spec: `
+		{
+			name: "port 0 specified",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+					Port:      0,
+				},
+				Path: options.PathOptions{
+					Base:       "",
+					TrimPrefix: "",
+					Split:      true,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -804,7 +791,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -817,22 +804,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "path-disabled",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+		},
+		{
+			name: "path-disabled",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "petstore",
-			},
-			PathSubOptions: map[string]options.SubOptions{
-				"/pet": {
-					Disabled: true,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/pet": {
+						Disabled: &trueValue,
+					},
 				},
 			},
-		},
-		spec: `
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -860,7 +847,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -874,22 +861,22 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "operation-disabled",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+		},
+		{
+			name: "operation-disabled",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "petstore",
-			},
-			OperationSubOptions: map[string]options.SubOptions{
-				"PUT/pet": {
-					Disabled: true,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				OperationSubOptions: map[string]options.SubOptions{
+					"PUT/pet": {
+						Disabled: &trueValue,
+					},
 				},
 			},
-		},
-		spec: `
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -917,7 +904,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -931,25 +918,25 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "cors-global",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			CORS: options.CORSOptions{
-				Origins:       []string{"http://foo.example", "http://bar.example"},
-				Methods:       []string{"POST", "GET", "OPTIONS"},
-				Headers:       []string{"Content-Type"},
-				ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-				Credentials:   nil,
-				MaxAge:        120,
-			},
 		},
-		spec: `
+		{
+			name: "cors-global",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				CORS: options.CORSOptions{
+					Origins:       []string{"http://foo.example", "http://bar.example"},
+					Methods:       []string{"POST", "GET", "OPTIONS"},
+					Headers:       []string{"Content-Type"},
+					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+					Credentials:   nil,
+					MaxAge:        120,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -975,7 +962,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -994,40 +981,40 @@ spec:
     credentials: false
     max_age: "120"
 `,
-	},
-	{
-		name: "cors-path-override",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+		},
+		{
+			name: "cors-path-override",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "petstore",
-			},
-			CORS: options.CORSOptions{
-				Origins:       []string{"http://foo.example", "http://bar.example"},
-				Methods:       []string{"POST", "GET", "OPTIONS"},
-				Headers:       []string{"Content-Type"},
-				ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-				Credentials:   nil,
-				MaxAge:        120,
-			},
-			Timeouts: options.TimeoutOptions{
-				RequestTimeout: 5,
-			},
-			PathSubOptions: map[string]options.SubOptions{
-				"/pet": {
-					CORS: options.CORSOptions{
-						Origins:       []string{"http://bar.example"},
-						Methods:       []string{"POST"},
-						Headers:       []string{"Content-Type"},
-						ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
-						Credentials:   nil,
-						MaxAge:        240,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				CORS: options.CORSOptions{
+					Origins:       []string{"http://foo.example", "http://bar.example"},
+					Methods:       []string{"POST", "GET", "OPTIONS"},
+					Headers:       []string{"Content-Type"},
+					ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+					Credentials:   nil,
+					MaxAge:        120,
+				},
+				Timeouts: options.TimeoutOptions{
+					RequestTimeout: 5,
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/pet": {
+						CORS: options.CORSOptions{
+							Origins:       []string{"http://bar.example"},
+							Methods:       []string{"POST"},
+							Headers:       []string{"Content-Type"},
+							ExposeHeaders: []string{"X-Custom-Header", "X-Other-Custom-Header"},
+							Credentials:   nil,
+							MaxAge:        240,
+						},
 					},
 				},
 			},
-		},
-		spec: `
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -1053,7 +1040,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1094,21 +1081,21 @@ spec:
     max_age: "120"
   timeout_ms: 5000
 `,
-	},
-	{
-		name: "timeouts-global",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Timeouts: options.TimeoutOptions{
-				RequestTimeout: 42,
-				IdleTimeout:    43,
-			},
 		},
-		spec: `
+		{
+			name: "timeouts-global",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Timeouts: options.TimeoutOptions{
+					RequestTimeout: 42,
+					IdleTimeout:    43,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -1134,7 +1121,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1148,29 +1135,29 @@ spec:
   timeout_ms: 42000
   idle_timeout_ms: 43000
 `,
-	},
-	{
-		name: "timeouts-path-override",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+		},
+		{
+			name: "timeouts-path-override",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "petstore",
-			},
-			Timeouts: options.TimeoutOptions{
-				RequestTimeout: 42,
-				IdleTimeout:    43,
-			},
-			PathSubOptions: map[string]options.SubOptions{
-				"/pet": {
-					Timeouts: options.TimeoutOptions{
-						RequestTimeout: 35,
-						IdleTimeout:    36,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Timeouts: options.TimeoutOptions{
+					RequestTimeout: 42,
+					IdleTimeout:    43,
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/pet": {
+						Timeouts: options.TimeoutOptions{
+							RequestTimeout: 35,
+							IdleTimeout:    36,
+						},
 					},
 				},
 			},
-		},
-		spec: `
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -1196,7 +1183,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1225,18 +1212,18 @@ spec:
   timeout_ms: 42000
   idle_timeout_ms: 43000
 `,
-	},
-	{
-		name: "host path set",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			Host: "somehost.io",
 		},
-		spec: `
+		{
+			name: "host path set",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Host: "somehost.io",
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -1254,7 +1241,7 @@ paths:
         '200':
           description: Successful operation
 `,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1267,21 +1254,21 @@ spec:
   service: petstore.default:80
   rewrite: ""
 `,
-	},
-	{
-		name: "rate-limit-global",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
-				Namespace: "default",
-				Name:      "petstore",
-			},
-			RateLimits: options.RateLimitOptions{
-				RPS:   100,
-				Burst: 200,
-			},
 		},
-		spec: `
+		{
+			name: "rate-limit-global",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				RateLimits: options.RateLimitOptions{
+					RPS:   100,
+					Burst: 200,
+				},
+			},
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -1307,7 +1294,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1342,29 +1329,29 @@ spec:
       burstFactor: 2
       unit: second
 `,
-	},
-	{
-		name: "rate-limit-path-override",
-		options: options.Options{
-			Namespace: "default",
-			Service: options.ServiceOptions{
+		},
+		{
+			name: "rate-limit-path-override",
+			options: options.Options{
 				Namespace: "default",
-				Name:      "petstore",
-			},
-			RateLimits: options.RateLimitOptions{
-				RPS:   40,
-				Burst: 80,
-			},
-			PathSubOptions: map[string]options.SubOptions{
-				"/pet": {
-					RateLimits: options.RateLimitOptions{
-						RPS:   20,
-						Burst: 40,
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				RateLimits: options.RateLimitOptions{
+					RPS:   40,
+					Burst: 80,
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/pet": {
+						RateLimits: options.RateLimitOptions{
+							RPS:   20,
+							Burst: 40,
+						},
 					},
 				},
 			},
-		},
-		spec: `
+			spec: `
 openapi: 3.0.2
 info:
   title: Swagger Petstore - OpenAPI 3.0
@@ -1390,7 +1377,7 @@ paths:
       responses:
         '200':
           description: Successful operation`,
-		res: `
+			res: `
 ---
 apiVersion: getambassador.io/v2
 kind: Mapping
@@ -1461,5 +1448,208 @@ spec:
       burstFactor: 2
       unit: second
 `,
-	},
+		},
+		{
+			name: "globally disabled",
+			options: options.Options{
+				Disabled:  true,
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  disabled: true
+paths:
+  /:
+    get: {}
+    post: {}
+`,
+			res: `
+`,
+		},
+		{
+			name: "path disabled, operation enabled",
+			options: options.Options{
+				Disabled:  true,
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/": {
+						Disabled: &trueValue,
+					},
+				},
+				OperationSubOptions: map[string]options.SubOptions{
+					"GET/": {
+						Disabled: &falseValue,
+					},
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    x-kusk:
+      disabled: true
+    get:
+      x-kusk:
+        disabled: false
+    post: {}
+`,
+			res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-get
+  namespace: default
+spec:
+  prefix: "/"
+  method: GET
+  service: petstore.default:80
+  rewrite: ""
+`,
+		},
+		{
+			name: "path disabled not specified operation disabled specified",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				OperationSubOptions: map[string]options.SubOptions{
+					"GET/": {
+						Disabled: &trueValue,
+					},
+					"POST/": {
+						Disabled: &falseValue,
+					},
+					"PATCH/": {
+						Disabled: &falseValue,
+					},
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    get:
+      x-kusk:
+        disabled: true
+    post:
+      x-kusk:
+        disabled: false
+    patch:
+      x-kusk:
+        disabled: false
+`,
+			res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-patch
+  namespace: default
+spec:
+  prefix: "/"
+  method: PATCH
+  service: petstore.default:80
+  rewrite: ""
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-post
+  namespace: default
+spec:
+  prefix: "/"
+  method: POST
+  service: petstore.default:80
+  rewrite: ""
+`,
+		},
+		{
+			name: "path disabled not specified operation disabled specified operation enabled not specified",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				OperationSubOptions: map[string]options.SubOptions{
+					"GET/": {
+						Disabled: &trueValue,
+					},
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    get:
+      x-kusk:
+        disabled: true
+    post: {}
+    patch: {}
+`,
+			res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-patch
+  namespace: default
+spec:
+  prefix: "/"
+  method: PATCH
+  service: petstore.default:80
+  rewrite: ""
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: petstore-post
+  namespace: default
+spec:
+  prefix: "/"
+  method: POST
+  service: petstore.default:80
+  rewrite: ""
+`,
+		},
+	}
+
+	var gen Generator
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			r := require.New(t)
+
+			spec, err := spec.NewParser(openapi3.NewLoader()).ParseFromReader(strings.NewReader(testCase.spec))
+			r.NoError(err, "failed to parse spec")
+
+			mappings, err := gen.Generate(&testCase.options, spec)
+			r.NoError(err)
+			r.Equal(testCase.res, mappings)
+		})
+	}
 }
