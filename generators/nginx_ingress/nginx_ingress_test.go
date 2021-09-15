@@ -19,6 +19,9 @@ type testCase struct {
 }
 
 func TestNGINXIngress(t *testing.T) {
+	trueValue := true
+	falseValue := false
+
 	var testCases = []testCase{
 		{
 			name: "root base path and no trim prefix",
@@ -513,6 +516,142 @@ spec:
               number: 7000
         path: /bookstore(/|$)(.*)
         pathType: Prefix
+status:
+  loadBalancer: {}
+`,
+		},
+		{
+			name: "globally disabled",
+			options: options.Options{
+				Disabled:  true,
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  disabled: true
+paths:
+  /:
+    get: {}
+    post: {}
+`,
+			res: ``,
+		},
+		{
+			name: "path disabled, another path enabled",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/": {
+						Disabled: &trueValue,
+					},
+					"/path": {
+						Disabled: &falseValue,
+					},
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    x-kusk:
+      disabled: true
+    get: {}
+  /path:
+    x-kusk:
+      disabled: true
+    get: {}
+`,
+			res: `---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /path
+  creationTimestamp: null
+  name: petstore-path
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: petstore
+            port:
+              number: 80
+        path: /path
+        pathType: Exact
+status:
+  loadBalancer: {}
+`,
+		},
+		{
+			name: "globally disabled, single path enabled",
+			options: options.Options{
+				Disabled:  true,
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/path": {
+						Disabled: &falseValue,
+					},
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  disabled: true
+paths:
+  /:
+    get: {}
+  /path:
+    x-kusk:
+      disabled: false
+    get: {}
+`,
+			res: `---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /path
+  creationTimestamp: null
+  name: petstore-path
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: petstore
+            port:
+              number: 80
+        path: /path
+        pathType: Exact
 status:
   loadBalancer: {}
 `,
