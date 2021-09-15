@@ -66,6 +66,6 @@ To learn more about Kusk check out the [complete documentation](https://kubeshop
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
 - Fork/Clone the repo and make sure you can run it as shown above
 - Check out open [issues](https://github.com/kubeshop/kusk/issues) here on GitHub
-- Get in touch with the team starting a discussion on [GitHub](https://github.com/kubeshop/kusk/discussions) or [Discord channel](https://discord.gg/uNuhy6GDyn) on what you want to help with 
+- Get in touch with the team by starting a discussion on [GitHub](https://github.com/kubeshop/kusk/discussions) or [Discord channel](https://discord.gg/uNuhy6GDyn) on what you want to help with 
   or open an issue of your own that you would like to contribute to the project.
 - Fly like the wind!
