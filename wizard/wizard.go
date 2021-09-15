@@ -137,7 +137,6 @@ func flowWithCluster(args *flow.Args, kubeConfigPath string) (string, error) {
 
 	args.Service = args.Prompt.SelectOneOf("Choose a service you want Kusk generate manifests for", servicesToSuggest, false)
 
-
 	return executeFlow(args)
 }
 
