@@ -416,13 +416,18 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	}
 
 	for path, pathItem := range spec.Paths {
-
-		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
-			// a path is disabled
-			if opts.IsPathDisabled(path) {
+		for method := range pathItem.Operations() {
+			if opts.IsOperationDisabled(path, method) {
 				return true
 			}
+		}
+		if opts.IsPathDisabled(path) {
+			return true
+		}
+	}
 
+	for path, pathItem := range spec.Paths {
+		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
 			// a path has non-zero, different from global scope CORS options
 			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
 				!reflect.DeepEqual(opts.CORS, pathSubOptions.CORS) {
@@ -444,11 +449,6 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 		for method := range pathItem.Operations() {
 			if opSubOptions, ok := opts.OperationSubOptions[method+path]; ok {
-				// an operation is disabled
-				if opts.IsOperationDisabled(path, method) {
-					return true
-				}
-
 				// an operation has non-zero, different from global CORS options
 				if !reflect.DeepEqual(options.CORSOptions{}, opSubOptions.CORS) &&
 					!reflect.DeepEqual(opts.CORS, opSubOptions.CORS) {

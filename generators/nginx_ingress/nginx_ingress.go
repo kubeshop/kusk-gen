@@ -196,7 +196,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			ingresses = append(ingresses, ingress)
 		}
-	} else {
+	} else if !opts.Disabled {
 		ingress := g.newIngressResource(
 			fmt.Sprintf("%s-ingress", opts.Service.Name),
 			opts.Namespace,
@@ -330,12 +330,12 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	warnGroupUnsupported(opts.RateLimits)
 
 	for path, pathItem := range spec.Paths {
-		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
-			// a path is disabled
-			if opts.IsPathDisabled(path) {
-				return true
-			}
+		// a path is disabled
+		if opts.IsPathDisabled(path) {
+			return true
+		}
 
+		if pathSubOptions, ok := opts.PathSubOptions[path]; ok {
 			// a path has non-zero, different from global scope CORS options
 			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOptions.CORS) &&
 				!reflect.DeepEqual(opts.CORS, pathSubOptions.CORS) {

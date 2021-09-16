@@ -1477,7 +1477,6 @@ paths:
 		{
 			name: "path disabled, operation enabled",
 			options: options.Options{
-				Disabled:  true,
 				Namespace: "default",
 				Service: options.ServiceOptions{
 					Namespace: "default",
