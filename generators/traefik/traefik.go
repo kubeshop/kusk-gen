@@ -143,43 +143,43 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 	// Main routine
 	// Iterate on all paths and build routes rules with related middlewares and any overrides
 	for path, pathItem := range spec.Paths {
-		// x-kusk options per path
-		// ServersTransport for this path
-		pathServiceServersTransport := serviceServersTransport
-		// Create copy of root middlewares map to further override per path
-		pathMiddlewares := copyMiddlewareMap(rootMiddlewares)
-		// x-kusk options per path
-		pathSubOpts, ok := opts.PathSubOptions[path]
-		if ok {
-			if opts.IsPathDisabled(path) {
-				continue
-			}
-
-			if pathSubOpts.Host != "" && pathSubOpts.Host != host {
-				host = pathSubOpts.Host
-			}
-			// if non-zero path-level CORS options are different, override with them
-			if !reflect.DeepEqual(options.CORSOptions{}, pathSubOpts.CORS) {
-				corsMiddleware := generateCORSMiddleware(generateResourceName([]string{serviceName, path, "cors"}), namespace, pathSubOpts.CORS)
-				pathMiddlewares["cors"] = corsMiddleware
-				allMiddlewares = append(allMiddlewares, corsMiddleware)
-			}
-
-			if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOpts.RateLimits) {
-				rateLimitMiddleware := generateRateLimitMiddleware(generateResourceName([]string{serviceName, path, "ratelimit"}), namespace, pathSubOpts.RateLimits)
-				pathMiddlewares["ratelimit"] = rateLimitMiddleware
-				allMiddlewares = append(allMiddlewares, rateLimitMiddleware)
-			}
-
-			if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) {
-				pathServiceServersTransport = generateServerTransport(generateResourceName([]string{serviceName, path}), opts.Namespace, pathSubOpts.Timeouts)
-				allServersTransports = append(allServersTransports, pathServiceServersTransport)
-			}
-		}
-
 		// x-kusk options per operation (http method)
 		// For each method we create separate Match rule and route and then add to routes list
 		for method := range pathItem.Operations() {
+			if opts.IsOperationDisabled(path, method) {
+				continue
+			}
+
+			// x-kusk options per path
+			// ServersTransport for this path
+			pathServiceServersTransport := serviceServersTransport
+			// Create copy of root middlewares map to further override per path
+			pathMiddlewares := copyMiddlewareMap(rootMiddlewares)
+			// x-kusk options per path
+			pathSubOpts, ok := opts.PathSubOptions[path]
+			if ok {
+				if pathSubOpts.Host != "" && pathSubOpts.Host != host {
+					host = pathSubOpts.Host
+				}
+				// if non-zero path-level CORS options are different, override with them
+				if !reflect.DeepEqual(options.CORSOptions{}, pathSubOpts.CORS) {
+					corsMiddleware := generateCORSMiddleware(generateResourceName([]string{serviceName, path, "cors"}), namespace, pathSubOpts.CORS)
+					pathMiddlewares["cors"] = corsMiddleware
+					allMiddlewares = append(allMiddlewares, corsMiddleware)
+				}
+
+				if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOpts.RateLimits) {
+					rateLimitMiddleware := generateRateLimitMiddleware(generateResourceName([]string{serviceName, path, "ratelimit"}), namespace, pathSubOpts.RateLimits)
+					pathMiddlewares["ratelimit"] = rateLimitMiddleware
+					allMiddlewares = append(allMiddlewares, rateLimitMiddleware)
+				}
+
+				if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) {
+					pathServiceServersTransport = generateServerTransport(generateResourceName([]string{serviceName, path}), opts.Namespace, pathSubOpts.Timeouts)
+					allServersTransports = append(allServersTransports, pathServiceServersTransport)
+				}
+			}
+
 			// Create copy of path middlewares map to further override per method
 			opMiddlewares := copyMiddlewareMap(pathMiddlewares)
 
@@ -231,7 +231,11 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		}
 	}
 
-	// Finaly generate Ingress spec and object itself
+	if len(routes) == 0 {
+		return "", nil
+	}
+
+	// Finally generate Ingress spec and object itself
 	ingressRouteSpec := traefikCRD.IngressRouteSpec{
 		EntryPoints: []string{HTTPEntryPoint},
 		Routes:      routes,

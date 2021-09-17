@@ -501,6 +501,208 @@ spec:
       serversTransport: petstore
 `,
 		},
+		{
+			name: "globally disabled",
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  disabled: true
+  namespace: nondefault
+  service:
+    name: petstore
+    port: 7777
+    namespace: nondefault
+paths:
+  /:
+    get: {}
+    post: {}
+`,
+			res: ``,
+		},
+		{
+			name: "path disabled, operation enabled",
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  namespace: nondefault
+  service:
+    name: petstore
+    port: 7777
+    namespace: nondefault
+paths:
+  /:
+    x-kusk:
+      disabled: true
+    get:
+      x-kusk:
+        disabled: false
+    post: {}
+`,
+			res: `
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: ServersTransport
+metadata:
+  creationTimestamp: null
+  name: petstore
+  namespace: nondefault
+spec:
+  forwardingTimeouts:
+    dialTimeout: 0
+    idleConnTimeout: 0
+    responseHeaderTimeout: 0
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  creationTimestamp: null
+  name: petstore
+  namespace: nondefault
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: PathPrefix("/") && Method("GET")
+    services:
+    - name: petstore
+      namespace: nondefault
+      port: 7777
+      serversTransport: petstore
+`,
+		},
+		{
+			name: "path disabled not specified operation disabled specified",
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  namespace: nondefault
+  service:
+    name: petstore
+    port: 7777
+    namespace: nondefault
+paths:
+  /:
+    get:
+      x-kusk:
+        disabled: true
+    post:
+      x-kusk:
+        disabled: false
+    patch:
+      x-kusk:
+        disabled: false
+`,
+			res: `
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: ServersTransport
+metadata:
+  creationTimestamp: null
+  name: petstore
+  namespace: nondefault
+spec:
+  forwardingTimeouts:
+    dialTimeout: 0
+    idleConnTimeout: 0
+    responseHeaderTimeout: 0
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  creationTimestamp: null
+  name: petstore
+  namespace: nondefault
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: PathPrefix("/") && Method("PATCH")
+    services:
+    - name: petstore
+      namespace: nondefault
+      port: 7777
+      serversTransport: petstore
+  - kind: Rule
+    match: PathPrefix("/") && Method("POST")
+    services:
+    - name: petstore
+      namespace: nondefault
+      port: 7777
+      serversTransport: petstore
+`,
+		},
+		{
+			name: "path disabled not specified operation disabled specified operation enabled not specified",
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  namespace: nondefault
+  service:
+    name: petstore
+    port: 7777
+    namespace: nondefault
+paths:
+  /:
+    get:
+      x-kusk:
+        disabled: true
+    post: {}
+    patch: {}
+`,
+			res: `
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: ServersTransport
+metadata:
+  creationTimestamp: null
+  name: petstore
+  namespace: nondefault
+spec:
+  forwardingTimeouts:
+    dialTimeout: 0
+    idleConnTimeout: 0
+    responseHeaderTimeout: 0
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  creationTimestamp: null
+  name: petstore
+  namespace: nondefault
+spec:
+  entryPoints:
+  - web
+  routes:
+  - kind: Rule
+    match: PathPrefix("/") && Method("PATCH")
+    services:
+    - name: petstore
+      namespace: nondefault
+      port: 7777
+      serversTransport: petstore
+  - kind: Rule
+    match: PathPrefix("/") && Method("POST")
+    services:
+    - name: petstore
+      namespace: nondefault
+      port: 7777
+      serversTransport: petstore
+`,
+		},
 	}
 
 	var gen Generator
