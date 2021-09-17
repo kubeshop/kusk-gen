@@ -83,11 +83,11 @@ spec:
 
   {{if .LabelsEnabled}}
   labels:
-    ambassador:
+    ambassador:{{if .RateLimitGroup}}
 	  - group:
-		  - kusk-group-{{.RateLimitGroup}}
+		  - kusk-group-{{.RateLimitGroup}}{{else}}
       - operation:
-          - kusk-operation-{{.MappingName}}
+          - kusk-operation-{{.MappingName}}{{end}}
       - request:
           - remote-address
   {{end}}
