@@ -109,7 +109,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 	}
 
 	var mappings []mappingTemplateData
-	var rateLimits []rateLimitTemplateData
+	rateLimits := make(map[string]*rateLimitTemplateData)
 
 	serviceURL := g.getServiceURL(opts)
 
@@ -215,16 +215,35 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 						}
 					}
 
-					if rateLimitOpts.Group == "" {
-						rateLimitOpts.Group = "default"
-					}
+					if rateLimitOpts.Group != "" {
+						// rate limit uses group, check that it wasn't already configured
+						if rl, ok := rateLimits[rateLimitOpts.Group]; ok {
+							// rate limit already configured within this group, replace limits if new ones are lower
+							if burstFactor < rl.BurstFactor {
+								rl.BurstFactor = burstFactor
+							}
 
-					rateLimits = append(rateLimits, rateLimitTemplateData{
-						Operation:   mappingName,
-						Rate:        rps,
-						BurstFactor: burstFactor,
-						Group:       rateLimitOpts.Group,
-					})
+							if rps < rl.Rate {
+								rl.Rate = rps
+							}
+						} else {
+							rateLimits[rateLimitOpts.Group] = &rateLimitTemplateData{
+								Name:        opts.Service.Name + "-" + rateLimitOpts.Group,
+								Operation:   mappingName,
+								Rate:        rps,
+								BurstFactor: burstFactor,
+								Group:       rateLimitOpts.Group,
+							}
+						}
+					} else {
+						// rate limit on this operation does not use grouping
+						rateLimits[mappingName] = &rateLimitTemplateData{
+							Name:        opts.Service.Name + "-" + mappingName,
+							Operation:   mappingName,
+							Rate:        rps,
+							BurstFactor: burstFactor,
+						}
+					}
 
 					op.LabelsEnabled = true
 					op.RateLimitGroup = rateLimitOpts.Group
@@ -301,12 +320,13 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				}
 			}
 
-			rateLimits = append(rateLimits, rateLimitTemplateData{
+			rateLimits["default"] = &rateLimitTemplateData{
+				Name:        "default",
 				Operation:   opts.Service.Name,
 				Rate:        rps,
 				BurstFactor: burstFactor,
 				Group:       opts.RateLimits.Group,
-			})
+			}
 		}
 
 		mappings = append(mappings, op)
@@ -320,8 +340,14 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		return mappings[i].MappingName < mappings[j].MappingName
 	})
 
-	sort.Slice(rateLimits, func(i, j int) bool {
-		return rateLimits[i].Operation < rateLimits[j].Operation
+	// flat out rate limits from map to array to sort them
+	var rateLimitsArray []rateLimitTemplateData
+	for _, rl := range rateLimits {
+		rateLimitsArray = append(rateLimitsArray, *rl)
+	}
+
+	sort.Slice(rateLimitsArray, func(i, j int) bool {
+		return rateLimitsArray[i].Operation < rateLimitsArray[j].Operation
 	})
 
 	var buf bytes.Buffer
