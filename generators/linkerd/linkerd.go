@@ -65,6 +65,11 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
 
+	spSpec := g.generateServiceProfileSpec(options, spec)
+	if len(spSpec.Routes) == 0 {
+		return "", nil
+	}
+
 	profile := &v1alpha2.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: k8s.ServiceProfileAPIVersion,
@@ -79,7 +84,7 @@ func (g *Generator) Generate(options *options.Options, spec *openapi3.T) (string
 			),
 			Namespace: options.Namespace,
 		},
-		Spec: g.generateServiceProfileSpec(options, spec),
+		Spec: spSpec,
 	}
 
 	b, err := yaml.Marshal(profile)
@@ -91,10 +96,6 @@ func (g *Generator) generateServiceProfileSpec(options *options.Options, spec *o
 	routes := make([]*v1alpha2.RouteSpec, 0)
 
 	for path, pathItem := range spec.Paths {
-		if options.IsPathDisabled(path) {
-			continue
-		}
-
 		for method, _ := range pathItem.Operations() {
 			if options.IsOperationDisabled(path, method) {
 				continue
