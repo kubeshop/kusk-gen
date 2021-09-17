@@ -151,10 +151,6 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		// x-kusk options per path
 		pathSubOpts, ok := opts.PathSubOptions[path]
 		if ok {
-			if opts.IsPathDisabled(path) {
-				continue
-			}
-
 			if pathSubOpts.Host != "" && pathSubOpts.Host != host {
 				host = pathSubOpts.Host
 			}
@@ -180,6 +176,10 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		// x-kusk options per operation (http method)
 		// For each method we create separate Match rule and route and then add to routes list
 		for method := range pathItem.Operations() {
+			if opts.IsOperationDisabled(path, method) {
+				continue
+			}
+
 			// Create copy of path middlewares map to further override per method
 			opMiddlewares := copyMiddlewareMap(pathMiddlewares)
 
@@ -231,7 +231,11 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		}
 	}
 
-	// Finaly generate Ingress spec and object itself
+	if len(routes) == 0 {
+		return "", nil
+	}
+
+	// Finally generate Ingress spec and object itself
 	ingressRouteSpec := traefikCRD.IngressRouteSpec{
 		EntryPoints: []string{HTTPEntryPoint},
 		Routes:      routes,

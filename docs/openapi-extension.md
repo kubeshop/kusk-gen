@@ -39,4 +39,10 @@ paths:
       description: Update an existing pet by Id
       operationId: updatePet
 ```
+
+`x-kusk` extension at the Operation level takes precedence, i.e. overrides, what's specified at the path level, including the `disabled` option.
+Likewise, the Path level settings override what's specified at the global level.
+
+If settings aren't specified at a path or operation level, it will inherit from the layer above. (Operation > Path > Global)
+
 Please review the generator's documentation to see what can be overwritten.
