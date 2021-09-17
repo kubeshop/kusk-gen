@@ -36,6 +36,7 @@ func TestLinkerd(t *testing.T) {
 }
 
 var trueValue = true
+var falseValue = false
 
 var testCases = []testCase{
 	{
@@ -482,6 +483,177 @@ spec:
       pathRegex: /authors
     name: POST /authors
     timeout: 6s
+`,
+	},
+	{
+		name: "globally disabled",
+		options: options.Options{
+			Disabled:  true,
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  disabled: true
+paths:
+  /:
+    get: {}
+    post: {}
+`,
+		res: ``,
+	},
+	{
+		name: "path disabled, operation enabled",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			PathSubOptions: map[string]options.SubOptions{
+				"/": {
+					Disabled: &trueValue,
+				},
+			},
+			OperationSubOptions: map[string]options.SubOptions{
+				"GET/": {
+					Disabled: &falseValue,
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    x-kusk:
+      disabled: true
+    get:
+      x-kusk:
+        disabled: false
+    post: {}
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: petstore.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: GET
+      pathRegex: /
+    name: GET /
+`,
+	},
+	{
+		name: "path disabled not specified operation disabled specified",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			OperationSubOptions: map[string]options.SubOptions{
+				"GET/": {
+					Disabled: &trueValue,
+				},
+				"POST/": {
+					Disabled: &falseValue,
+				},
+				"PATCH/": {
+					Disabled: &falseValue,
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    get:
+      x-kusk:
+        disabled: true
+    post:
+      x-kusk:
+        disabled: false
+    patch:
+      x-kusk:
+        disabled: false
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: petstore.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: PATCH
+      pathRegex: /
+    name: PATCH /
+  - condition:
+      method: POST
+      pathRegex: /
+    name: POST /
+`,
+	},
+	{
+		name: "path disabled not specified operation disabled specified operation enabled not specified",
+		options: options.Options{
+			Namespace: "default",
+			Service: options.ServiceOptions{
+				Namespace: "default",
+				Name:      "petstore",
+			},
+			OperationSubOptions: map[string]options.SubOptions{
+				"GET/": {
+					Disabled: &trueValue,
+				},
+			},
+		},
+		spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+paths:
+  /:
+    get:
+      x-kusk:
+        disabled: true
+    post: {}
+    patch: {}
+`,
+		res: `apiVersion: linkerd.io/v1alpha2
+kind: ServiceProfile
+metadata:
+  creationTimestamp: null
+  name: petstore.default.svc.cluster.local
+  namespace: default
+spec:
+  routes:
+  - condition:
+      method: PATCH
+      pathRegex: /
+    name: PATCH /
+  - condition:
+      method: POST
+      pathRegex: /
+    name: POST /
 `,
 	},
 }
