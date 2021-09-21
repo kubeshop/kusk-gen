@@ -17,15 +17,19 @@ import (
 )
 
 var (
-	mappingTemplate     *template.Template
-	rateLimitTemplate   *template.Template
-	reDuplicateNewlines = regexp.MustCompile(`\s*\n+`)
-	rePathSymbols       = regexp.MustCompile(`[/{}]`)
+	mappingTemplate           *template.Template
+	ambassadorMappingTemplate *template.Template
+	rateLimitTemplate         *template.Template
+	reDuplicateNewlines       = regexp.MustCompile(`\s*\n+`)
+	rePathSymbols             = regexp.MustCompile(`[/{}]`)
 )
 
 func init() {
 	mappingTemplate = template.New("mapping")
 	mappingTemplate = template.Must(mappingTemplate.Parse(mappingTemplateRaw))
+
+	ambassadorMappingTemplate = template.New("mapping")
+	ambassadorMappingTemplate = template.Must(ambassadorMappingTemplate.Parse(ambassadorMappingTemplateRaw))
 
 	rateLimitTemplate = template.New("rateLimit")
 	rateLimitTemplate = template.Must(rateLimitTemplate.Parse(rateLimitTemplateRaw))
@@ -98,6 +102,12 @@ func (g *Generator) Flags() *pflag.FlagSet {
 		"host",
 		"",
 		"the Host header value to listen on",
+	)
+
+	fs.Bool(
+		"use-prerelease",
+		false,
+		"use Ambassador 2.0 pre-release. Not guaranteed to be stable",
 	)
 
 	return fs
@@ -352,13 +362,15 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 	var buf bytes.Buffer
 
-	err := mappingTemplate.Execute(&buf, mappings)
-	if err != nil {
+	if opts.UsePreRelease {
+		if err := ambassadorMappingTemplate.Execute(&buf, mappings); err != nil {
+			return "", fmt.Errorf("failed to execute ambassador mapping template: %w", err)
+		}
+	} else if err := mappingTemplate.Execute(&buf, mappings); err != nil {
 		return "", fmt.Errorf("failed to execute mapping template: %w", err)
 	}
 
-	err = rateLimitTemplate.Execute(&buf, rateLimits)
-	if err != nil {
+	if err := rateLimitTemplate.Execute(&buf, rateLimits); err != nil {
 		return "", fmt.Errorf("failed to execute rate limit template: %w", err)
 	}
 

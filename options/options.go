@@ -17,6 +17,9 @@ type SubOptions struct {
 
 type Options struct {
 	Disabled bool `yaml:"disabled,omitempty" json:"disabled,omitempty"`
+
+	UsePreRelease bool `yaml:"usePreRelease,omitempty" json:"usePreRelease,omitempty"`
+
 	// Namespace for the generated resource. Default value is "default".
 	Namespace string `yaml:"namespace,omitempty" json:"namespace,omitempty"`
 
