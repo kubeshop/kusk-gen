@@ -48,18 +48,20 @@ allowing you to
 - Kusk plays nicely with both manual and automated/GitOps/CD workflows.
 - The underlying architecture makes it straight-forward to extend Kusk with new generators
 
-Kusk currently supports
-- Ambassador 1.x
-- Linkerd
-- Nginx-Ingress
-- Traefik V2 (v2.x)
+Kusk currently supports (click for configuration options)
+- [Ambassador 1.x](https://kubeshop.github.io/kusk/ambassador/)
+- [Linkerd](https://kubeshop.github.io/kusk/linkerd/)
+- [Nginx-Ingress](https://kubeshop.github.io/kusk/nginx-ingress/)
+- [Traefik V2 (v2.x)](https://kubeshop.github.io/kusk/traefik/)
 
 Some of the upcoming tools we'd like to support are Kong, Ambassador 2.x, etc. Please don't hesitate to 
 suggest others or contribute your own generator!
 
-## Documentation
+## Documentation & Support
 
 To learn more about Kusk check out the [complete documentation](https://kubeshop.github.io/kusk/)
+
+Join our [Discord Server](https://discord.gg/uNuhy6GDyn) to ask questions, suggest ideas, etc.
 
 # How to contribute
 
@@ -67,6 +69,6 @@ To learn more about Kusk check out the [complete documentation](https://kubeshop
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
 - Fork/Clone the repo and make sure you can run it as shown above
 - Check out open [issues](https://github.com/kubeshop/kusk/issues) here on GitHub
-- Get in touch with the team by starting a discussion on [GitHub](https://github.com/kubeshop/kusk/discussions) or [Discord channel](https://discord.gg/uNuhy6GDyn) on what you want to help with 
+- Get in touch with the team by starting a discussion on [GitHub](https://github.com/kubeshop/kusk/discussions) or on our [Discord Server](https://discord.gg/uNuhy6GDyn).
   or open an issue of your own that you would like to contribute to the project.
 - Fly like the wind!
