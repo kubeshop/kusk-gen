@@ -25,8 +25,12 @@ func init() {
 }
 
 func init() {
-	generators.Registry["ambassador"] = &Generator{
-		abstractGenerator: ambassador.AbstractGenerator{
+	generators.Registry["ambassador"] = New()
+}
+
+func New() *Generator {
+	return &Generator{
+		AbstractGenerator: ambassador.AbstractGenerator{
 			MappingTemplate:   mappingTemplate,
 			RateLimitTemplate: rateLimitTemplate,
 		},
@@ -34,7 +38,7 @@ func init() {
 }
 
 type Generator struct {
-	abstractGenerator ambassador.AbstractGenerator
+	AbstractGenerator ambassador.AbstractGenerator
 }
 
 func (g *Generator) ShortDescription() string {
@@ -50,9 +54,9 @@ func (g *Generator) Cmd() string {
 }
 
 func (g *Generator) Flags() *pflag.FlagSet {
-	return g.abstractGenerator.Flags()
+	return g.AbstractGenerator.Flags()
 }
 
 func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, error) {
-	return g.abstractGenerator.Generate(opts, spec)
+	return g.AbstractGenerator.Generate(opts, spec)
 }

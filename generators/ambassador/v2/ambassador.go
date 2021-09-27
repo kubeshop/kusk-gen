@@ -25,7 +25,11 @@ func init() {
 }
 
 func init() {
-	generators.Registry["ambassador2"] = &Generator{
+	generators.Registry["ambassador2"] = New()
+}
+
+func New() *Generator {
+	return &Generator{
 		abstractGenerator: ambassador.AbstractGenerator{
 			MappingTemplate:   mappingTemplate,
 			RateLimitTemplate: rateLimitTemplate,

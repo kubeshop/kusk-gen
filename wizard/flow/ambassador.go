@@ -5,12 +5,13 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/kubeshop/kusk/generators/ambassador"
+	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/options"
 )
 
 type ambassadorFlow struct {
 	baseFlow
+	generator generators.Interface
 }
 
 func (a ambassadorFlow) getBasePath() string {
@@ -168,11 +169,9 @@ func (a ambassadorFlow) Start() (Response, error) {
 
 	cmd := a.getCmdFromOpts(opts)
 
-	var ag ambassador.Generator
-
-	mappings, err := ag.Generate(opts, a.apiSpec)
+	mappings, err := a.generator.Generate(opts, a.apiSpec)
 	if err != nil {
-		return Response{}, fmt.Errorf("Failed to generate mappings: %s\n", err)
+		return Response{}, fmt.Errorf("failed to generate mappings: %s\n", err)
 	}
 
 	return Response{
