@@ -87,9 +87,9 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 	var mappings []mappingTemplateData
 	rateLimits := make(map[string]*rateLimitTemplateData)
 
-	serviceURL := GetServiceURL(opts)
+	serviceURL := getServiceURL(opts)
 
-	if ShouldSplit(opts, spec) {
+	if shouldSplit(opts, spec) {
 		// generate a mapping for each operation
 		basePath := opts.Path.Base
 		if basePath == "/" {
@@ -115,8 +115,8 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 					host = opSubOptions.Host
 				}
 
-				mappingPath, regex := GenerateMappingPath(path, operation)
-				mappingName := GenerateMappingName(opts.Service.Name, method, path, operation)
+				mappingPath, regex := generateMappingPath(path, operation)
+				mappingName := generateMappingName(opts.Service.Name, method, path, operation)
 
 				op := mappingTemplateData{
 					MappingName:      mappingName,
@@ -343,7 +343,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 
 // generateMappingPath returns the final pattern that should go to mapping
 // and whether the regex should be used
-func GenerateMappingPath(path string, op *openapi3.Operation) (string, bool) {
+func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	containsPathParameter := false
 	for _, param := range op.Parameters {
 		if param.Value.In == "path" {
@@ -378,7 +378,7 @@ func GenerateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	return path, true
 }
 
-func GenerateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
+func generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
 	var res strings.Builder
 
 	if operation.OperationID != "" {
@@ -397,7 +397,7 @@ func GenerateMappingName(serviceName, method, path string, operation *openapi3.O
 	return strings.ToLower(res.String())
 }
 
-func GetServiceURL(options *options.Options) string {
+func getServiceURL(options *options.Options) string {
 	if options.Service.Port > 0 {
 		return fmt.Sprintf(
 			"%s.%s:%d",
@@ -410,7 +410,7 @@ func GetServiceURL(options *options.Options) string {
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
 }
 
-func ShouldSplit(opts *options.Options, spec *openapi3.T) bool {
+func shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	if opts.Path.Split {
 		return true
 	}
