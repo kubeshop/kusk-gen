@@ -1,4 +1,4 @@
-package ambassador
+package v1
 
 import (
 	"strings"
@@ -7,6 +7,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 
+	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )
@@ -1729,7 +1730,12 @@ spec:
 		},
 	}
 
-	var gen Generator
+	gen := Generator{
+		abstractGenerator: ambassador.AbstractGenerator{
+			MappingTemplate:   mappingTemplate,
+			RateLimitTemplate: rateLimitTemplate,
+		},
+	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
