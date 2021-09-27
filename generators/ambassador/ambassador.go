@@ -12,44 +12,20 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/pflag"
 
-	"github.com/kubeshop/kusk/generators"
 	"github.com/kubeshop/kusk/options"
 )
 
 var (
-	mappingTemplate     *template.Template
-	rateLimitTemplate   *template.Template
-	reDuplicateNewlines = regexp.MustCompile(`\s*\n+`)
 	rePathSymbols       = regexp.MustCompile(`[/{}]`)
+	reDuplicateNewlines = regexp.MustCompile(`\s*\n+`)
 )
 
-func init() {
-	mappingTemplate = template.New("mapping")
-	mappingTemplate = template.Must(mappingTemplate.Parse(mappingTemplateRaw))
-
-	rateLimitTemplate = template.New("rateLimit")
-	rateLimitTemplate = template.Must(rateLimitTemplate.Parse(rateLimitTemplateRaw))
+type AbstractGenerator struct {
+	MappingTemplate   *template.Template
+	RateLimitTemplate *template.Template
 }
 
-func init() {
-	generators.Registry["ambassador"] = &Generator{}
-}
-
-type Generator struct{}
-
-func (g *Generator) ShortDescription() string {
-	return "Generates Ambassador Mappings for your service"
-}
-
-func (g *Generator) LongDescription() string {
-	return g.ShortDescription()
-}
-
-func (g *Generator) Cmd() string {
-	return "ambassador"
-}
-
-func (g *Generator) Flags() *pflag.FlagSet {
+func (*AbstractGenerator) Flags() *pflag.FlagSet {
 	fs := pflag.NewFlagSet("ambassador", pflag.ExitOnError)
 
 	fs.String(
@@ -103,7 +79,7 @@ func (g *Generator) Flags() *pflag.FlagSet {
 	return fs
 }
 
-func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, error) {
+func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (string, error) {
 	if err := opts.FillDefaultsAndValidate(); err != nil {
 		return "", fmt.Errorf("failed to validate options: %w", err)
 	}
@@ -111,9 +87,9 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 	var mappings []mappingTemplateData
 	rateLimits := make(map[string]*rateLimitTemplateData)
 
-	serviceURL := g.getServiceURL(opts)
+	serviceURL := getServiceURL(opts)
 
-	if g.shouldSplit(opts, spec) {
+	if shouldSplit(opts, spec) {
 		// generate a mapping for each operation
 		basePath := opts.Path.Base
 		if basePath == "/" {
@@ -123,7 +99,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		host := opts.Host
 
 		for path, pathItem := range spec.Paths {
-			pathSubOptions, _ := opts.PathSubOptions[path]
+			pathSubOptions := opts.PathSubOptions[path]
 
 			if pathSubOptions.Host != "" && pathSubOptions.Host != host {
 				host = pathSubOptions.Host
@@ -139,8 +115,8 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 					host = opSubOptions.Host
 				}
 
-				mappingPath, regex := g.generateMappingPath(path, operation)
-				mappingName := g.generateMappingName(opts.Service.Name, method, path, operation)
+				mappingPath, regex := generateMappingPath(path, operation)
+				mappingName := generateMappingName(opts.Service.Name, method, path, operation)
 
 				op := mappingTemplateData{
 					MappingName:      mappingName,
@@ -176,7 +152,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				// if final CORS options are not empty, include them
 				if !reflect.DeepEqual(options.CORSOptions{}, corsOpts) {
 					op.CORSEnabled = true
-					op.CORS = g.corsTemplateData(&corsOpts)
+					op.CORS = newCorsTemplateData(&corsOpts)
 				}
 
 				// take global rate limit options
@@ -292,7 +268,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 		// if global CORS options are defined, take them
 		if !reflect.DeepEqual(options.CORSOptions{}, opts.CORS) {
 			op.CORSEnabled = true
-			op.CORS = g.corsTemplateData(&opts.CORS)
+			op.CORS = newCorsTemplateData(&opts.CORS)
 		}
 
 		// if global rate limit options are defined, take them
@@ -352,13 +328,11 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 	var buf bytes.Buffer
 
-	err := mappingTemplate.Execute(&buf, mappings)
-	if err != nil {
+	if err := a.MappingTemplate.Execute(&buf, mappings); err != nil {
 		return "", fmt.Errorf("failed to execute mapping template: %w", err)
 	}
 
-	err = rateLimitTemplate.Execute(&buf, rateLimits)
-	if err != nil {
+	if err := a.RateLimitTemplate.Execute(&buf, rateLimits); err != nil {
 		return "", fmt.Errorf("failed to execute rate limit template: %w", err)
 	}
 
@@ -369,7 +343,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 // generateMappingPath returns the final pattern that should go to mapping
 // and whether the regex should be used
-func (g *Generator) generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
+func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	containsPathParameter := false
 	for _, param := range op.Parameters {
 		if param.Value.In == "path" {
@@ -404,7 +378,7 @@ func (g *Generator) generateMappingPath(path string, op *openapi3.Operation) (st
 	return path, true
 }
 
-func (g *Generator) generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
+func generateMappingName(serviceName, method, path string, operation *openapi3.Operation) string {
 	var res strings.Builder
 
 	if operation.OperationID != "" {
@@ -423,7 +397,7 @@ func (g *Generator) generateMappingName(serviceName, method, path string, operat
 	return strings.ToLower(res.String())
 }
 
-func (g *Generator) getServiceURL(options *options.Options) string {
+func getServiceURL(options *options.Options) string {
 	if options.Service.Port > 0 {
 		return fmt.Sprintf(
 			"%s.%s:%d",
@@ -436,7 +410,7 @@ func (g *Generator) getServiceURL(options *options.Options) string {
 	return fmt.Sprintf("%s.%s", options.Service.Name, options.Service.Namespace)
 }
 
-func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
+func shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	if opts.Path.Split {
 		return true
 	}
@@ -497,20 +471,4 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 	}
 
 	return false
-}
-
-func (g *Generator) corsTemplateData(corsOpts *options.CORSOptions) corsTemplateData {
-	res := corsTemplateData{
-		Origins:        strings.Join(corsOpts.Origins, ","),
-		Methods:        strings.Join(corsOpts.Methods, ","),
-		Headers:        strings.Join(corsOpts.Headers, ","),
-		ExposedHeaders: strings.Join(corsOpts.ExposeHeaders, ","),
-		MaxAge:         fmt.Sprint(corsOpts.MaxAge),
-	}
-
-	if corsOpts.Credentials != nil {
-		res.Credentials = *corsOpts.Credentials
-	}
-
-	return res
 }

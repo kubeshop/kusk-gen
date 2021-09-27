@@ -1,4 +1,4 @@
-package ambassador
+package v2
 
 import (
 	"strings"
@@ -7,6 +7,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 
+	"github.com/kubeshop/kusk/generators/ambassador"
 	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/spec"
 )
@@ -56,8 +57,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -105,8 +106,8 @@ spec:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -146,8 +147,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: amb
@@ -195,8 +196,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -244,8 +245,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-postpetpetiduploadimage
   namespace: default
@@ -293,8 +294,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-postpetpetiduploadimage
   namespace: default
@@ -348,8 +349,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore
   namespace: default
@@ -395,8 +396,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-postpetpetiduploadimage
   namespace: default
@@ -509,8 +510,8 @@ definitions:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-createpets
   namespace: default
@@ -520,8 +521,8 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-listpets
   namespace: default
@@ -531,8 +532,8 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-showpetbyid
   namespace: default
@@ -686,8 +687,8 @@ spec:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-createpets
   namespace: default
@@ -697,8 +698,8 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-listpets
   namespace: default
@@ -708,8 +709,8 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-showpetbyid
   namespace: default
@@ -751,8 +752,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -793,8 +794,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -849,8 +850,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -906,8 +907,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -964,8 +965,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore
   namespace: default
@@ -1042,8 +1043,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1061,8 +1062,8 @@ spec:
     max_age: "240"
   timeout_ms: 5000
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1123,8 +1124,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore
   namespace: default
@@ -1185,8 +1186,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1198,8 +1199,8 @@ spec:
   timeout_ms: 35000
   idle_timeout_ms: 36000
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1243,8 +1244,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore
   namespace: default
@@ -1296,8 +1297,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore
   namespace: default
@@ -1376,8 +1377,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1393,8 +1394,8 @@ spec:
       - request:
           - remote-address
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1491,8 +1492,8 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1508,8 +1509,8 @@ spec:
       - request:
           - remote-address
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1601,8 +1602,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-get
   namespace: default
@@ -1652,8 +1653,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-patch
   namespace: default
@@ -1663,8 +1664,8 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-post
   namespace: default
@@ -1704,8 +1705,8 @@ paths:
 `,
 			res: `
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-patch
   namespace: default
@@ -1715,8 +1716,8 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: getambassador.io/v2
-kind: Mapping
+apiVersion: x.getambassador.io/v3alpha1
+kind: AmbassadorMapping
 metadata:
   name: petstore-post
   namespace: default
@@ -1729,7 +1730,12 @@ spec:
 		},
 	}
 
-	var gen Generator
+	gen := Generator{
+		abstractGenerator: ambassador.AbstractGenerator{
+			MappingTemplate:   mappingTemplate,
+			RateLimitTemplate: rateLimitTemplate,
+		},
+	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
@@ -1738,9 +1744,9 @@ spec:
 			spec, err := spec.NewParser(openapi3.NewLoader()).ParseFromReader(strings.NewReader(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			mappings, err := gen.Generate(&testCase.options, spec)
+			AmbassadorMappings, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)
-			r.Equal(testCase.res, mappings)
+			r.Equal(testCase.res, AmbassadorMappings)
 		})
 	}
 }

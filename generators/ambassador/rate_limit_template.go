@@ -8,7 +8,7 @@ type rateLimitTemplateData struct {
 	BurstFactor uint32
 }
 
-var rateLimitTemplateRaw = `{{range .}}
+var RateLimitTemplateRaw = `{{range .}}
 ---
 apiVersion: getambassador.io/v2
 kind: RateLimit

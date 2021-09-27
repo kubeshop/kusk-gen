@@ -5,6 +5,8 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 
+	ambassadorV1 "github.com/kubeshop/kusk/generators/ambassador/v1"
+	ambassadorV2 "github.com/kubeshop/kusk/generators/ambassador/v2"
 	"github.com/kubeshop/kusk/options"
 	"github.com/kubeshop/kusk/wizard/prompt"
 )
@@ -57,7 +59,15 @@ func New(args *Args) (Interface, error) {
 
 	switch args.Service {
 	case "ambassador":
-		return ambassadorFlow{baseFlow}, nil
+		return ambassadorFlow{
+			baseFlow:  baseFlow,
+			generator: ambassadorV1.New(),
+		}, nil
+	case "ambassador 2":
+		return ambassadorFlow{
+			baseFlow:  baseFlow,
+			generator: ambassadorV2.New(),
+		}, nil
 	case "linkerd":
 		return linkerdFlow{baseFlow}, nil
 	case "nginx-ingress":
