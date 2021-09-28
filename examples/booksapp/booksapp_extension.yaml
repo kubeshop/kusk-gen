@@ -1,6 +1,7 @@
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   path:
     base: /bookstore
     trim_prefix: /bookstore
