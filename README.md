@@ -50,11 +50,13 @@ allowing you to
 
 Kusk currently supports (click for configuration options)
 - [Ambassador 1.x](https://kubeshop.github.io/kusk/ambassador/)
+- [Ambassador 2.0](https://kubeshop.github.io/kusk/ambassador/)
+  - **Warning** This is a developer preview and should be treated as unstable
 - [Linkerd](https://kubeshop.github.io/kusk/linkerd/)
 - [Nginx-Ingress](https://kubeshop.github.io/kusk/nginx-ingress/)
 - [Traefik V2 (v2.x)](https://kubeshop.github.io/kusk/traefik/)
 
-Some of the upcoming tools we'd like to support are Kong, Ambassador 2.x, etc. Please don't hesitate to 
+Some of the upcoming tools we'd like to support are Kong and Contour. Please don't hesitate to 
 suggest others or contribute your own generator!
 
 ## Documentation & Support

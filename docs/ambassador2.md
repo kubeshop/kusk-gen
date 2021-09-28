@@ -1,4 +1,6 @@
-# Ambassador
+# Ambassador 2.0
+**Warning**: Ambassador 2.0 is currently in Developer Preview and could change at any point, breaking the implementation here.
+
 
 ```shell
 kusk ambassador2 --help
