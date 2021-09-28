@@ -15,7 +15,7 @@ spec:
   {{end}}
 
   {{ if .Host}}
-  host: {{.Host}}
+  hostname: '{{.Host}}'
   {{end}}
 
   {{if .Method}}
@@ -34,10 +34,38 @@ spec:
 
   {{if .CORSEnabled}}
   cors:
-    origins: {{.CORS.Origins}}
-    methods: {{.CORS.Methods}}
-    headers: {{.CORS.Headers}}
-    exposed_headers: {{.CORS.ExposedHeaders}}
+    {{ $origins := split .CORS.Origins "," }}
+    {{ if gt (len $origins) 0 }}
+    origins:
+    {{ range $val := $origins }}
+      - "{{ $val }}"
+    {{ end }}
+    {{ end }}
+
+    {{ $methods := split .CORS.Methods "," }}
+    {{ if gt (len $methods) 0 }}
+    methods:
+    {{ range $val := $methods }}
+      - "{{ $val }}"
+    {{ end }}
+    {{ end }}
+
+    {{ $headers := split .CORS.Headers "," }}
+    {{ if gt (len $methods) 0 }}
+    headers:
+    {{ range $val := $headers }}
+      - "{{ $val }}"
+    {{ end }}
+    {{ end }}
+
+    {{ $exposedHeaders := split .CORS.ExposedHeaders "," }}
+    {{ if gt (len $exposedHeaders) 0 }}
+    exposed_headers:
+    {{ range $val := $exposedHeaders }}
+      - "{{ $val }}"
+    {{ end }}
+    {{ end }}
+
     credentials: {{.CORS.Credentials}}
     max_age: "{{.CORS.MaxAge}}"
   {{end}}
