@@ -27,6 +27,7 @@ func TestAmbassador(t *testing.T) {
 		{
 			name: "basic",
 			options: options.Options{
+        Host: "*",
 				Namespace: "default",
 				Service: options.ServiceOptions{
 					Namespace: "default",
@@ -45,6 +46,7 @@ info:
   version: 1.0.5
 x-kusk:
   namespace: notdefault
+  host: "*"
   service:
     name: petstore
 paths:
@@ -64,6 +66,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -73,6 +76,7 @@ spec:
 			name: "basic-json",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -113,6 +117,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -122,6 +127,7 @@ spec:
 			name: "basic-namespace",
 			options: options.Options{
 				Namespace: "amb",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -154,6 +160,7 @@ metadata:
   namespace: amb
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -163,6 +170,7 @@ spec:
 			name: "parameter",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -204,6 +212,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -213,6 +222,7 @@ spec:
 			name: "empty-operationId",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -253,6 +263,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -262,6 +273,7 @@ spec:
 			name: "basepath",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -302,6 +314,7 @@ metadata:
 spec:
   prefix: "/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -311,6 +324,7 @@ spec:
 			name: "basepath-rootonly",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -356,6 +370,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/api/v3"
+  hostname: '*'
   service: petstore.default:80
   rewrite: ""
 `,
@@ -364,6 +379,7 @@ spec:
 			name: "basepath-trimprefix",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -404,6 +420,7 @@ metadata:
 spec:
   prefix: "/petstore/api/v3/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   regex_rewrite:
@@ -415,6 +432,7 @@ spec:
 			name: "swagger-yaml",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -517,6 +535,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pets"
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -528,6 +547,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pets"
+  hostname: '*'
   method: GET
   service: petstore.default:80
   rewrite: ""
@@ -540,6 +560,7 @@ metadata:
 spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
+  hostname: '*'
   method: GET
   service: petstore.default:80
   rewrite: ""
@@ -549,6 +570,7 @@ spec:
 			name: "swagger-json",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -694,6 +716,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pets"
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -705,6 +728,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pets"
+  hostname: '*'
   method: GET
   service: petstore.default:80
   rewrite: ""
@@ -717,6 +741,7 @@ metadata:
 spec:
   prefix: "/pets/([a-zA-Z0-9]*)"
   prefix_regex: true
+  hostname: '*'
   method: GET
   service: petstore.default:80
   rewrite: ""
@@ -726,6 +751,7 @@ spec:
 			name: "port specified",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -759,6 +785,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:443
   rewrite: ""
@@ -768,6 +795,7 @@ spec:
 			name: "port 0 specified",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -801,6 +829,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -810,6 +839,7 @@ spec:
 			name: "path-disabled",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -858,6 +888,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -867,6 +898,7 @@ spec:
 			name: "operation-disabled",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -915,6 +947,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -924,6 +957,7 @@ spec:
 			name: "cors-global",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -972,13 +1006,22 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   service: petstore.default:80
   rewrite: ""
   cors:
-    origins: http://foo.example,http://bar.example
-    methods: POST,GET,OPTIONS
-    headers: Content-Type
-    exposed_headers: X-Custom-Header,X-Other-Custom-Header
+    origins:
+      - "http://foo.example"
+      - "http://bar.example"
+    methods:
+      - "POST"
+      - "GET"
+      - "OPTIONS"
+    headers:
+      - "Content-Type"
+    exposed_headers:
+      - "X-Custom-Header"
+      - "X-Other-Custom-Header"
     credentials: false
     max_age: "120"
 `,
@@ -987,6 +1030,7 @@ spec:
 			name: "cors-path-override",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1050,14 +1094,20 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
   cors:
-    origins: http://bar.example
-    methods: POST
-    headers: Content-Type
-    exposed_headers: X-Custom-Header,X-Other-Custom-Header
+    origins:
+      - "http://bar.example"
+    methods:
+      - "POST"
+    headers:
+      - "Content-Type"
+    exposed_headers:
+      - "X-Custom-Header"
+      - "X-Other-Custom-Header"
     credentials: false
     max_age: "240"
   timeout_ms: 5000
@@ -1070,14 +1120,23 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
   cors:
-    origins: http://foo.example,http://bar.example
-    methods: POST,GET,OPTIONS
-    headers: Content-Type
-    exposed_headers: X-Custom-Header,X-Other-Custom-Header
+    origins:
+      - "http://foo.example"
+      - "http://bar.example"
+    methods:
+      - "POST"
+      - "GET"
+      - "OPTIONS"
+    headers:
+      - "Content-Type"
+    exposed_headers:
+      - "X-Custom-Header"
+      - "X-Other-Custom-Header"
     credentials: false
     max_age: "120"
   timeout_ms: 5000
@@ -1087,6 +1146,7 @@ spec:
 			name: "timeouts-global",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1131,6 +1191,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   service: petstore.default:80
   rewrite: ""
   timeout_ms: 42000
@@ -1141,6 +1202,7 @@ spec:
 			name: "timeouts-path-override",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1193,6 +1255,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -1207,6 +1270,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -1251,7 +1315,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
-  host: somehost.io
+  hostname: 'somehost.io'
   service: petstore.default:80
   rewrite: ""
 `,
@@ -1260,6 +1324,7 @@ spec:
 			name: "rate-limit-global",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1304,6 +1369,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   service: petstore.default:80
   rewrite: ""
   labels:
@@ -1332,6 +1398,7 @@ spec:
 			name: "rate-limit-path-override",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1384,6 +1451,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -1402,6 +1470,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -1445,6 +1514,7 @@ spec:
 			name: "rate-limit-group",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1499,6 +1569,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/pet"
+  hostname: '*'
   method: PUT
   service: petstore.default:80
   rewrite: ""
@@ -1517,6 +1588,7 @@ metadata:
 spec:
   prefix: "/pet/([a-zA-Z0-9]*)/uploadImage"
   prefix_regex: true
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -1547,6 +1619,7 @@ spec:
 			options: options.Options{
 				Disabled:  true,
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1571,6 +1644,7 @@ paths:
 			name: "path disabled, operation enabled",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1609,6 +1683,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   method: GET
   service: petstore.default:80
   rewrite: ""
@@ -1618,6 +1693,7 @@ spec:
 			name: "path disabled not specified operation disabled specified",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1660,6 +1736,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   method: PATCH
   service: petstore.default:80
   rewrite: ""
@@ -1671,6 +1748,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
@@ -1680,6 +1758,7 @@ spec:
 			name: "path disabled not specified operation disabled specified operation enabled not specified",
 			options: options.Options{
 				Namespace: "default",
+        Host: "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1712,6 +1791,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   method: PATCH
   service: petstore.default:80
   rewrite: ""
@@ -1723,6 +1803,7 @@ metadata:
   namespace: default
 spec:
   prefix: "/"
+  hostname: '*'
   method: POST
   service: petstore.default:80
   rewrite: ""
