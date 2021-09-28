@@ -27,7 +27,7 @@ func TestAmbassador(t *testing.T) {
 		{
 			name: "basic",
 			options: options.Options{
-        Host: "*",
+				Host:      "*",
 				Namespace: "default",
 				Service: options.ServiceOptions{
 					Namespace: "default",
@@ -76,7 +76,7 @@ spec:
 			name: "basic-json",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -127,7 +127,7 @@ spec:
 			name: "basic-namespace",
 			options: options.Options{
 				Namespace: "amb",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -170,7 +170,7 @@ spec:
 			name: "parameter",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -222,7 +222,7 @@ spec:
 			name: "empty-operationId",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -273,7 +273,7 @@ spec:
 			name: "basepath",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -324,7 +324,7 @@ spec:
 			name: "basepath-rootonly",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -379,7 +379,7 @@ spec:
 			name: "basepath-trimprefix",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -432,7 +432,7 @@ spec:
 			name: "swagger-yaml",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -570,7 +570,7 @@ spec:
 			name: "swagger-json",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -751,7 +751,7 @@ spec:
 			name: "port specified",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -795,7 +795,7 @@ spec:
 			name: "port 0 specified",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -839,7 +839,7 @@ spec:
 			name: "path-disabled",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -898,7 +898,7 @@ spec:
 			name: "operation-disabled",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -957,7 +957,7 @@ spec:
 			name: "cors-global",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1030,7 +1030,7 @@ spec:
 			name: "cors-path-override",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1146,7 +1146,7 @@ spec:
 			name: "timeouts-global",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1202,7 +1202,7 @@ spec:
 			name: "timeouts-path-override",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1324,7 +1324,7 @@ spec:
 			name: "rate-limit-global",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1398,7 +1398,7 @@ spec:
 			name: "rate-limit-path-override",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1514,7 +1514,7 @@ spec:
 			name: "rate-limit-group",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1619,7 +1619,7 @@ spec:
 			options: options.Options{
 				Disabled:  true,
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1644,7 +1644,7 @@ paths:
 			name: "path disabled, operation enabled",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1693,7 +1693,7 @@ spec:
 			name: "path disabled not specified operation disabled specified",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
@@ -1758,7 +1758,7 @@ spec:
 			name: "path disabled not specified operation disabled specified operation enabled not specified",
 			options: options.Options{
 				Namespace: "default",
-        Host: "*",
+				Host:      "*",
 				Service: options.ServiceOptions{
 					Namespace: "default",
 					Name:      "petstore",
