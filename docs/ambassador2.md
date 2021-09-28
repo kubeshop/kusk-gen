@@ -137,6 +137,7 @@ kubectl rollout status  -n booksapp deployment/webapp -w
 ```shell
 kusk ambassador2 -i examples/booksapp/booksapp.yaml \
 --namespace booksapp \
+--host "*" \
 --service.name webapp \
 --service.port 7000 \
 --service.namespace booksapp
@@ -148,6 +149,7 @@ kusk ambassador2 -i examples/booksapp/booksapp.yaml \
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   service:
     name: webapp
     namespace: booksapp
@@ -166,13 +168,20 @@ apiVersion: x.getambassador.io/v3alpha1
 kind: AmbassadorMapping
 metadata:
   name: booksapp
-  namespace: my-namespace
+  namespace: booksapp
 spec:
   prefix: "/"
-  service: booksapp.my-service-namespace:7000
+  hostname: '*'
+  service: booksapp.booksapp:7000
   rewrite: ""
 ```
 
+### Test
+`curl -Lki https://localhost:8443`
+
+Or go to your web browser
+
+---
 ## Split Path
 
 By setting split path to true, kusk will generate a mapping per route specified in the 
@@ -181,11 +190,12 @@ provided OpenAPI specification
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
---namespace my-namespace \
---service.name booksapp \
+kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+--namespace booksapp \
+--host "*" \
+--service.name webapp \
 --service.port 7000 \
---service.namespace my-service-namespace \
+--service.namespace booksapp \
 --path.split true
 ```
 
@@ -195,6 +205,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   service:
     name: webapp
     namespace: booksapp
@@ -218,24 +229,33 @@ apiVersion: x.getambassador.io/v3alpha1
 kind: AmbassadorMapping
 metadata:
   name: booksapp-get
-  namespace: my-namespace
+  namespace: booksapp
 spec:
   prefix: "/"
+  hostname: '*'
   method: GET
-  service: booksapp.my-service-namespace:7000
+  service: booksapp.booksapp:7000
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
 kind: AmbassadorMapping
 metadata:
   name: booksapp-postbooks
-  namespace: my-namespace
+  namespace: booksapp
 spec:
   prefix: "/books"
+  hostname: '*'
   method: POST
-  service: booksapp.my-service-namespace:7000
+  service: booksapp.booksapp:7000
   rewrite: ""
 ```
+
+### Test
+`curl -Lki https://localhost:8443`
+
+Or go to your web browser
+
+---
 
 ## Base Path and Trim Prefix
 
@@ -247,11 +267,12 @@ request onto the service.
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
---namespace my-namespace \
---service.name booksapp \
+kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+--namespace booksapp \
+--host "*" \
+--service.name webapp \
 --service.port 7000 \
---service.namespace my-service-namespace \
+--service.namespace booksapp \
 --path.base /my-app \
 --path.trim_prefix /my-app
 ```
@@ -262,6 +283,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   service:
     name: webapp
     namespace: booksapp
@@ -283,14 +305,24 @@ apiVersion: x.getambassador.io/v3alpha1
 kind: AmbassadorMapping
 metadata:
   name: booksapp
-  namespace: my-namespace
+  namespace: booksapp
 spec:
   prefix: "/my-app"
-  service: booksapp.my-service-namespace:7000
+  hostname: '*'
+  service: booksapp.booksapp:7000
   regex_rewrite:
     pattern: '/my-app(.*)'
     substitution: '\1'
 ```
+
+### Test
+`curl -Lki https://localhost:8443/my-app/`
+
+Or go to your web browser
+
+**Note** the trailing `/` is mandatory.
+
+---
 
 ## Setting timeouts
 
@@ -299,11 +331,12 @@ kusk allows for setting both idle and request timeouts via flags or the x-kusk O
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
---namespace my-namespace \
+kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+--namespace booksapp \
+--host "*" \
 --service.name booksapp \
 --service.port 7000 \
---service.namespace my-service-namespace \
+--service.namespace booksapp \
 --timeouts.idle_timeout 120 \
 --timeouts.request_timeout 120
 ```
@@ -314,6 +347,7 @@ kusk ambassador -i examples/booksapp/booksapp.yaml \
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   service:
     name: webapp
     namespace: booksapp
@@ -335,60 +369,11 @@ apiVersion: x.getambassador.io/v3alpha1
 kind: AmbassadorMapping
 metadata:
   name: booksapp
-  namespace: my-namespace
-spec:
-  prefix: "/"
-  service: booksapp.my-service-namespace:7000
-  rewrite: ""
-  timeout_ms: 120000
-  idle_timeout_ms: 120000
-```
-
-## Setting the Host header
-
-kusk allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
-
-### CLI Flags
-
-```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
---namespace my-namespace \
---service.name booksapp \
---service.port 7000 \
---service.namespace my-service-namespace \
---host "somehost.io"
-```
-
-### OpenAPI Specification
-
-```yaml
-openapi: 3.0.1
-x-kusk:
   namespace: booksapp
-  service:
-    name: webapp
-    namespace: booksapp
-    port: 7000
-  host: somehost.io
-paths:
-  /:
-    get: {}
-...
-```
-
-### Sample Output
-
-```yaml
----
-apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
-metadata:
-  name: booksapp
-  namespace: my-namespace
 spec:
   prefix: "/"
-  host: somehost.io
-  service: booksapp.my-service-namespace:7000
+  hostname: '*'
+  service: booksapp.booksapp:7000
   rewrite: ""
   timeout_ms: 120000
   idle_timeout_ms: 120000
@@ -398,12 +383,18 @@ spec:
 
 Via the x-kusk extension, you can set cors policies on your resources
 
+kusk ambassador2 -i examples/booksapp/booksapp_extension.yaml
+
+Here we only set the `-i` input flag as the other mandatory options have been set using
+the `x-kusk` extension in the OpenAPI spec file.
+
 ### OpenAPI Specification
 
 ```yaml
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   service:
     name: webapp
     namespace: booksapp
@@ -439,15 +430,28 @@ metadata:
   namespace: booksapp
 spec:
   prefix: "/"
+  hostname: '*'
   service: webapp.booksapp:7000
   rewrite: ""
   cors:
-    origins: http://foo.example,http://bar.example
-    methods: POST,GET,OPTIONS
-    headers: Content-Type
-    exposed_headers: X-Custom-Header
+    origins:
+      - "http://foo.example"
+      - "http://bar.example"
+    methods:
+      - "POST"
+      - "GET"
+      - "OPTIONS"
+    headers:
+      - "Content-Type"
+    exposed_headers:
+      - "X-Custom-Header"
     credentials: true
     max_age: "86400"
+```
+
+### Test
+```
+curl -kI -X GET -H "Origin: http://foo.example" --verbose https://localhost:8443/
 ```
 
 ## Basic Path settings override
@@ -460,6 +464,7 @@ For this example, let's assume that one of the paths in the API specification sh
 openapi: 3.0.1
 x-kusk:
   namespace: booksapp
+  host: "*"
   service:
     name: webapp
     namespace: booksapp
@@ -496,7 +501,7 @@ paths:
 ### Sample Output
 
 ```yaml
----
+----
 apiVersion: x.getambassador.io/v3alpha1
 kind: AmbassadorMapping
 metadata:
@@ -504,14 +509,19 @@ metadata:
   namespace: booksapp
 spec:
   prefix: "/"
+  hostname: '*'
   method: GET
   service: webapp.booksapp:7000
   rewrite: ""
   cors:
-    origins:
-    methods: POST,GET,OPTIONS
-    headers: Content-Type
-    exposed_headers: X-Custom-Header
+    methods:
+      - "POST"
+      - "GET"
+      - "OPTIONS"
+    headers:
+      - "Content-Type"
+    exposed_headers:
+      - "X-Custom-Header"
     credentials: true
     max_age: "86400"
 ---
@@ -522,14 +532,17 @@ metadata:
   namespace: booksapp
 spec:
   prefix: "/books"
+  hostname: '*'
   method: POST
   service: webapp.booksapp:7000
   rewrite: ""
   cors:
-    origins:
-    methods: POST
-    headers: Other-Content-Type
-    exposed_headers: X-Other-Custom-Header
+    methods:
+      - "POST"
+    headers:
+      - "Other-Content-Type"
+    exposed_headers:
+      - "X-Other-Custom-Header"
     credentials: true
     max_age: "120"
 ```
