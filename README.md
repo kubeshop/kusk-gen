@@ -50,7 +50,7 @@ allowing you to
 
 Kusk currently supports (click for configuration options)
 - [Ambassador 1.x](https://kubeshop.github.io/kusk/ambassador/)
-- [Ambassador 2.0](https://kubeshop.github.io/kusk/ambassador/)
+- [Ambassador 2.0](https://kubeshop.github.io/kusk/ambassador2/)
   - **Warning** This is a developer preview and should be treated as unstable
 - [Linkerd](https://kubeshop.github.io/kusk/linkerd/)
 - [Nginx-Ingress](https://kubeshop.github.io/kusk/nginx-ingress/)

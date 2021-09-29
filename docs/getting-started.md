@@ -1,19 +1,21 @@
-# Installation
+#  Getting Started
 
-#### Homebrew
+## Installing Kusk
+
+### Homebrew
 `brew install kubeshop/kusk/kusk`
 
-#### Latest release on Github
+### Latest release on Github
 `go install github.com/kubeshop/kusk@$VERSION`
 
-#### From source
+### From source
 ```shell
 git clone git@github.com:kubeshop/kusk.git && \
 cd kusk && \
 go install
 ```
 
-# Usage
+## Usage
 
 For a run-through of what Kusk can do with the tools already installed in your cluster run:
 `kusk wizard -i my-openapi-spec.yaml`
