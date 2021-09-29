@@ -119,38 +119,9 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			name := fmt.Sprintf("%s-%s", opts.Service.Name, ingressResourceNameFromPath(path))
 
-			// take global CORS options
-			corsOpts := opts.CORS
-
-			// if path-level CORS options are different, override with them
-			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-				if !reflect.DeepEqual(options.CORSOptions{}, pathSubOpts.CORS) &&
-					!reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
-					corsOpts = pathSubOpts.CORS
-				}
-			}
-
-			// take global rate limit options
-			rateLimitOpts := opts.RateLimits
-
-			// if path-level rate limit options are different, override with them
-			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-				if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOpts.RateLimits) &&
-					!reflect.DeepEqual(rateLimitOpts, pathSubOpts.RateLimits) {
-					rateLimitOpts = pathSubOpts.RateLimits
-				}
-			}
-
-			// take global Timeout options
-			timeoutOpts := opts.Timeouts
-
-			// if path-level Timeout options are different, override with them
-			if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-				if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) &&
-					!reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
-					timeoutOpts = pathSubOpts.Timeouts
-				}
-			}
+			corsOpts := opts.GetCORSOpts(path, "")
+			rateLimitOpts := opts.GetRateLimitOpts(path, "")
+			timeoutOpts := opts.GetTimeoutOptions(path, "")
 
 			// Get initial set of annotation based on current options
 			// will be modified next based on current path
