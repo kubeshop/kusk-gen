@@ -12,6 +12,8 @@ theme:
   highlightjs: true
   hljs_languages:
     - yaml
+  features:
+    - navigation.expand
 
 nav:
   - Welcome: index.md
@@ -20,7 +22,8 @@ nav:
   - Using with ArgoCD: argocd.md
 
   - Generators:
-    - Ambassador: ambassador.md
+    - Ambassador 1.X: ambassador.md
+    - Ambassador 2.X: ambassador2.md
     - Linkerd: linkerd.md
     - Nginx-Ingress: nginx-ingress.md
     - Traefik: traefik.md
