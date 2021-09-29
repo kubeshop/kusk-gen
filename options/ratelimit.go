@@ -8,7 +8,7 @@ type RateLimitOptions struct {
 	Group string `json:"group,omitempty" yaml:"group,omitempty"`
 }
 
-func (o Options) GetRateLimitOpts(path, method string) RateLimitOptions {
+func (o *Options) GetRateLimitOpts(path, method string) RateLimitOptions {
 	// take global rate limit options
 	rateLimitOpts := o.RateLimits
 
