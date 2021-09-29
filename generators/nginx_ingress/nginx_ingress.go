@@ -121,7 +121,7 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 
 			corsOpts := opts.GetCORSOpts(path, "")
 			rateLimitOpts := opts.GetRateLimitOpts(path, "")
-			timeoutOpts := opts.GetTimeoutOptions(path, "")
+			timeoutOpts := opts.GetTimeoutOpts(path, "")
 
 			// Get initial set of annotation based on current options
 			// will be modified next based on current path

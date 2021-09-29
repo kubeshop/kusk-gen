@@ -193,7 +193,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 				}
 
 				// take global timeout options
-				timeoutOpts := opts.GetTimeoutOptions(path, method)
+				timeoutOpts := opts.GetTimeoutOpts(path, method)
 
 				// if final timeout options are not empty, include them
 				if !reflect.DeepEqual(options.TimeoutOptions{}, timeoutOpts) {

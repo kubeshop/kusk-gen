@@ -9,7 +9,7 @@ type TimeoutOptions struct {
 	IdleTimeout uint32 `yaml:"idle_timeout,omitempty" json:"idle_timeout,omitempty"`
 }
 
-func (o *Options) GetTimeoutOptions(path, method string) TimeoutOptions {
+func (o *Options) GetTimeoutOpts(path, method string) TimeoutOptions {
 	// take global timeout options
 	timeoutOpts := o.Timeouts
 
