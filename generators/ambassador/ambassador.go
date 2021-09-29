@@ -130,24 +130,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 					Host:             host,
 				}
 
-				// take global CORS options
-				corsOpts := opts.CORS
-
-				// if non-zero path-level CORS options are different, override with them
-				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-					if !reflect.DeepEqual(options.CORSOptions{}, pathSubOpts.CORS) &&
-						!reflect.DeepEqual(corsOpts, pathSubOpts.CORS) {
-						corsOpts = pathSubOpts.CORS
-					}
-				}
-
-				// if non-zero operation-level CORS options are different, override them
-				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-					if !reflect.DeepEqual(options.CORSOptions{}, opSubOpts.CORS) &&
-						!reflect.DeepEqual(corsOpts, opSubOpts.CORS) {
-						corsOpts = opSubOpts.CORS
-					}
-				}
+				corsOpts := opts.GetCORSOpts(path, method)
 
 				// if final CORS options are not empty, include them
 				if !reflect.DeepEqual(options.CORSOptions{}, corsOpts) {
@@ -156,23 +139,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 				}
 
 				// take global rate limit options
-				rateLimitOpts := opts.RateLimits
-
-				// if non-zero path-level rate limit options are different, override with them
-				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-					if !reflect.DeepEqual(options.RateLimitOptions{}, pathSubOpts.RateLimits) &&
-						!reflect.DeepEqual(rateLimitOpts, pathSubOpts.RateLimits) {
-						rateLimitOpts = pathSubOpts.RateLimits
-					}
-				}
-
-				// if non-zero operation-level rate limit options are different, override them
-				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-					if !reflect.DeepEqual(options.RateLimitOptions{}, opSubOpts.RateLimits) &&
-						!reflect.DeepEqual(rateLimitOpts, opSubOpts.RateLimits) {
-						rateLimitOpts = opSubOpts.RateLimits
-					}
-				}
+				rateLimitOpts := opts.GetRateLimitOpts(path, method)
 
 				// if final rate limit options are not empty, include them
 				if !reflect.DeepEqual(options.RateLimitOptions{}, rateLimitOpts) {
@@ -226,23 +193,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 				}
 
 				// take global timeout options
-				timeoutOpts := opts.Timeouts
-
-				// if non-zero path-level timeout options are different, override with them
-				if pathSubOpts, ok := opts.PathSubOptions[path]; ok {
-					if !reflect.DeepEqual(options.TimeoutOptions{}, pathSubOpts.Timeouts) &&
-						!reflect.DeepEqual(timeoutOpts, pathSubOpts.Timeouts) {
-						timeoutOpts = pathSubOpts.Timeouts
-					}
-				}
-
-				// if non-zero operation-level timeout options are different, override them
-				if opSubOpts, ok := opts.OperationSubOptions[path]; ok {
-					if !reflect.DeepEqual(options.TimeoutOptions{}, opSubOpts.Timeouts) &&
-						!reflect.DeepEqual(timeoutOpts, opSubOpts.Timeouts) {
-						timeoutOpts = opSubOpts.Timeouts
-					}
-				}
+				timeoutOpts := opts.GetTimeoutOpts(path, method)
 
 				// if final timeout options are not empty, include them
 				if !reflect.DeepEqual(options.TimeoutOptions{}, timeoutOpts) {
