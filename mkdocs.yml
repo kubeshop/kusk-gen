@@ -33,7 +33,7 @@ nav:
 extra:
   analytics:
     provider: google
-    property: GTM-5S7QKN7
+    property: UA-204665550-4
 
   consent:
     title: Cookie consent
