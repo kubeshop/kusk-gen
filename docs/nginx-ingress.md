@@ -13,6 +13,7 @@ Flags:
       --service.namespace string              namespace containing the target Service (default "default")
       --service.port int32                    target Service port (default 80)
       --host string                           an Ingress Host to listen on
+      --timeouts.request_timeout     uint32   total request timeout (seconds)
       --nginx_ingress.rewrite_target string   a custom NGINX rewrite target
       --path.base string                      a base path for Service endpoints (default "/")
       --path.trim_prefix string               a prefix to trim from the URL before forwarding to the upstream Service
