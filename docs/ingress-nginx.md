@@ -1,4 +1,4 @@
-# Nginx Ingress
+# Ingress Nginx
 
 **Note** This generator refers to the community ingress from [Kubernetes ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
 
