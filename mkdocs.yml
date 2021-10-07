@@ -25,7 +25,7 @@ nav:
     - Ambassador 1.X: ambassador.md
     - Ambassador 2.X: ambassador2.md
     - Linkerd: linkerd.md
-    - Nginx-Ingress: nginx-ingress.md
+    - Nginx-Ingress: ingress-nginx.md
     - Traefik: traefik.md
 
   - For Developers: development.md
