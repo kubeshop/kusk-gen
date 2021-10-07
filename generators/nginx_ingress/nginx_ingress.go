@@ -33,17 +33,17 @@ var (
 )
 
 func init() {
-	generators.Registry["nginx-ingress"] = &Generator{}
+	generators.Registry["ingress-nginx"] = &Generator{}
 }
 
 type Generator struct{}
 
 func (g *Generator) Cmd() string {
-	return "nginx-ingress"
+	return "ingress-nginx"
 }
 
 func (g *Generator) Flags() *pflag.FlagSet {
-	fs := pflag.NewFlagSet("nginx-ingress", pflag.ExitOnError)
+	fs := pflag.NewFlagSet("ingress-nginx", pflag.ExitOnError)
 
 	fs.String(
 		"path.base",
@@ -97,7 +97,7 @@ func (g *Generator) Flags() *pflag.FlagSet {
 }
 
 func (g *Generator) ShortDescription() string {
-	return "Generates nginx-ingress resources"
+	return "Generates ingress-nginx resources"
 }
 
 func (g *Generator) LongDescription() string {
@@ -292,7 +292,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 
 		if ro.Group != "" {
 			log.New(os.Stderr, "WARN", log.Lmsgprefix).
-				Printf("nginx-ingress does not support rate limit groups. These will be ignored")
+				Printf("ingress-nginx does not support rate limit groups. These will be ignored")
 
 			groupUnsupportedWarned = true
 		}
@@ -339,7 +339,7 @@ func (g *Generator) shouldSplit(opts *options.Options, spec *openapi3.T) bool {
 		for method := range pathItem.Operations() {
 			if _, ok := opts.OperationSubOptions[method+path]; ok {
 				log.New(os.Stderr, "WARN", log.Lmsgprefix).
-					Printf("HTTP Method level options detected which nginx-ingress doesn't support. These will be ignored")
+					Printf("HTTP Method level options detected which ingress-nginx doesn't support. These will be ignored")
 
 				break // Only need to warn users once
 			}

@@ -8,7 +8,7 @@ within the `x-kusk` extension. The extension can be specified at the root, path 
 
 The following top-level properties are available:
 
-| property | root | path | operation | [Amb 1.X](ambassador.md) | [Amb 2.X](ambassador2.md) | [LinkerD](linkerd.md) | [Nginx-Ing](nginx-ingress.md) | [Traefik](traefik.md)
+| property | root | path | operation | [Amb 1.X](ambassador.md) | [Amb 2.X](ambassador2.md) | [LinkerD](linkerd.md) | [Nginx-Ing](ingress-nginx.md) | [Traefik](traefik.md)
 | --- | :---: | :---: | :---: | :---: |  :---: |  :---: |  :---: |  :---: |   
 | [`disabled`](#disabled) | X | X | X | X | X | X | X | X  
 | [`host`](#host) | X | X | X | X | X | X | X | X
@@ -126,7 +126,7 @@ https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules f
 
 ### Nginx Ingress
 
-Options specific to the [Nginx-Ingress controller](nginx-ingress.md)
+Options specific to the [Nginx-Ingress controller](ingress-nginx.md)
 
 | Name | Description |
 | :---: | :--- |
