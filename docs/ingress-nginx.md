@@ -1,5 +1,7 @@
 # Nginx Ingress
 
+**Note** This generator refers to the community ingress from [Kubernetes ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
+
 ```bash
 kusk ingress-nginx
 
