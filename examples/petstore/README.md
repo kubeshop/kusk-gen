@@ -74,7 +74,7 @@ EOF
 kubectl patch deployment ingress-nginx-controller -n ingress-nginx --patch "$(cat ingress.yaml)"
 
 # Generate the ingress resource from the specification
-go run main.go nginx-ingress -i examples/petstore/petstore.yaml --path.base="/" --service.name "petstore" | kubectl apply -f -
+go run main.go ingress-nginx -i examples/petstore/petstore.yaml --path.base="/" --service.name "petstore" | kubectl apply -f -
 
 # cURL an api endpoint
 curl -kLi 'http://localhost:8080/api/v3/pet/findByStatus?status=available'

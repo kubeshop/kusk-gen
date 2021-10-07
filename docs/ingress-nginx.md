@@ -1,10 +1,12 @@
 # Nginx Ingress
 
+**Note** This generator refers to the community ingress from [Kubernetes ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
+
 ```bash
-kusk nginx-ingress
+kusk ingress-nginx
 
 Usage:
-  kusk nginx-ingress [flags]
+  kusk ingress-nginx [flags]
 
 Flags:
   -i, --in string                             file path to api spec file to generate mappings from. e.g. --in apispec.yaml
@@ -17,10 +19,10 @@ Flags:
       --nginx_ingress.rewrite_target string   a custom NGINX rewrite target
       --path.base string                      a base path for Service endpoints (default "/")
       --path.trim_prefix string               a prefix to trim from the URL before forwarding to the upstream Service
-  -h, --help                                  help for nginx-ingress
+  -h, --help                                  help for ingress-nginx
 ```
 
-The nginx-ingress generator generates [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) 
+The ingress-nginx generator generates [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) 
 resources for exposing HTTP and HTTPS routes from outside the cluster to services within the cluster. 
 
 All options that can be set via flags can also be set using our `x-kusk` OpenAPI extension in your specification.
@@ -55,7 +57,7 @@ To override settings on the path or HTTP method level, you are required to use t
 ## Basic Usage
 ### CLI Flags
 ```shell
-kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
+kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -108,7 +110,7 @@ provided OpenAPI specification
 
 ### CLI Flags
 ```shell
-kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
+kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \
@@ -191,7 +193,7 @@ request onto the service.
 
 ### CLI Flags
 ```shell
-kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
+kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -249,7 +251,7 @@ status:
 ## Setting the rewrite target
 ### CLI Flags
 ```shell
-kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
+kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -304,7 +306,7 @@ status:
 ## Setting the Host
 ### CLI Flags
 ```shell
-kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
+kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -357,13 +359,13 @@ status:
 ## Setting timeouts
 kusk allows for setting a request timeout via flags or the x-kusk OpenAPI extension
 
-The nginx-ingress generator will spread the total request time over the following settings, diving it by 2
+The ingress-nginx generator will spread the total request time over the following settings, diving it by 2
 - `nginx.ingress.kubernetes.io/proxy-send-timeout`
 - `nginx.ingress.kubernetes.io/proxy-read-timeout`
 
 ### CLI Flags
 ```shell
-kusk nginx-ingress -i examples/booksapp/booksapp.yaml \
+kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -420,7 +422,7 @@ status:
 ## CORS
 Via the x-kusk extension, you can set cors policies on your resources.
 
-Due to a limitation of the nginx-ingress controller, we can only choose a single origin (the first one) 
+Due to a limitation of the ingress-nginx controller, we can only choose a single origin (the first one) 
 from `cors.origins`. Kusk logs a warning informing you of this.
 
 ### OpenAPI Specification

@@ -8,7 +8,7 @@ within the `x-kusk` extension. The extension can be specified at the root, path 
 
 The following top-level properties are available:
 
-| property | root | path | operation | [Amb 1.X](ambassador.md) | [Amb 2.X](ambassador2.md) | [LinkerD](linkerd.md) | [Nginx-Ing](nginx-ingress.md) | [Traefik](traefik.md)
+| property | root | path | operation | [Amb 1.X](ambassador.md) | [Amb 2.X](ambassador2.md) | [LinkerD](linkerd.md) | [Ing-Nginx](ingress-nginx.md) | [Traefik](traefik.md)
 | --- | :---: | :---: | :---: | :---: |  :---: |  :---: |  :---: |  :---: |   
 | [`disabled`](#disabled) | X | X | X | X | X | X | X | X  
 | [`host`](#host) | X | X | X | X | X | X | X | X
@@ -20,7 +20,7 @@ The following top-level properties are available:
 | [`path`](#path) | X |  |  |  X | X | X | X | X
 | [`cluster`](#cluster) | X |  |  |   |  | X |  | 
 | [`host`](#host) | X |  |  |  | X |  | X | X
-| [`nginx_ingress`](#nginx-ingress) | X |  |  |  |  |  | X | 
+| [`nginx_ingress`](#ingress-nginx) | X |  |  |  |  |  | X |
 
 ### Property Overriding/inheritance
 
@@ -124,9 +124,9 @@ Please see the documentation for each individual generator to see which of these
 A string specifying an Ingress host rule - see 
 https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules for additional documentation.
 
-### Nginx Ingress
+### Ingress Nginx
 
-Options specific to the [Nginx-Ingress controller](nginx-ingress.md)
+Options specific to the [ingress-nginx controller](ingress-nginx.md)
 
 | Name | Description |
 | :---: | :--- |

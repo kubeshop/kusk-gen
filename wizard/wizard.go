@@ -7,11 +7,12 @@ import (
 	"path/filepath"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"k8s.io/client-go/util/homedir"
+
 	"github.com/kubeshop/kusk/cluster"
 	"github.com/kubeshop/kusk/spec"
 	"github.com/kubeshop/kusk/wizard/flow"
 	"github.com/kubeshop/kusk/wizard/prompt"
-	"k8s.io/client-go/util/homedir"
 )
 
 func Start(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) {
@@ -107,8 +108,8 @@ func flowWithCluster(args *flow.Args, kubeConfigPath string) (string, error) {
 	}
 
 	if nginxIngressFound {
-		servicesToSuggest = append(servicesToSuggest, "nginx-ingress")
-		fmt.Fprintln(os.Stderr, "✔ Nginx Ingress installation found")
+		servicesToSuggest = append(servicesToSuggest, "ingress-nginx")
+		fmt.Fprintln(os.Stderr, "✔ Ingress Nginx installation found")
 	}
 
 	if traefikFound {
@@ -153,7 +154,7 @@ func flowWithoutCluster(args *flow.Args) (string, error) {
 		[]string{
 			"ambassador",
 			"linkerd",
-			"nginx-ingress",
+			"ingress-nginx",
 			"traefik",
 		},
 		false,

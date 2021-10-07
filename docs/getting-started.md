@@ -32,7 +32,7 @@ Available Commands:
   completion    generate the autocompletion script for the specified shell
   help          Help about any command
   linkerd       Generates Linkerd Service Profiles for your service
-  nginx-ingress Generates nginx-ingress resources
+  ingress-nginx Generates ingress-nginx resources
   traefik       Generates Traefik resources
   wizard        Connects to current Kubernetes cluster and lists available generators
 

@@ -111,7 +111,7 @@ func (c *Client) DetectNginxIngress() (bool, error) {
 	}
 
 	if !errors.IsNotFound(err) {
-		return false, fmt.Errorf("error fetching nginx-ingress deployments: %w", err)
+		return false, fmt.Errorf("error fetching ingress-nginx deployments: %w", err)
 	}
 
 	return false, nil

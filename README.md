@@ -53,7 +53,8 @@ Kusk currently supports (click for configuration options)
 - [Ambassador 2.0](https://kubeshop.github.io/kusk/ambassador2/)
   - **Warning** This is a developer preview and should be treated as unstable
 - [Linkerd](https://kubeshop.github.io/kusk/linkerd/)
-- [Nginx-Ingress](https://kubeshop.github.io/kusk/nginx-ingress/)
+- [Ingress-Nginx](https://kubeshop.github.io/kusk/ingress-nginx/)
+  - This generator refers to the community ingress from [Kubernetes ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
 - [Traefik V2 (v2.x)](https://kubeshop.github.io/kusk/traefik/)
 
 Some of the upcoming tools we'd like to support are Kong and Contour. Please don't hesitate to 
