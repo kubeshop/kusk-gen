@@ -78,7 +78,7 @@ func (g *Generator) generateAnnotations(
 
 		if burst := rateLimits.Burst; burst != 0 {
 			// https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting
-			// nginx-ingress uses a burst multiplier to configure burst for a rate limited path,
+			// ingress-nginx uses a burst multiplier to configure burst for a rate limited path,
 			// i.e. burst = rps * burstMultiplier
 			var burstMultiplier = burst / rps
 			if burstMultiplier < 1 {

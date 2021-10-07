@@ -20,7 +20,7 @@ The following top-level properties are available:
 | [`path`](#path) | X |  |  |  X | X | X | X | X
 | [`cluster`](#cluster) | X |  |  |   |  | X |  | 
 | [`host`](#host) | X |  |  |  | X |  | X | X
-| [`nginx_ingress`](#nginx-ingress) | X |  |  |  |  |  | X | 
+| [`nginx_ingress`](#ingress-nginx) | X |  |  |  |  |  | X | 
 
 ### Property Overriding/inheritance
 
@@ -126,7 +126,7 @@ https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules f
 
 ### Nginx Ingress
 
-Options specific to the [Nginx-Ingress controller](ingress-nginx.md)
+Options specific to the [ingress-nginx controller](ingress-nginx.md)
 
 | Name | Description |
 | :---: | :--- |

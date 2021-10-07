@@ -70,7 +70,7 @@ func New(args *Args) (Interface, error) {
 		}, nil
 	case "linkerd":
 		return linkerdFlow{baseFlow}, nil
-	case "nginx-ingress":
+	case "ingress-nginx":
 		return nginxIngressFlow{baseFlow}, nil
 	case "traefik":
 		return traefikFlow{baseFlow}, nil

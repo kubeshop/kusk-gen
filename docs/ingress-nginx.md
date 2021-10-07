@@ -17,7 +17,7 @@ Flags:
       --nginx_ingress.rewrite_target string   a custom NGINX rewrite target
       --path.base string                      a base path for Service endpoints (default "/")
       --path.trim_prefix string               a prefix to trim from the URL before forwarding to the upstream Service
-  -h, --help                                  help for nginx-ingress
+  -h, --help                                  help for ingress-nginx
 ```
 
 The ingress-nginx generator generates [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) 
