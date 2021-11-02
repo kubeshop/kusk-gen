@@ -60,7 +60,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -111,7 +111,7 @@ spec:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -154,7 +154,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: amb
@@ -205,7 +205,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -256,7 +256,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
   namespace: default
@@ -307,7 +307,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
   namespace: default
@@ -364,7 +364,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore
   namespace: default
@@ -413,7 +413,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
   namespace: default
@@ -529,7 +529,7 @@ definitions:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-createpets
   namespace: default
@@ -541,7 +541,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-listpets
   namespace: default
@@ -553,7 +553,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-showpetbyid
   namespace: default
@@ -710,7 +710,7 @@ spec:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-createpets
   namespace: default
@@ -722,7 +722,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-listpets
   namespace: default
@@ -734,7 +734,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-showpetbyid
   namespace: default
@@ -779,7 +779,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -823,7 +823,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -881,7 +881,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -940,7 +940,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1000,7 +1000,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore
   namespace: default
@@ -1088,7 +1088,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1113,7 +1113,7 @@ spec:
   timeout_ms: 5000
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1185,7 +1185,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore
   namespace: default
@@ -1249,7 +1249,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1263,7 +1263,7 @@ spec:
   idle_timeout_ms: 36000
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1309,7 +1309,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore
   namespace: default
@@ -1363,7 +1363,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore
   namespace: default
@@ -1445,7 +1445,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1463,7 +1463,7 @@ spec:
           - remote-address
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1563,7 +1563,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-updatepet
   namespace: default
@@ -1581,7 +1581,7 @@ spec:
           - remote-address
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-uploadfile
   namespace: default
@@ -1677,7 +1677,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-get
   namespace: default
@@ -1730,7 +1730,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-patch
   namespace: default
@@ -1742,7 +1742,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-post
   namespace: default
@@ -1785,7 +1785,7 @@ paths:
 			res: `
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-patch
   namespace: default
@@ -1797,7 +1797,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: petstore-post
   namespace: default
@@ -1825,9 +1825,9 @@ spec:
 			spec, err := spec.NewParser(openapi3.NewLoader()).ParseFromReader(strings.NewReader(testCase.spec))
 			r.NoError(err, "failed to parse spec")
 
-			AmbassadorMappings, err := gen.Generate(&testCase.options, spec)
+			Mappings, err := gen.Generate(&testCase.options, spec)
 			r.NoError(err)
-			r.Equal(testCase.res, AmbassadorMappings)
+			r.Equal(testCase.res, Mappings)
 		})
 	}
 }

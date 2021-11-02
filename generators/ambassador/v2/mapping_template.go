@@ -3,7 +3,7 @@ package v2
 var mappingTemplateRaw = `{{range .}}
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: {{.MappingName}}
   namespace: {{.MappingNamespace}}
