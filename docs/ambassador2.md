@@ -26,7 +26,7 @@ Flags:
   -h, --help
 ```
 
-The Ambassador generator generates [AmbassadorMapping]s (https://www.getambassador.io/docs/edge-stack/2.0/topics/using/intro-mappings/) resources for mapping resource to services. All options that can be set via 
+The Ambassador generator generates [Mapping]s (https://www.getambassador.io/docs/edge-stack/2.0/topics/using/intro-mappings/) resources for mapping resource to services. All options that can be set via 
 flags can also be set using our `x-kusk` OpenAPI extension in your specification.
 
 CLI flags apply only at the global level i.e. applies to all paths and methods.
@@ -44,7 +44,7 @@ To override settings on the path or HTTP method level, you are required to use t
 | Path Base               | --path.base                | path.base                 | Prefix for your resource routes                                                                                    | ❌                             |
 | Path Trim Prefix        | --path.trim_prefix         | path.trim_prefix          | Trim the specified prefix from URl before passing request onto service                                             | ❌                             |
 | Path split              | --path.split               | path.split                | Boolean; whether or not to force generator to generate a mapping for each path                                     | ❌                             |
-| Host                    | --host                     | host                      | The value to set the host field to in the AmbassadorMapping resource                                                         | ✅                             |
+| Host                    | --host                     | host                      | The value to set the host field to in the Mapping resource                                                         | ✅                             |
 | Rate limit (RPS)        | --rate_limits.rps          | rate_limits.rps           | Request per second rate limit                                                                                      | ✅                             |
 | Rate limit (burst)      | --rate_limits.burst        | rate_limits.burst         | Rate limit burst                                                                                                   | ✅                             |
 | Rate limit group        | N/A                        | rate_limits.group         | Rate limit endpoint group                                                                                          |                               |
@@ -167,7 +167,7 @@ paths:
 ```yaml
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: booksapp
   namespace: booksapp
@@ -228,7 +228,7 @@ paths:
 ```yaml
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: booksapp-get
   namespace: booksapp
@@ -240,7 +240,7 @@ spec:
   rewrite: ""
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: booksapp-postbooks
   namespace: booksapp
@@ -304,7 +304,7 @@ paths:
 ```yaml
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: booksapp
   namespace: booksapp
@@ -368,7 +368,7 @@ paths:
 ```yaml
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: booksapp
   namespace: booksapp
@@ -426,7 +426,7 @@ paths:
 ```yaml
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: webapp
   namespace: booksapp
@@ -505,7 +505,7 @@ paths:
 ```yaml
 ----
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: webapp-get
   namespace: booksapp
@@ -528,7 +528,7 @@ spec:
     max_age: "86400"
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorMapping
+kind: Mapping
 metadata:
   name: webapp-postbooks
   namespace: booksapp
