@@ -59,7 +59,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -110,7 +110,7 @@ spec:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -153,7 +153,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -204,7 +204,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -255,7 +255,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
@@ -306,7 +306,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
@@ -363,7 +363,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore
@@ -412,7 +412,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-postpetpetiduploadimage
@@ -528,7 +528,7 @@ definitions:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-createpets
@@ -540,7 +540,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-listpets
@@ -552,7 +552,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-showpetbyid
@@ -709,7 +709,7 @@ spec:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-createpets
@@ -721,7 +721,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-listpets
@@ -733,7 +733,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-showpetbyid
@@ -778,7 +778,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -822,7 +822,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -880,7 +880,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -939,7 +939,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -999,7 +999,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore
@@ -1087,7 +1087,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -1112,7 +1112,7 @@ spec:
     max_age: "240"
   timeout_ms: 5000
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -1184,7 +1184,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore
@@ -1248,7 +1248,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -1262,7 +1262,7 @@ spec:
   timeout_ms: 35000
   idle_timeout_ms: 36000
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -1308,7 +1308,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore
@@ -1362,7 +1362,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore
@@ -1444,7 +1444,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -1462,7 +1462,7 @@ spec:
       - request:
           - remote-address
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -1562,7 +1562,7 @@ paths:
           description: Successful operation`,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-updatepet
@@ -1580,7 +1580,7 @@ spec:
       - request:
           - remote-address
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-uploadfile
@@ -1676,7 +1676,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-get
@@ -1729,7 +1729,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-patch
@@ -1741,7 +1741,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-post
@@ -1784,7 +1784,7 @@ paths:
 `,
 			res: `
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-patch
@@ -1796,7 +1796,7 @@ spec:
   service: petstore.default:80
   rewrite: ""
 ---
-apiVersion: x.getambassador.io/v3alpha1
+apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: petstore-post
