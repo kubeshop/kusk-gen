@@ -40,6 +40,12 @@ func (*AbstractGenerator) Flags() *pflag.FlagSet {
 		"a prefix to trim from the URL before forwarding to the upstream Service",
 	)
 
+	fs.String(
+		"path.rewrite",
+		"",
+		"rewrite your base path before forwardng to the upstream service",
+	)
+
 	fs.Bool(
 		"path.split",
 		false,
@@ -91,10 +97,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 
 	if shouldSplit(opts, spec) {
 		// generate a mapping for each operation
-		basePath := opts.Path.Base
-		if basePath == "/" {
-			basePath = ""
-		}
+		basePath := strings.TrimSuffix(opts.Path.Base, "/")
 
 		host := opts.Host
 
@@ -118,12 +121,18 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 				mappingPath, regex := generateMappingPath(path, operation)
 				mappingName := generateMappingName(opts.Service.Name, method, path, operation)
 
+				var pathRewrite string
+				if opts.Path.RewriteBase != "" {
+					pathRewrite = strings.TrimSuffix(opts.Path.RewriteBase, "/") + mappingPath
+				}
+
 				op := mappingTemplateData{
 					MappingName:      mappingName,
 					MappingNamespace: opts.Namespace,
 					ServiceURL:       serviceURL,
 					BasePath:         basePath,
 					TrimPrefix:       opts.Path.TrimPrefix,
+					PathRewrite:      pathRewrite,
 					Method:           method,
 					Path:             mappingPath,
 					Regex:            regex,
@@ -211,6 +220,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 			ServiceURL:       serviceURL,
 			BasePath:         opts.Path.Base,
 			TrimPrefix:       opts.Path.TrimPrefix,
+			PathRewrite:      strings.TrimSuffix(opts.Path.RewriteBase, "/"),
 			RequestTimeout:   opts.Timeouts.RequestTimeout * 1000,
 			IdleTimeout:      opts.Timeouts.IdleTimeout * 1000,
 			Host:             opts.Host,
@@ -296,6 +306,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 // and whether the regex should be used
 func generateMappingPath(path string, op *openapi3.Operation) (string, bool) {
 	containsPathParameter := false
+
 	for _, param := range op.Parameters {
 		if param.Value.In == "path" {
 			containsPathParameter = true
