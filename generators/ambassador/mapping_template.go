@@ -6,8 +6,9 @@ type mappingTemplateData struct {
 	MappingNamespace string
 	ServiceURL       string
 
-	BasePath   string
-	TrimPrefix string
+	BasePath    string
+	TrimPrefix  string
+	PathRewrite string
 
 	Method  string
 	Path    string

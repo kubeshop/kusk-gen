@@ -28,6 +28,8 @@ spec:
   regex_rewrite:
     pattern: '{{.TrimPrefix}}(.*)'
     substitution: '\1'
+  {{else if .PathRewrite}}
+  rewrite: "{{.PathRewrite}}"
   {{else}}
   rewrite: ""
   {{end}}

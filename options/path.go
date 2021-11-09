@@ -15,6 +15,10 @@ type PathOptions struct {
 	// is "/api/v3/pets".
 	TrimPrefix string `yaml:"trim_prefix,omitempty" json:"trim_prefix,omitempty"`
 
+	// RewriteBase is the rewrite value that should replace the Base path before being forwarded to the
+	// upstream service
+	RewriteBase string `yaml:"rewrite_base,omitempty" json:"rewrite_base,omitempty"`
+
 	// Split forces Kusk to generate a separate resource for each Path or Operation, where appropriate.
 	Split bool `yaml:"split,omitempty" json:"split,omitempty"`
 }

@@ -1727,6 +1727,151 @@ spec:
   rewrite: ""
 `,
 		},
+		{
+			name: "rewrite literal specified at global level",
+			spec: `
+openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  host: "*"
+  path:
+    base: /my-bookstore
+    rewrite_base: /bookstore/
+  service:
+    name: webapp
+    namespace: booksapp
+    port: 7000
+paths:
+  /:
+    get: {}
+
+  /books:
+    post: {}
+
+  /books/{id}:
+    get: {}
+`,
+			options: options.Options{
+				Namespace: "booksapp",
+				Host:      "*",
+				Path: options.PathOptions{
+					Base:        "/my-bookstore",
+					RewriteBase: "/bookstore/",
+				},
+				Service: options.ServiceOptions{
+					Namespace: "booksapp",
+					Name:      "webapp",
+					Port:      7000,
+				},
+			},
+			res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: webapp
+  namespace: booksapp
+spec:
+  prefix: "/my-bookstore"
+  host: *
+  service: webapp.booksapp:7000
+  rewrite: "/bookstore"
+`,
+		},
+		{
+			name: "rewrite literal specified at global level with path split",
+			spec: `
+openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  host: "*"
+  path:
+    base: /my-bookstore/
+    rewrite_base: /bookstore/
+  service:
+    name: webapp
+    namespace: booksapp
+    port: 7000
+paths:
+  /:
+    get: {}
+
+  /books:
+    post: {}
+
+  /books/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+  /disabled-path:
+    x-kusk:
+      disabled: true
+  get: {}
+`,
+			options: options.Options{
+				Namespace: "booksapp",
+				Host:      "*",
+				Path: options.PathOptions{
+					Base:        "/my-bookstore/",
+					RewriteBase: "/bookstore/",
+				},
+				Service: options.ServiceOptions{
+					Namespace: "booksapp",
+					Name:      "webapp",
+					Port:      7000,
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/disabled-path": {
+						Disabled: &trueValue,
+					},
+				},
+			},
+			res: `
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: webapp-get
+  namespace: booksapp
+spec:
+  prefix: "/my-bookstore/"
+  host: *
+  method: GET
+  service: webapp.booksapp:7000
+  rewrite: "/bookstore/"
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: webapp-getbooksid
+  namespace: booksapp
+spec:
+  prefix: "/my-bookstore/books/([a-zA-Z0-9]*)"
+  prefix_regex: true
+  host: *
+  method: GET
+  service: webapp.booksapp:7000
+  rewrite: "/bookstore/books/([a-zA-Z0-9]*)"
+---
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: webapp-postbooks
+  namespace: booksapp
+spec:
+  prefix: "/my-bookstore/books"
+  host: *
+  method: POST
+  service: webapp.booksapp:7000
+  rewrite: "/bookstore/books"
+`,
+		},
 	}
 
 	gen := New()
