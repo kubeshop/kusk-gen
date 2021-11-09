@@ -43,7 +43,7 @@ func (*AbstractGenerator) Flags() *pflag.FlagSet {
 	fs.String(
 		"path.rewrite",
 		"",
-		"rewrite your base path before forwardng to the upstream service",
+		"rewrite your base path before forwarding to the upstream service",
 	)
 
 	fs.Bool(
