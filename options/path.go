@@ -1,7 +1,7 @@
 package options
 
 import (
-	"github.com/go-ozzo/ozzo-validation/v4"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type PathOptions struct {
@@ -15,9 +15,9 @@ type PathOptions struct {
 	// is "/api/v3/pets".
 	TrimPrefix string `yaml:"trim_prefix,omitempty" json:"trim_prefix,omitempty"`
 
-	// RewriteBase is the rewrite value that should replace the Base path before being forwarded to the
+	// Rewrite is the rewrite value that should replace the Base path before being forwarded to the
 	// upstream service
-	RewriteBase string `yaml:"rewrite_base,omitempty" json:"rewrite_base,omitempty"`
+	Rewrite string `yaml:"rewrite,omitempty" json:"rewrite,omitempty"`
 
 	// Split forces Kusk to generate a separate resource for each Path or Operation, where appropriate.
 	Split bool `yaml:"split,omitempty" json:"split,omitempty"`
