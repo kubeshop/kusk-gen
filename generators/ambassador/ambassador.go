@@ -122,8 +122,8 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 				mappingName := generateMappingName(opts.Service.Name, method, path, operation)
 
 				var pathRewrite string
-				if opts.Path.RewriteBase != "" {
-					pathRewrite = strings.TrimSuffix(opts.Path.RewriteBase, "/") + mappingPath
+				if opts.Path.Rewrite != "" {
+					pathRewrite = strings.TrimSuffix(opts.Path.Rewrite, "/") + mappingPath
 				}
 
 				op := mappingTemplateData{
@@ -220,7 +220,7 @@ func (a *AbstractGenerator) Generate(opts *options.Options, spec *openapi3.T) (s
 			ServiceURL:       serviceURL,
 			BasePath:         opts.Path.Base,
 			TrimPrefix:       opts.Path.TrimPrefix,
-			PathRewrite:      strings.TrimSuffix(opts.Path.RewriteBase, "/"),
+			PathRewrite:      opts.Path.Rewrite,
 			RequestTimeout:   opts.Timeouts.RequestTimeout * 1000,
 			IdleTimeout:      opts.Timeouts.IdleTimeout * 1000,
 			Host:             opts.Host,

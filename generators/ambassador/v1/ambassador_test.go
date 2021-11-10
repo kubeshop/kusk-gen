@@ -1756,7 +1756,7 @@ paths:
 				Host:      "*",
 				Path: options.PathOptions{
 					Base:        "/my-bookstore",
-					RewriteBase: "/bookstore/",
+					Rewrite: "/bookstore/",
 				},
 				Service: options.ServiceOptions{
 					Namespace: "booksapp",
@@ -1775,7 +1775,7 @@ spec:
   prefix: "/my-bookstore"
   host: *
   service: webapp.booksapp:7000
-  rewrite: "/bookstore"
+  rewrite: "/bookstore/"
 `,
 		},
 		{
@@ -1819,7 +1819,7 @@ paths:
 				Host:      "*",
 				Path: options.PathOptions{
 					Base:        "/my-bookstore/",
-					RewriteBase: "/bookstore/",
+					Rewrite: "/bookstore/",
 				},
 				Service: options.ServiceOptions{
 					Namespace: "booksapp",
