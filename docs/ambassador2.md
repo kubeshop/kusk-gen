@@ -17,6 +17,7 @@ Flags:
       --service.port int32                target Service port (default 80)
       --host string                       the Host header value to listen on
       --path.base string                  a base path for Service endpoints (default "/")
+      --path.rewrite string               rewrite your base path before forwarding to the upstream service
       --path.split                        force Kusk to generate a separate Mapping for each operation
       --path.trim_prefix string           a prefix to trim from the URL before forwarding to the upstream Service
       --rate_limits.burst uint32          request per second burst
@@ -42,6 +43,7 @@ To override settings on the path or HTTP method level, you are required to use t
 | Service Namespace       | --service.namespace        | service.namespace         | The namespace where the service named above resides (default value: default)                                       | ❌                             |
 | Service Port            | --service.port             | service.port              | Port the service is listening on (default value: 80)                                                               | ❌                             |
 | Path Base               | --path.base                | path.base                 | Prefix for your resource routes                                                                                    | ❌                             |
+| Path Rewrite            | --path.rewrite             | path.rewrite              | Rewrite your base path before forwarding to the upstream service                                                   | ❌                             |
 | Path Trim Prefix        | --path.trim_prefix         | path.trim_prefix          | Trim the specified prefix from URl before passing request onto service                                             | ❌                             |
 | Path split              | --path.split               | path.split                | Boolean; whether or not to force generator to generate a mapping for each path                                     | ❌                             |
 | Host                    | --host                     | host                      | The value to set the host field to in the Mapping resource                                                         | ✅                             |
@@ -69,11 +71,9 @@ To override settings on the path or HTTP method level, you are required to use t
 helm repo add datawire https://www.getambassador.io
 helm repo update
 
-# Create Namespace and Install:
-helm install -n ambassador --create-namespace \
-        edge-stack --devel \
-        datawire/edge-stack && \
-    kubectl rollout status  -n ambassador deployment/edge-stack -w
+kubectl create namespace emissary && \
+helm install emissary-ingress --devel --namespace emissary datawire/emissary-ingress && \
+kubectl -n emissary wait --for condition=available --timeout=90s deploy -lapp.kubernetes.io/instance=emissary-ingress
 ```
 
 ### Create the AmbassadorListeners
@@ -81,10 +81,10 @@ helm install -n ambassador --create-namespace \
 kubectl apply -f - <<EOF
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorListener
+kind: Listener
 metadata:
   name: edge-stack-listener-8080
-  namespace: ambassador
+  namespace: emissary
 spec:
   port: 8080
   protocol: HTTP
@@ -94,10 +94,10 @@ spec:
       from: ALL
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorListener
+kind: Listener
 metadata:
   name: edge-stack-listener-8443
-  namespace: ambassador
+  namespace: emissary
 spec:
   port: 8443
   protocol: HTTPS
@@ -113,7 +113,7 @@ EOF
 cat <<EOF | kubectl apply -f -
 ---
 apiVersion: x.getambassador.io/v3alpha1
-kind: AmbassadorHost
+kind: Host
 metadata:
   name: my-host
   namespace: ambassador
@@ -325,6 +325,72 @@ Or go to your web browser
 **Note** the trailing `/` is mandatory.
 
 ---
+
+## Base Path and Rewrite
+Setting the Base path option allows your service to be identified with the base path acting as a prefix.
+
+Setting the rewrite option will instruct ambassador to rewrite the base path before sending the request to the upstream service
+
+When no rewrite or trim prefix is specified, the rewrite option will default to `""`. 
+
+**note** If you want the default ambassador behaviour for rewrites, set the rewrite option to `/`
+**note** `trim_prefix` takes precedence over rewrite. If both are defined, `trim_prefix` will take effect and `rewrite` will be ignored.
+
+### CLI Flags
+
+```shell
+kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+--namespace booksapp \
+--host "*" \
+--service.name webapp \
+--service.port 7000 \
+--service.namespace booksapp \
+--path.base /my-app \
+--path.rewrite /my-other-app
+```
+
+### OpenAPI Specification
+
+```yaml
+openapi: 3.0.1
+x-kusk:
+  namespace: booksapp
+  host: "*"
+  service:
+    name: webapp
+    namespace: booksapp
+    port: 7000
+  path:
+    base: /my-app
+    rewrite: /my-other-app
+paths:
+  /:
+    get: {}
+...
+```
+
+### Sample Output
+
+```yaml
+---
+apiVersion: x.getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: booksapp
+  namespace: booksapp
+spec:
+  prefix: "/my-app"
+  hostname: '*'
+  service: booksapp.booksapp:7000
+  rewrite: "/my-other-app"
+```
+
+### Test
+`curl -Lki https://localhost:8443/my-app/`
+
+Or go to your web browser
+
+**Note** the trailing `/` is mandatory.
 
 ## Setting timeouts
 
