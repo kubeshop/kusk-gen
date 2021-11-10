@@ -17,7 +17,7 @@ type PathOptions struct {
 
 	// Rewrite is the rewrite value that should replace the Base path before being forwarded to the
 	// upstream service
-	Rewrite string `yaml:"rewrite,omitempty" json:"rewrite_base,omitempty"`
+	Rewrite string `yaml:"rewrite,omitempty" json:"rewrite,omitempty"`
 
 	// Split forces Kusk to generate a separate resource for each Path or Operation, where appropriate.
 	Split bool `yaml:"split,omitempty" json:"split,omitempty"`
