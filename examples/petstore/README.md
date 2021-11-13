@@ -28,16 +28,16 @@ kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lprod
 Root only
 ```shell
 # This will allow you to resolve the swagger documentation in the browser at https://localhost:8443/
-go run main.go ambassador -i examples/petstore/petstore.yaml --path.base="/petstore" --path.trim_prefix="/petstore" --service.name "petstore" | kubectl apply -f -
+kusk ambassador -i examples/petstore/petstore.yaml --path.base="/petstore" --path.trim_prefix="/petstore" --service.name "petstore" | kubectl apply -f -
 ```
 
 CQRS Pattern
 ```shell
 # This will allow you to resolve the swagger documentation in the browser at https://localhost:8443/
-go run main.go ambassador -i examples/petstore/petstore.yaml --path.base="/" --service.name "petstore" | kubectl apply -f -
+kusk ambassador -i examples/petstore/petstore.yaml --path.base="/" --service.name "petstore" | kubectl apply -f -
 
 # This will create mappings for each route in the api
-go run main.go ambassador -i examples/petstore/petstore.yaml --path.base="/petstore/api/v3" --path.trim_prefix="/petstore" --service.name "petstore" --path.split=true | kubectl apply -f -
+kusk ambassador -i examples/petstore/petstore.yaml --path.base="/petstore/api/v3" --path.trim_prefix="/petstore" --service.name "petstore" --path.split=true | kubectl apply -f -
 curl -kLi 'https://localhost:8443/petstore/api/v3/pet/findByStatus?status=available'  
 ```
 
