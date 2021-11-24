@@ -1,6 +1,9 @@
 # Ambassador 2.0
 **Warning**: Ambassador 2.0 is currently in Developer Preview and could change at any point, breaking the implementation here.
 
+** Note**
+Ambassador2 uses `CustomResourceDefinition`s with `apiVersion` = `apiextensions.k8s.io/v1` which is compatible with Kubernetes version 1.22+. Please ensure your Kubernetes version is compatible with the version of Ambassador you're using.
+
 
 ```shell
 kusk ambassador2 --help
