@@ -35,7 +35,47 @@ Apply Petstore manifest
 kubectl apply -f examples/petstore/manifest.yaml
 ```
 
-## Ambassador Mappings
+## Ambassador 1.x Mappings
+**Note**:
+Ambassador uses `CustomResourceDefinition`s with `apiVersion` = `apiextensions.k8s.io/v1beta1` which was removed in Kubernetes version 1.22+.
+
+Please ensure your Kubernetes version is compatible with the version of Ambassador you're using.
+
+### Setup
+```shell
+helm repo add datawire https://www.getambassador.io
+helm install ambassador datawire/ambassador --set enableAES=false
+
+kubectl wait --for condition=established --timeout=90s crd -lapp.kubernetes.io/name=ambassador
+
+kubectl wait --for condition=available --timeout=90s deploy -lapp.kubernetes.io/name=ambassador
+```
+
+### Generate mappings and curl service
+
+Root only
+```shell
+# This will allow you to resolve the swagger documentation in the browser at https://localhost:8080/
+go run main.go ambassador -i examples/petstore/petstore.yaml --path.base="/petstore" --path.trim_prefix="/petstore" --service.name "petstore" | kubectl apply -f -
+
+curl -Li 'http://localhost:8080/petstore/api/v3/pet/findByStatus?status=available'
+```
+
+CQRS Pattern
+```shell
+# This will allow you to resolve the swagger documentation in the browser at https://localhost:8080/
+go run main.go ambassador -i examples/petstore/petstore.yaml --path.base="/" --service.name "petstore" | kubectl apply -f -
+
+# This will create mappings for each route in the api
+go run main.go ambassador -i examples/petstore/petstore.yaml --path.base="/petstore/api/v3" --path.trim_prefix="/petstore" --service.name "petstore" --path.split=true | kubectl apply -f -
+
+curl -Li 'http://localhost:8080/petstore/api/v3/pet/findByStatus?status=available'
+```
+
+## Ambassador 2.x Mappings
+**Note**: Ambassador2 uses `CustomResourceDefinition`s with `apiVersion` = `apiextensions.k8s.io/v1` which is compatible with Kubernetes version 1.22+.
+
+Please ensure your Kubernetes version is compatible with the version of Ambassador you're using.
 ### Setup
 
 ```shell

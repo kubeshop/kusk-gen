@@ -1,6 +1,6 @@
 # Ambassador
 
-** Note**
+**Note**:
 Ambassador uses `CustomResourceDefinition`s with `apiVersion` = `apiextensions.k8s.io/v1beta1` which was removed in Kubernetes version 1.22+. Please ensure your Kubernetes version is compatible with the version of Ambassador you're using
 
 ```shell
