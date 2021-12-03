@@ -8,6 +8,10 @@
 ### Latest release on Github
 `go install github.com/kubeshop/kusk@$VERSION`
 
+If you don't want to build it yourself, the [Releases](https://github.com/kubeshop/kusk/releases) page contains already built binaries for all supported platforms.
+
+Download it and unpack *kusk* to the directory of you choice.
+
 ### From source
 ```shell
 git clone git@github.com:kubeshop/kusk.git && \

@@ -226,7 +226,7 @@ func ingressResourceNameFromPath(path string) string {
 	}
 
 	// remove trailing - character
-	return strings.TrimSuffix(b.String(), "-")
+	return strings.ToLower(strings.TrimSuffix(b.String(), "-"))
 }
 
 func (g *Generator) newIngressResource(
