@@ -140,16 +140,22 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 				pathField = opts.Path.Base + string(openApiPathVariableRegex.ReplaceAll([]byte(path), []byte("([A-z0-9]+)")))
 
 				// get the first capture group of regex. Given a path /books/{id}, will return /books/
-				rewrite := string(openApiPathVariableRegex.ReplaceAllLiteral([]byte(path), []byte("$1")))
+				rewrite := opts.Path.Base + string(openApiPathVariableRegex.ReplaceAllLiteral([]byte(path), []byte("$1")))
 				annotations[rewriteTargetAnnotationKey] = rewrite
 				annotations[useRegexAnnotationKey] = "true"
 			} else if path == "/" {
 				pathField = opts.Path.Base + "$"
-				annotations[rewriteTargetAnnotationKey] = "/"
+				annotations[rewriteTargetAnnotationKey] = opts.Path.Base + "/"
 				annotations[useRegexAnnotationKey] = "true"
 			} else {
 				pathField = opts.Path.Base + path
-				annotations[rewriteTargetAnnotationKey] = path
+				annotations[rewriteTargetAnnotationKey] = strings.TrimPrefix(pathField, opts.Path.TrimPrefix)
+			}
+
+			if rewriteValue, ok := annotations[rewriteTargetAnnotationKey]; ok {
+				rewriteValue = strings.ReplaceAll(rewriteValue, "//", "/")
+				rewriteValue = strings.TrimPrefix(rewriteValue, opts.Path.TrimPrefix)
+				annotations[rewriteTargetAnnotationKey] = rewriteValue
 			}
 
 			// Replace // with /
