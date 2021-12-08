@@ -656,6 +656,67 @@ status:
   loadBalancer: {}
 `,
 		},
+		{
+			name: "REGRESSION - rewrite target correct when base path defined and trim prefix is not defined",
+			options: options.Options{
+				Namespace: "default",
+				Service: options.ServiceOptions{
+					Namespace: "default",
+					Name:      "petstore",
+				},
+				Path: options.PathOptions{
+					Base: "/api",
+				},
+				PathSubOptions: map[string]options.SubOptions{
+					"/": {
+						Disabled: &trueValue,
+					},
+				},
+			},
+			spec: `
+openapi: 3.0.2
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  version: 1.0.5
+x-kusk:
+  service:
+    name: petstore
+    namespace: default
+  path:
+    base: /api
+paths:
+  /:
+    x-kusk:
+      disabled: true
+    get: {}
+  /path:
+    get: {}
+`,
+			res: `---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /api/path
+  creationTimestamp: null
+  name: petstore-path
+  namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: petstore
+            port:
+              number: 80
+        path: /api/path
+        pathType: Exact
+status:
+  loadBalancer: {}
+`,
+		},
 	}
 
 	var gen Generator
