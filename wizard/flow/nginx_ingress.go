@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kubeshop/kusk/generators/nginx_ingress"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/generators/nginx_ingress"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 type nginxIngressFlow struct {

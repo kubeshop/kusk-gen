@@ -5,8 +5,8 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/kubeshop/kusk/generators"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/generators"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 type ambassadorFlow struct {

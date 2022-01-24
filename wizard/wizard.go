@@ -9,10 +9,10 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"k8s.io/client-go/util/homedir"
 
-	"github.com/kubeshop/kusk/cluster"
-	"github.com/kubeshop/kusk/spec"
-	"github.com/kubeshop/kusk/wizard/flow"
-	"github.com/kubeshop/kusk/wizard/prompt"
+	"github.com/kubeshop/kusk-gen/cluster"
+	"github.com/kubeshop/kusk-gen/spec"
+	"github.com/kubeshop/kusk-gen/wizard/flow"
+	"github.com/kubeshop/kusk-gen/wizard/prompt"
 )
 
 func Start(apiSpecPath string, apiSpec *openapi3.T, prompt prompt.Prompter) {

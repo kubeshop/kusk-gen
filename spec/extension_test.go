@@ -7,7 +7,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 func TestGetOptions(t *testing.T) {

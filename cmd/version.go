@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/kusk/version"
+	"github.com/kubeshop/kusk-gen/version"
 )
 
 func init() {

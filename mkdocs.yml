@@ -3,7 +3,7 @@ site_description: 'Make OpenAPI the source of truth for K8s configuration'
 site_author: 'Kubeshop Kusk Team'
 docs_dir: docs/
 repo_name: 'kubeshop/kusk'
-repo_url: 'https://github.com/kubeshop/kusk'
+repo_url: 'https://github.com/kubeshop/kusk-gen'
 edit_uri: blob/main/docs/
 
 theme:

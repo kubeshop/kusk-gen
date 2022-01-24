@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/kubeshop/kusk/generators"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/generators"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 func init() {

@@ -9,8 +9,8 @@ import (
 	"github.com/knadh/koanf/providers/structs"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/spec"
+	"github.com/kubeshop/kusk-gen/options"
+	"github.com/kubeshop/kusk-gen/spec"
 )
 
 func TestTraefik(t *testing.T) {

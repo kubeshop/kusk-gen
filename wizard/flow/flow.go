@@ -5,10 +5,10 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 
-	ambassadorV1 "github.com/kubeshop/kusk/generators/ambassador/v1"
-	ambassadorV2 "github.com/kubeshop/kusk/generators/ambassador/v2"
-	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/wizard/prompt"
+	ambassadorV1 "github.com/kubeshop/kusk-gen/generators/ambassador/v1"
+	ambassadorV2 "github.com/kubeshop/kusk-gen/generators/ambassador/v2"
+	"github.com/kubeshop/kusk-gen/options"
+	"github.com/kubeshop/kusk-gen/wizard/prompt"
 )
 
 type Interface interface {

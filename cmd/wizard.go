@@ -8,9 +8,9 @@ import (
 	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/kusk/spec"
-	"github.com/kubeshop/kusk/wizard"
-	"github.com/kubeshop/kusk/wizard/prompt"
+	"github.com/kubeshop/kusk-gen/spec"
+	"github.com/kubeshop/kusk-gen/wizard"
+	"github.com/kubeshop/kusk-gen/wizard/prompt"
 )
 
 func init() {

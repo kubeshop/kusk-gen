@@ -16,8 +16,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	"github.com/kubeshop/kusk/generators"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/generators"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 const (
