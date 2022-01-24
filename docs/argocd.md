@@ -33,7 +33,7 @@ We will add an `initContainer` to `argocd-repo-server` and a volume to download 
 +          image: alpine:3.8
 +          command: [ sh, -c ]
 +          args:
-+            - wget -qO- https://github.com/kubeshop/kusk-gen/releases/download/0.0.1-rc1/kusk_0.0.1-rc1_Linux_x86_64.tar.gz | tar -xvzf - &&
++            - wget -qO- https://github.com/kubeshop/kusk-gen/releases/latest/download/kusk-gen_Linux_arm64.tar.gz | tar -xvzf - &&
 +              mv kusk /custom-tools/
 +          volumeMounts:
 +            - mountPath: /custom-tools
