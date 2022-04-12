@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 const (

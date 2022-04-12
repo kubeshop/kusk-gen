@@ -1,4 +1,4 @@
-module github.com/kubeshop/kusk
+module github.com/kubeshop/kusk-gen
 
 go 1.16
 

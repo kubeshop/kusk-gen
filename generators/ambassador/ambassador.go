@@ -12,7 +12,7 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/pflag"
 
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 var (

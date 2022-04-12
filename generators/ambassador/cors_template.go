@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 type corsTemplateData struct {

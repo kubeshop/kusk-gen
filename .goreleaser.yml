@@ -9,12 +9,14 @@ builds:
       - windows
       - darwin
 archives:
-  - replacements:
+  - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    replacements:
       darwin: macOS
       linux: Linux
       windows: Windows
       386: i386
       amd64: x86_64
+
 checksum:
   name_template: 'checksums.txt'
 changelog:
@@ -34,7 +36,7 @@ brews:
   -
     tap:
       owner: kubeshop
-      name: homebrew-kusk
+      name: homebrew-kusk-gen
     description: Make your OpenAPI definition the source of truth for API resources in cluster
     homepage: https://kusk.io
     license: "MIT"

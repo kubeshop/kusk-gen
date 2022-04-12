@@ -8,9 +8,9 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/pflag"
 
-	"github.com/kubeshop/kusk/generators"
-	"github.com/kubeshop/kusk/generators/ambassador"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/generators"
+	"github.com/kubeshop/kusk-gen/generators/ambassador"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 var (

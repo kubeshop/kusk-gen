@@ -7,9 +7,9 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kubeshop/kusk/generators/ambassador"
-	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/spec"
+	"github.com/kubeshop/kusk-gen/generators/ambassador"
+	"github.com/kubeshop/kusk-gen/options"
+	"github.com/kubeshop/kusk-gen/spec"
 )
 
 type testCase struct {
@@ -1837,7 +1837,7 @@ paths:
 				Namespace: "booksapp",
 				Host:      "*",
 				Path: options.PathOptions{
-					Base:        "/my-bookstore",
+					Base:    "/my-bookstore",
 					Rewrite: "/bookstore/",
 				},
 				Service: options.ServiceOptions{
@@ -1900,7 +1900,7 @@ paths:
 				Namespace: "booksapp",
 				Host:      "*",
 				Path: options.PathOptions{
-					Base:        "/my-bookstore/",
+					Base:    "/my-bookstore/",
 					Rewrite: "/bookstore/",
 				},
 				Service: options.ServiceOptions{

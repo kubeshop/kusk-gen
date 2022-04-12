@@ -20,9 +20,9 @@ Read the [Introductory blog-post](https://medium.com/kubeshop-i/hello-kusk-opena
 `brew install kubeshop/kusk/kusk`
 
 ### Latest release on Github
-`go install github.com/kubeshop/kusk@$VERSION`
+`go install github.com/kubeshop/kusk-gen@$VERSION`
 
-If you don't want to build it yourself, the [Releases](https://github.com/kubeshop/kusk/releases) page contains already built binaries for all supported platforms.
+If you don't want to build it yourself, the [Releases](https://github.com/kubeshop/kusk-gen/releases) page contains already built binaries for all supported platforms.
 
 Download it and unpack *kusk* to the directory of you choice.
 
@@ -75,7 +75,7 @@ Join our [Discord Server](https://discord.gg/uNuhy6GDyn) to ask questions, sugge
 - Check out our [Contributor Guide](https://github.com/kubeshop/.github/blob/main/CONTRIBUTING.md) and
   [Code of Conduct](https://github.com/kubeshop/.github/blob/main/CODE_OF_CONDUCT.md)
 - Fork/Clone the repo and make sure you can run it as shown above
-- Check out open [issues](https://github.com/kubeshop/kusk/issues) here on GitHub
-- Get in touch with the team by starting a discussion on [GitHub](https://github.com/kubeshop/kusk/discussions) or on our [Discord Server](https://discord.gg/uNuhy6GDyn).
+- Check out open [issues](https://github.com/kubeshop/kusk-gen/issues) here on GitHub
+- Get in touch with the team by starting a discussion on [GitHub](https://github.com/kubeshop/kusk-gen/discussions) or on our [Discord Server](https://discord.gg/uNuhy6GDyn).
   or open an issue of your own that you would like to contribute to the project.
 - Fly like the wind!

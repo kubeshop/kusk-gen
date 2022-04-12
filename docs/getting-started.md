@@ -6,9 +6,9 @@
 `brew install kubeshop/kusk/kusk`
 
 ### Latest release on Github
-`go install github.com/kubeshop/kusk@$VERSION`
+`go install github.com/kubeshop/kusk-gen@$VERSION`
 
-If you don't want to build it yourself, the [Releases](https://github.com/kubeshop/kusk/releases) page contains already built binaries for all supported platforms.
+If you don't want to build it yourself, the [Releases](https://github.com/kubeshop/kusk-gen/releases) page contains already built binaries for all supported platforms.
 
 Download it and unpack *kusk* to the directory of you choice.
 

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kubeshop/kusk/generators/traefik"
-	"github.com/kubeshop/kusk/options"
+	"github.com/kubeshop/kusk-gen/generators/traefik"
+	"github.com/kubeshop/kusk-gen/options"
 )
 
 type traefikFlow struct {

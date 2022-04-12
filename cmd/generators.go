@@ -10,14 +10,14 @@ import (
 	"github.com/knadh/koanf/providers/structs"
 	"github.com/spf13/cobra"
 
-	"github.com/kubeshop/kusk/generators"
-	_ "github.com/kubeshop/kusk/generators/ambassador/v1"
-	_ "github.com/kubeshop/kusk/generators/ambassador/v2"
-	_ "github.com/kubeshop/kusk/generators/linkerd"
-	_ "github.com/kubeshop/kusk/generators/nginx_ingress"
-	_ "github.com/kubeshop/kusk/generators/traefik"
-	"github.com/kubeshop/kusk/options"
-	"github.com/kubeshop/kusk/spec"
+	"github.com/kubeshop/kusk-gen/generators"
+	_ "github.com/kubeshop/kusk-gen/generators/ambassador/v1"
+	_ "github.com/kubeshop/kusk-gen/generators/ambassador/v2"
+	_ "github.com/kubeshop/kusk-gen/generators/linkerd"
+	_ "github.com/kubeshop/kusk-gen/generators/nginx_ingress"
+	_ "github.com/kubeshop/kusk-gen/generators/traefik"
+	"github.com/kubeshop/kusk-gen/options"
+	"github.com/kubeshop/kusk-gen/spec"
 )
 
 var (
