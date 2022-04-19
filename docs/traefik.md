@@ -1,7 +1,7 @@
 # Traefik V2
 
 ```bash
-kusk traefik
+kusk-gen traefik
 
 Usage:
   kusk traefik [flags]
@@ -59,7 +59,7 @@ To override settings on the path or HTTP method level, you are required to use t
 ### CLI Flags
 
 ```shell
-kusk traefik -i examples/booksapp/booksapp.yaml \
+kusk-gen traefik -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -127,7 +127,7 @@ request onto the service.
 ### CLI Flags
 
 ```shell
-kusk traefik -i examples/booksapp/booksapp.yaml \
+kusk-gen traefik -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -209,7 +209,7 @@ spec:
 ### CLI Flags
 
 ```shell
-kusk traefik -i examples/booksapp/booksapp.yaml \
+kusk-gen traefik -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -271,7 +271,7 @@ spec:
 
 ## Setting timeouts
 
-Kusk allows for setting a request timeout via flags or the x-kusk OpenAPI extension.
+kusk-gen allows for setting a request timeout via flags or the x-kusk OpenAPI extension.
 
 Traefik uses [ServersTransport](https://doc.traefik.io/traefik/routing/providers/kubernetes-crd/#kind-serverstransport) CRD to control timeouts to backend service.
 
@@ -284,7 +284,7 @@ Zero (0) value of timeout in CRD means "No timeout".
 ### CLI Flags
 
 ```shell
-kusk traefik -i examples/booksapp/booksapp.yaml \
+kusk-gen traefik -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -349,7 +349,7 @@ spec:
 
 ## Setting Rate Limits
 
-Kusk allows for setting a Rate Limits via flags or the x-kusk OpenAPI extension.
+kusk-gen allows for setting a Rate Limits via flags or the x-kusk OpenAPI extension.
 
 Traefik uses [RateLimit Middleware](https://doc.traefik.io/traefik/middlewares/http/ratelimit/) for that.
 
@@ -360,7 +360,7 @@ x-kusk option rate_limits.burst is used to set rateLimit.burst in CRD.
 ### CLI Flags
 
 ```shell
-kusk traefik -i examples/booksapp/booksapp.yaml \
+kusk-gen traefik -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \

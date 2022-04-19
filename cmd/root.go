@@ -9,7 +9,7 @@ import (
 
 var (
 	rootCmd = &cobra.Command{
-		Use:   "kusk",
+		Use:   "kusk-gen",
 		Short: "Framework that makes an OpenAPI definition the source of truth for all API-related objects in a cluster (services, mappings, monitors, etc)",
 	}
 )

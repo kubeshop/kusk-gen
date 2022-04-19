@@ -4,11 +4,11 @@
 Ambassador uses `CustomResourceDefinition`s with `apiVersion` = `apiextensions.k8s.io/v1beta1` which was removed in Kubernetes version 1.22+. Please ensure your Kubernetes version is compatible with the version of Ambassador you're using
 
 ```shell
-kusk ambassador --help
+kusk-gen ambassador --help
 Generates Ambassador Mappings for your service
 
 Usage:
-  kusk ambassador [flags]
+  kusk-gen ambassador [flags]
 
 Flags:
   -i, --in string                         file path to api spec file to generate mappings from. e.g. --in apispec.yaml
@@ -59,7 +59,7 @@ To override settings on the path or HTTP method level, you are required to use t
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \
@@ -99,13 +99,13 @@ spec:
 
 ## Split Path
 
-By setting split path to true, kusk will generate a mapping per route specified in the 
+By setting split path to true, kusk-gen will generate a mapping per route specified in the 
 provided OpenAPI specification
 
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \
@@ -171,7 +171,7 @@ request onto the service.
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \
@@ -218,12 +218,12 @@ spec:
 
 ## Setting timeouts
 
-kusk allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
+kusk-gen allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
 
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \
@@ -270,12 +270,12 @@ spec:
 
 ## Setting the Host header
 
-kusk allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
+kusk-gen allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
 
 ### CLI Flags
 
 ```shell
-kusk ambassador -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \

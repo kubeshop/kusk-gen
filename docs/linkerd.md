@@ -1,7 +1,7 @@
 # Linkerd
 
 ```shell
-kusk linkerd
+kusk-gen linkerd
 
 Usage:
   kusk linkerd [flags]
@@ -41,7 +41,7 @@ To override settings on the path or HTTP method level, you are required to use t
 ## Basic Usage
 ### CLI Flags
 ```shell
-kusk linkerd -i examples/booksapp/booksapp.yaml \
+kusk-gen linkerd -i examples/booksapp/booksapp.yaml \
 --service.name webapp \
 --namespace my-namespace \
 --service.namespace my-service-namespace
@@ -116,7 +116,7 @@ Setting the Base path option allows your service to be identified with the base 
 
 ### CLI Flags
 ```shell
-kusk linkerd -i examples/booksapp/booksapp.yaml \
+kusk-gen linkerd -i examples/booksapp/booksapp.yaml \
 --service.name webapp \
 --namespace my-namespace \
 --service.namespace my-service-namespace \
@@ -195,7 +195,7 @@ Setting the cluster domain option will override the default internal cluster dom
 
 ### CLI Flags
 ```shell
-kusk linkerd -i examples/booksapp/booksapp.yaml \
+kusk-gen linkerd -i examples/booksapp/booksapp.yaml \
 --service.name webapp \
 --namespace my-namespace \
 --service.namespace my-service-namespace \
@@ -274,7 +274,7 @@ kusk's Linkerd generator allows for setting request timeouts via flags or the x-
 
 ### CLI Flags
 ```shell
-kusk linkerd -i examples/booksapp/booksapp.yaml \
+kusk-gen linkerd -i examples/booksapp/booksapp.yaml \
 --service.name webapp \
 --namespace my-namespace \
 --service.namespace my-service-namespace \

@@ -29,7 +29,7 @@ We will add an `initContainer` to `argocd-repo-server` and a volume to download 
                weight: 5
        automountServiceAccountToken: false
 +      initContainers:
-+        - name: download-kusk
++        - name: download-kusk-gen
 +          image: alpine:3.8
 +          command: [ sh, -c ]
 +          args:
@@ -37,7 +37,7 @@ We will add an `initContainer` to `argocd-repo-server` and a volume to download 
 +              mv kusk /custom-tools/
 +          volumeMounts:
 +            - mountPath: /custom-tools
-+              name: kusk
++              name: kusk-gen
        containers:
          - command:
              - uid_entrypoint.sh
@@ -45,11 +45,11 @@ We will add an `initContainer` to `argocd-repo-server` and a volume to download 
                name: gpg-keyring
              - mountPath: /app/config/reposerver/tls
                name: argocd-repo-server-tls
-+            - mountPath: /usr/local/bin/kusk
-+              name: kusk
-+              subPath: kusk
++            - mountPath: /usr/local/bin/kusk-gen
++              name: kusk-gen
++              subPath: kusk-gen
        volumes:
-+        - name: kusk
++        - name: kusk-gen
 +          emptyDir: {}
          - configMap:
              name: argocd-ssh-known-hosts-cm
@@ -66,25 +66,25 @@ When installed, Kusk binary will be available during ArgoCD sync. To use that, w
    name: argocd-cm
 +data:
 +  configManagementPlugins: |
-+    - name: kusk
++    - name: kusk-gen
 +      generate:
 +        command: ["/bin/sh", "-c"]
-+        args: ["kusk $KUSK_GENERATOR -i $KUSK_INPUT $KUSK_ARGS"]
++        args: ["kusk-gen $KUSK_GENERATOR -i $KUSK_INPUT $KUSK_ARGS"]
 ```
 
 Once these changes are applied to your ArgoCD installation, you can begin to use Kusk!
 
-## Use Kusk in ArgoCD UI
+## Use kusk-gen in ArgoCD UI
 When you are [creating an App via UI](https://argoproj.github.io/argo-cd/getting_started/#creating-apps-via-ui), scroll down and select "Plugin" as a configuration management tool:
 ![image](https://user-images.githubusercontent.com/14029650/129340017-04ef2221-1793-4087-bf95-d60b1f2900d4.png)
 
-After that, select Kusk as a plugin and fill the environment variables to specify the generator you want to invoke and the input file with your OpenAPI schema:
+After that, select kusk-gen as a plugin and fill the environment variables to specify the generator you want to invoke and the input file with your OpenAPI schema:
 ![image](https://user-images.githubusercontent.com/14029650/129340227-d729cb61-7c28-4869-80dd-9cea7153cfbd.png)
 
 ArgoCD will sync your app and you will be able to see resources generated and applied to your cluster automatically 🪄:
 ![image](https://user-images.githubusercontent.com/14029650/129340502-e469fd2e-d745-483e-ba11-954dcc5c3ab2.png)
 
-## Use Kusk in ArgoCD CLI
+## Use kusk-gen in ArgoCD CLI
 It is also possible to [create an App via CLI](https://argoproj.github.io/argo-cd/getting_started/#creating-apps-via-cli) with Kusk - just specify `--config-management-plugin kusk` option:
 ```shell
 argocd app create petstore-kusk \
@@ -97,7 +97,7 @@ argocd app create petstore-kusk \
     --dest-namespace default
 ```
 
-## Use Kusk in ArgoCD App manifest
+## Use kusk-gen in ArgoCD App manifest
 In ArgoCD it is possible to manage applications using App manifest and apply them using `kubectl`: [documentation](https://argoproj.github.io/argo-cd/operator-manual/declarative-setup/).
 To use Kusk in this setup, add Kusk in a `plugin` node:
 ```yaml

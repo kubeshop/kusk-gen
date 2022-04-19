@@ -3,7 +3,7 @@
 ## Installing Kusk
 
 ### Homebrew
-`brew install kubeshop/kusk/kusk`
+`brew install kubeshop/kusk/kusk-gen`
 
 ### Latest release on Github
 `go install github.com/kubeshop/kusk-gen@$VERSION`
@@ -14,22 +14,22 @@ Download it and unpack *kusk* to the directory of you choice.
 
 ### From source
 ```shell
-git clone git@github.com:kubeshop/kusk.git && \
-cd kusk && \
+git clone git@github.com:kubeshop/kusk-gen.git && \
+cd kusk-gen && \
 go install
 ```
 
 ## Usage
 
-For a run-through of what Kusk can do with the tools already installed in your cluster run:
-`kusk wizard -i my-openapi-spec.yaml`
+For a run-through of what kusk-gen can do with the tools already installed in your cluster run:
+`kusk-gen wizard -i my-openapi-spec.yaml`
 
 Or use one of our examples
-`kusk wizard -i examples/booksapp/booksapp.yaml`
+`kusk-gen wizard -i examples/booksapp/booksapp.yaml`
 
 ```shell
 Usage:
-  kusk [command]
+  kusk-gen [command]
 
 Available Commands:
   ambassador    Generates Ambassador Mappings for your service
@@ -43,7 +43,7 @@ Available Commands:
 Flags:
   -h, --help   help for kusk
 
-Use "kusk [command] --help" for more information about a command.
+Use "kusk-gen [command] --help" for more information about a command.
 ```
 
 For more comprehensive instructions on individual generators, please refer to the dedicated document in the docs folder

@@ -3,7 +3,7 @@
 **Note** This generator refers to the community ingress from [Kubernetes ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
 
 ```bash
-kusk ingress-nginx
+kusk-gen ingress-nginx
 
 Usage:
   kusk ingress-nginx [flags]
@@ -57,7 +57,7 @@ To override settings on the path or HTTP method level, you are required to use t
 ## Basic Usage
 ### CLI Flags
 ```shell
-kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
+kusk-gen ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -110,7 +110,7 @@ provided OpenAPI specification
 
 ### CLI Flags
 ```shell
-kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
+kusk-gen ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name booksapp \
 --service.port 7000 \
@@ -193,7 +193,7 @@ request onto the service.
 
 ### CLI Flags
 ```shell
-kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
+kusk-gen ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -251,7 +251,7 @@ status:
 ## Setting the rewrite target
 ### CLI Flags
 ```shell
-kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
+kusk-gen ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -306,7 +306,7 @@ status:
 ## Setting the Host
 ### CLI Flags
 ```shell
-kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
+kusk-gen ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \
@@ -357,7 +357,7 @@ status:
 ```
 
 ## Setting timeouts
-kusk allows for setting a request timeout via flags or the x-kusk OpenAPI extension
+kusk-gen allows for setting a request timeout via flags or the x-kusk OpenAPI extension
 
 The ingress-nginx generator will spread the total request time over the following settings, diving it by 2
 - `nginx.ingress.kubernetes.io/proxy-send-timeout`
@@ -365,7 +365,7 @@ The ingress-nginx generator will spread the total request time over the followin
 
 ### CLI Flags
 ```shell
-kusk ingress-nginx -i examples/booksapp/booksapp.yaml \
+kusk-gen ingress-nginx -i examples/booksapp/booksapp.yaml \
 --namespace my-namespace \
 --service.name webapp \
 --service.port 7000 \

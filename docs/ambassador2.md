@@ -5,7 +5,7 @@ Ambassador2 uses `CustomResourceDefinition`s with `apiVersion` = `apiextensions.
 
 
 ```shell
-kusk ambassador2 --help
+kusk-gen ambassador2 --help
 Generates Ambassador 2.0 Mappings for your service
 
 Usage:
@@ -139,7 +139,7 @@ kubectl rollout status  -n booksapp deployment/webapp -w
 ### CLI Flags
 
 ```shell
-kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador2 -i examples/booksapp/booksapp.yaml \
 --namespace booksapp \
 --host "*" \
 --service.name webapp \
@@ -194,7 +194,7 @@ provided OpenAPI specification
 ### CLI Flags
 
 ```shell
-kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador2 -i examples/booksapp/booksapp.yaml \
 --namespace booksapp \
 --host "*" \
 --service.name webapp \
@@ -271,7 +271,7 @@ request onto the service.
 ### CLI Flags
 
 ```shell
-kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador2 -i examples/booksapp/booksapp.yaml \
 --namespace booksapp \
 --host "*" \
 --service.name webapp \
@@ -341,7 +341,7 @@ When no rewrite or trim prefix is specified, the rewrite option will default to 
 ### CLI Flags
 
 ```shell
-kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador2 -i examples/booksapp/booksapp.yaml \
 --namespace booksapp \
 --host "*" \
 --service.name webapp \
@@ -396,12 +396,12 @@ Or go to your web browser
 
 ## Setting timeouts
 
-kusk allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
+kusk-gen allows for setting both idle and request timeouts via flags or the x-kusk OpenAPI extension
 
 ### CLI Flags
 
 ```shell
-kusk ambassador2 -i examples/booksapp/booksapp.yaml \
+kusk-gen ambassador2 -i examples/booksapp/booksapp.yaml \
 --namespace booksapp \
 --host "*" \
 --service.name booksapp \
@@ -453,7 +453,7 @@ spec:
 
 Via the x-kusk extension, you can set cors policies on your resources
 
-kusk ambassador2 -i examples/booksapp/booksapp_extension.yaml
+kusk-gen ambassador2 -i examples/booksapp/booksapp_extension.yaml
 
 Here we only set the `-i` input flag as the other mandatory options have been set using
 the `x-kusk` extension in the OpenAPI spec file.

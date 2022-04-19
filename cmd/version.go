@@ -11,7 +11,7 @@ import (
 func init() {
 	versionCmd := &cobra.Command{
 		Use:   "version",
-		Short: "Prints kusk version info",
+		Short: "Prints kusk-gen version info",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("Version: %s\n", version.Version)
 			fmt.Printf("Git SHA: %s\n", version.Commit)
