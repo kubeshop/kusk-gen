@@ -254,17 +254,21 @@ func (g *Generator) Generate(opts *options.Options, spec *openapi3.T) (string, e
 }
 
 func generateCORSMiddleware(name string, namespace string, corsOpts options.CORSOptions) traefikCRD.Middleware {
-	midlewareSpec := traefikCRD.MiddlewareSpec{Headers: &traefikDynamicConfig.Headers{
-		AccessControlAllowHeaders:     corsOpts.Headers,
-		AccessControlAllowMethods:     corsOpts.Methods,
-		AccessControlAllowOriginList:  corsOpts.Origins,
-		AccessControlMaxAge:           int64(corsOpts.MaxAge),
-		AccessControlAllowCredentials: *corsOpts.Credentials,
+	middlewareSpec := traefikCRD.MiddlewareSpec{Headers: &traefikDynamicConfig.Headers{
+		AccessControlAllowHeaders:    corsOpts.Headers,
+		AccessControlAllowMethods:    corsOpts.Methods,
+		AccessControlAllowOriginList: corsOpts.Origins,
+		AccessControlMaxAge:          int64(corsOpts.MaxAge),
 	}}
+
+	if corsOpts.Credentials != nil {
+		middlewareSpec.Headers.AccessControlAllowCredentials = *corsOpts.Credentials
+	}
+
 	middleware := traefikCRD.Middleware{
 		TypeMeta:   metav1.TypeMeta{Kind: "Middleware", APIVersion: APIVersion},
 		ObjectMeta: metav1.ObjectMeta{Name: name, Namespace: namespace},
-		Spec:       midlewareSpec,
+		Spec:       middlewareSpec,
 	}
 	return middleware
 }
