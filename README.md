@@ -1,13 +1,16 @@
 # kusk-gen - use OpenAPI to configure Kubernetes
 
 [![Known Vulnerabilities](https://snyk.io/test/github/kubeshop/kusk-gen/badge.svg)](https://snyk.io/test/github/kubeshop/kusk-gen)
+![kusk-gen-release-date](https://img.shields.io/github/v/tag/kubeshop/kusk-gen)
+
+---
 
 ## What is kusk-gen?
 
 Developers deploying their REST APIs in Kubernetes shouldn't have to worry about managing resources that do not directly
 relate to their applications or services.
 
-kusk-gen (_coachman in Swedish_) treats your OpenAPI/Swagger definition as a source of truth for generating 
+kusk-gen (_coachman in Swedish_) treats your OpenAPI/Swagger definition as a source of truth for generating
 supplementary Kubernetes resources for your REST APIs in regard to mappings, security, traffic-control, monitoring, etc.
 
 Read the [Introductory blog-post](https://medium.com/kubeshop-i/hello-kusk-openapi-for-kubernetes-19be94fc1e91) to get an overview.
@@ -17,29 +20,37 @@ Read the [Introductory blog-post](https://medium.com/kubeshop-i/hello-kusk-opena
 ## Quick Start
 
 ### Homebrew
-`brew install kubeshop/kusk/kusk-gen`
+
+```sh
+brew install kubeshop/kusk/kusk-gen
+```
 
 ### Latest release on Github
-`go install github.com/kubeshop/kusk-gen@$VERSION`
+
+```sh
+go install github.com/kubeshop/kusk-gen@latest
+```
 
 If you don't want to build it yourself, the [Releases](https://github.com/kubeshop/kusk-gen/releases) page contains already built binaries for all supported platforms.
 
 Download it and unpack *kusk-gen* to the directory of you choice.
 
 ### From source
-```shell
+
+```sh
 git clone git@github.com:kubeshop/kusk-gen.git && \
-cd kusk-gen && \
-go install
+  cd kusk-gen && \
+  go install
 ```
 
 Read more at [Getting Started](https://kubeshop.github.io/kusk-gen/getting-started/)
 
 ## Why kusk-gen?
 
-Using OpenAPI as the source-for-truth for client, servers, testing, documentation, etc. is a common approach when 
-building microservice architectures with REST APis. Kusk extends this paradigm to also include Kubernetes configurations, 
-allowing you to 
+Using OpenAPI as the source-for-truth for client, servers, testing, documentation, etc. is a common approach when
+building microservice architectures with REST APis. Kusk extends this paradigm to also include Kubernetes configurations,
+allowing you to:
+
 - Cut down on development time when deploying your REST APIs to your clusters
 - Remove the need to learn tools-specific formats and configurations
 - Easily switch between supported tools without having to learn new formats/configurations
@@ -52,7 +63,8 @@ allowing you to
 - kusk-gen plays nicely with both manual and automated/GitOps/CD workflows.
 - The underlying architecture makes it straight-forward to extend kusk-gen with new generators
 
-kusk-gen currently supports (click for configuration options)
+kusk-gen currently supports (click for configuration options):
+
 - [Ambassador 1.x](https://kubeshop.github.io/kusk-gen/ambassador/)
 - [Ambassador 2.0](https://kubeshop.github.io/kusk-gen/ambassador2/)
   - **Warning** This is a developer preview and should be treated as unstable
@@ -61,7 +73,7 @@ kusk-gen currently supports (click for configuration options)
   - This generator refers to the community ingress from [Kubernetes ingress-nginx](https://github.com/kubernetes/ingress-nginx/)
 - [Traefik V2 (v2.x)](https://kubeshop.github.io/kusk-gen/traefik/)
 
-Some of the upcoming tools we'd like to support are Kong and Contour. Please don't hesitate to 
+Some of the upcoming tools we'd like to support are Kong and Contour. Please don't hesitate to
 suggest others or contribute your own generator!
 
 ## Documentation & Support

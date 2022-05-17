@@ -3,3 +3,8 @@ kusk-gen
 site/
 dist/
 .vscode
+
+# Ignore temp (dev) folders #
+.tmp/
+/.tmp/
+#############################
