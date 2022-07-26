@@ -1,6 +1,6 @@
 # kusk-gen - use OpenAPI to configure Kubernetes
 
-[![Known Vulnerabilities](https://snyk.io/test/github/kubeshop/kusk-gen/badge.svg)](https://snyk.io/test/github/kubeshop/kusk-gen)
+**This project is now deprecated** - please check out [Kusk Gateway](https://github.com/kubeshop/kusk-gateway), which applies the same philosophy as kusk-gen but exclusively for Envoy.
 
 ## What is kusk-gen?
 
