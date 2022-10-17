@@ -1,7 +1,5 @@
 # kusk-gen - use OpenAPI to configure Kubernetes
 
-**This project is now deprecated** - please check out [Kusk Gateway](https://github.com/kubeshop/kusk-gateway), which applies the same philosophy as kusk-gen but exclusively for Envoy.
-
 ## What is kusk-gen?
 
 Developers deploying their REST APIs in Kubernetes shouldn't have to worry about managing resources that do not directly
